@@ -170,9 +170,12 @@ export interface Settings {
    * Same key and values as the Mac's "pillColors".
    */
   pillColors: Record<string, string>;
-  /**
-   * Interface language: "" follows the system (when Cocoa has its language,
-   * else English), or one of src/i18n's ten codes ("fr", "pt-BR", "zh-Hans"…).
+  /** Enable idle auto-hide in collapsed mode */
+  idleAutoHide: boolean;
+  /** Inactivity seconds before collapsed notch auto-hides (default 15s) */
+  idleHideInterval: number;
+  /** Interface language: "" follows the system (when Cocoa has its language,
+   *  else English), or one of src/i18n's ten codes ("fr", "pt-BR", "zh-Hans"…).
    */
   language: string;
   /** Mochi on the desktop. Rust owns it: whatever the page sends back is ignored. */
@@ -225,6 +228,8 @@ export const DEFAULT_SETTINGS: Settings = {
   showSystemNotifications: true,
   notificationDuration: 5,
   notificationSound: true,
+  idleAutoHide: true,
+  idleHideInterval: 15,
   welfareReminders: true,
   welfareIntervalMinutes: 45,
   welfareBreakReminders: true,

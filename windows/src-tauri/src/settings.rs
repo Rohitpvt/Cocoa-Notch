@@ -48,6 +48,10 @@ pub struct Settings {
     pub notification_duration: f64,
     /// Play chime sound when a system notification arrives.
     pub notification_sound: bool,
+    /// Enable idle auto-hide in collapsed mode.
+    pub idle_auto_hide: bool,
+    /// Inactivity seconds before collapsed notch auto-hides.
+    pub idle_hide_interval: f64,
     /// Enable Mochi Welfare & Wellness proactive comments.
     pub welfare_reminders: bool,
     /// Interval in minutes between welfare reminders.
@@ -150,6 +154,8 @@ impl Default for Settings {
             show_system_notifications: true,
             notification_duration: 5.0,
             notification_sound: true,
+            idle_auto_hide: true,
+            idle_hide_interval: 15.0,
             welfare_reminders: true,
             welfare_interval_minutes: 45.0,
             welfare_break_reminders: true,
@@ -444,6 +450,8 @@ mod tests {
   "showSystemNotifications": false,
   "notificationDuration": 10.0,
   "notificationSound": false,
+  "idleAutoHide": false,
+  "idleHideInterval": 20.0,
   "welfareReminders": false,
   "welfareIntervalMinutes": 60.0,
   "welfareBreakReminders": false,
@@ -864,6 +872,8 @@ mod tests {
                 "showSystemNotifications",
                 "notificationDuration",
                 "notificationSound",
+                "idleAutoHide",
+                "idleHideInterval",
                 "welfareReminders",
                 "welfareIntervalMinutes",
                 "welfareBreakReminders",

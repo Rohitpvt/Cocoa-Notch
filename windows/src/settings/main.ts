@@ -1014,6 +1014,17 @@ function generalSection(): HTMLElement {
     void save();
   });
 
+  const idleHideDuration = h("input", {
+    type: "number", min: "3", max: "120", step: "1",
+    value: String(Math.round(settings.idleHideInterval || 15)),
+    style: "width:72px",
+  }) as HTMLInputElement;
+  idleHideDuration.addEventListener("change", () => {
+    settings.idleHideInterval = Math.max(3, Math.min(120, Number(idleHideDuration.value) || 15));
+    idleHideDuration.value = String(settings.idleHideInterval);
+    void save();
+  });
+
   return h(
     "section",
     {},
@@ -1027,6 +1038,16 @@ function generalSection(): HTMLElement {
       h("label", { text: t("Auto-close") }),
       autoClose,
       h("span", { class: "hint", text: t("seconds after you leave the island") }),
+    ),
+    h("div", { class: "row" },
+      h("label", { text: t("Idle auto-hide") }),
+      toggle(settings.idleAutoHide !== false, (v) => { settings.idleAutoHide = v; void save(); }),
+      h("span", { class: "hint", text: t("Animate upwards and hide when collapsed mode is idle") }),
+    ),
+    h("div", { class: "row" },
+      h("label", { text: t("Idle hide duration") }),
+      idleHideDuration,
+      h("span", { class: "hint", text: t("seconds of inactivity before notch disappears") }),
     ),
     h("div", { class: "row" },
       h("label", { text: t("Island lives on") }),

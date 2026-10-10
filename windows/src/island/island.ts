@@ -130,6 +130,11 @@ export class Island {
     State.subscribe(() => {
       this.fsm.openOnHover = State.settings.openOnHover;
       this.fsm.homeToPetitDelay = State.settings.autoCloseInterval;
+      this.fsm.idleAutoHide = State.settings.idleAutoHide ?? true;
+      this.fsm.idleHideDelay = State.settings.idleHideInterval ?? 15;
+      if (!this.fsm.idleAutoHide && this.fsm.state === "hidden") {
+        this.fsm.reveal();
+      }
       this.dirty = true;
       this.ensureRunning();
     });

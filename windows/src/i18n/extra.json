@@ -4328,6 +4328,50 @@
    "pt-BR": "Ontem",
    "ru": "Вчера",
    "id": "Kemarin"
+  },
+  "Idle auto-hide": {
+   "zh-Hans": "闲置时自动隐藏",
+   "hi": "निष्क्रिय होने पर स्वतः छिपाएं",
+   "es": "Ocultar automáticamente al estar inactivo",
+   "ar": "الإخفاء التلقائي عند الخمول",
+   "fr": "Masquer automatiquement en cas d'inactivité",
+   "bn": "নিষ্ক্রিয় থাকলে স্বয়ংক্রিয় লুকানো",
+   "pt-BR": "Ocultar automaticamente quando ocioso",
+   "ru": "Автоскрытие при бездействии",
+   "id": "Sembunyikan otomatis saat tidak aktif"
+  },
+  "Animate upwards and hide when collapsed mode is idle": {
+   "zh-Hans": "折叠模式闲置时向上滑动并完全隐藏",
+   "hi": "संक्षिप्त मोड में निष्क्रिय होने पर ऊपर की ओर खिसक कर छिप जाएं",
+   "es": "Animar hacia arriba y ocultar cuando el modo plegado esté inactivo",
+   "ar": "التحريك للأعلى والإخفاء عند خمول الوضع المصغر",
+   "fr": "Glisser vers le haut et disparaître lorsque le mode réduit est inactif",
+   "bn": "সংকুচিত মোডে নিষ্ক্রিয় থাকলে উপরে স্লাইড করে লুকান",
+   "pt-BR": "Deslizar para cima e ocultar quando o modo recolhido estiver ocioso",
+   "ru": "Сдвигать вверх и скрывать при бездействии в свернутом режиме",
+   "id": "Animasi ke atas dan sembunyikan saat mode diciutkan tidak aktif"
+  },
+  "Idle hide duration": {
+   "zh-Hans": "闲置隐藏延迟",
+   "hi": "निष्क्रिय छिपाने की अवधि",
+   "es": "Duración antes de ocultar por inactividad",
+   "ar": "مدة الخمول قبل الإخفاء",
+   "fr": "Délai de masquage après inactivité",
+   "bn": "নিষ্ক্রিয় লুকানোর সময়সীমা",
+   "pt-BR": "Duração de inatividade antes de ocultar",
+   "ru": "Время бездействия до скрытия",
+   "id": "Durasi tidak aktif sebelum disembunyikan"
+  },
+  "seconds of inactivity before notch disappears": {
+   "zh-Hans": "刘海隐藏前的无操作秒数",
+   "hi": "नॉच गायब होने से पहले निष्क्रियता के सेकंड",
+   "es": "segundos de inactividad antes de que la muesca desaparezca",
+   "ar": "ثوانٍ من عدم النشاط قبل اختفاء النوتش",
+   "fr": "secondes d'inactivité avant la disparition de l'encoche",
+   "bn": "নচ অদৃশ্য হওয়ার পূর্বে নিষ্ক্রিয়তার সেকেন্ড",
+   "pt-BR": "segundos de inatividade antes do notch desaparecer",
+   "ru": "секунд бездействия перед исчезновением выреза",
+   "id": "detik tidak aktif sebelum notch menghilang"
   }
  }
 }

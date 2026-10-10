@@ -21,7 +21,23 @@ export class IslandStateMachine {
     this.homeDelay = seconds;
     if (this.state === "home" && this.homeCollapse != null) this.scheduleHomeCollapse();
   }
-  /** petit → hidden delay, seconds: 15s idle auto-hide */
+  /**
+   * Opt-in: Auto-hide notch upwards after idle in collapsed mode.
+   */
+  idleAutoHide = true;
+
+  /**
+   * petit → hidden delay, seconds: idle auto-hide delay. Changing it while a
+   * countdown runs restarts the timer with the new duration.
+   */
+  get idleHideDelay(): number {
+    return this.petitToHiddenDelay;
+  }
+  set idleHideDelay(seconds: number) {
+    if (!Number.isFinite(seconds) || seconds < 0 || seconds === this.petitToHiddenDelay) return;
+    this.petitToHiddenDelay = seconds;
+    if (this.state === "petit" && this.petitHide != null && this.idleAutoHide) this.schedulePetitHide();
+  }
   petitToHiddenDelay = 15;
   /** coucou → petit once the greeting animation ends (no hover). */
   greetAutoCollapseDelay = 0.6;
@@ -128,7 +144,7 @@ export class IslandStateMachine {
   activity() {
     if (this.state === "hidden") {
       this.reveal();
-    } else if (this.state === "petit") {
+    } else if (this.state === "petit" && this.idleAutoHide) {
       this.schedulePetitHide();
     }
   }
@@ -144,7 +160,7 @@ export class IslandStateMachine {
     if (this.state !== "hidden") return;
     this.cancelTimers();
     this.transition("petit");
-    this.schedulePetitHide();
+    if (this.idleAutoHide) this.schedulePetitHide();
   }
 
   /** Alert or explicit request: open straight to expanded. */
@@ -186,12 +202,13 @@ export class IslandStateMachine {
 
   schedulePetitHide(delay = this.petitToHiddenDelay) {
     this.clear("petitHide");
+    if (!this.idleAutoHide) return;
     // A card folded away while it waits for an answer keeps the compact island
     // on screen, so it can be reopened (isHeldOpen on macOS).
     if (this.pinned) return;
     this.petitHide = window.setTimeout(() => {
       this.petitHide = null;
-      if (this.state === "petit" && !this.pinned) this.transition("hidden");
+      if (this.state === "petit" && !this.pinned && this.idleAutoHide) this.transition("hidden");
     }, delay * 1000);
   }
 
@@ -235,7 +252,7 @@ export class IslandStateMachine {
     if (next === this.state) return;
     const from = this.state;
     this.state = next;
-    if (next === "petit" && !this.pinned) {
+    if (next === "petit" && !this.pinned && this.idleAutoHide) {
       this.schedulePetitHide();
     } else if (next !== "petit") {
       this.clear("petitHide");
