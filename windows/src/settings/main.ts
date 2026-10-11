@@ -80,6 +80,38 @@ const HOOKS_CHANGE: Change = {
     : t("Done. Open a new Claude Code session to pick the hooks up."),
 };
 
+const ANTIGRAVITY_CHANGE: Change = {
+  preview: async (install) => {
+    const plan = await Bridge.agentHooksPreview("antigravity", install);
+    return {
+      diff: plan.diff,
+      backup: plan.backup,
+      settingsPath: plan.path,
+      fingerprint: plan.fingerprint,
+    };
+  },
+  apply: (install, fingerprint) => Bridge.agentHooksApply("antigravity", install, fingerprint),
+  get installText() {
+    return t("This is exactly what changes for {name}. Nothing else is touched.", { name: "Antigravity" });
+  },
+  get removeText() {
+    return t("This removes Cocoa's entries only. Everything else stays.");
+  },
+  get installButton() {
+    return t("Back up and write");
+  },
+  get removeButton() {
+    return t("Back up and remove");
+  },
+  done: (backup) => {
+    const saved = backup
+      ? t("Done. Previous version saved as {paths}.", { paths: backup.split("\n").join(", ") })
+      : t("Done.");
+    const note = t("Start a new Antigravity conversation to pick the hooks up.");
+    return `${saved} ${note}`.trim();
+  },
+};
+
 const STATUS_LINE_CHANGE: Change = {
   preview: Bridge.statusLinePreview,
   apply: Bridge.statusLineApply,
@@ -127,7 +159,9 @@ async function reviewChange(
         class: "path",
         text: preview.backup
           ? t("Backup → {path}", { path: preview.backup })
-          : t("No settings.json yet — nothing to back up."),
+          : (preview.settingsPath && !preview.settingsPath.includes("settings.json")
+              ? t("No existing file — nothing to back up.")
+              : t("No settings.json yet — nothing to back up.")),
       }),
     ),
   );
@@ -253,59 +287,6 @@ function antigravitySection(initialStatus: AgentHookStatus, hookPath: string): H
     head.append(statusDot(status.installed), h("span", { text: "Antigravity" }));
   };
 
-  async function showReview(install: boolean) {
-    let plan;
-    try {
-      plan = await Bridge.agentHooksPreview("antigravity", install);
-    } catch (err) {
-      clear(body);
-      body.append(
-        h("div", { class: "notice err", text: String(err).replace(/^Error:\s*/, "") }),
-        h("div", { class: "row" }, h("button", { text: t("Back"), onclick: redraw })),
-      );
-      return;
-    }
-    clear(body);
-    body.append(
-      h("div", {
-        class: "hint",
-        text: install
-          ? t("This is exactly what changes for {name}. Nothing else is touched.", { name: "Antigravity" })
-          : t("This removes Cocoa's entries only. Everything else stays."),
-      }),
-      renderDiff(plan.diff),
-      h("div", { class: "row" },
-        h("span", {
-          class: "path",
-          text: plan.backup
-            ? t("Backup → {path}", { path: plan.backup })
-            : t("No existing file — nothing to back up."),
-        }),
-      ),
-    );
-    const confirm = h("button", {
-      class: install ? "primary" : "danger",
-      text: install ? t("Back up and write") : t("Back up and remove"),
-    });
-    confirm.addEventListener("click", async () => {
-      confirm.disabled = true;
-      try {
-        const backups = await Bridge.agentHooksApply("antigravity", install, plan.fingerprint);
-        clear(body);
-        const note = install ? t("Start a new Antigravity conversation to pick the hooks up.") : "";
-        const saved = backups
-          ? t("Done. Previous version saved as {paths}.", { paths: backups.split("\n").join(", ") })
-          : t("Done.");
-        body.append(h("div", { class: "notice ok", text: `${saved} ${note}`.trim() }));
-        window.setTimeout(() => void rebuild(), 2600);
-      } catch (err) {
-        confirm.disabled = false;
-        body.append(h("div", { class: "notice err", text: t("Could not write: {error}", { error: String(err) }) }));
-      }
-    });
-    body.append(h("div", { class: "row" }, confirm, h("button", { text: t("Cancel"), onclick: redraw })));
-  }
-
   function draw() {
     body.append(
       h("div", {
@@ -336,7 +317,7 @@ function antigravitySection(initialStatus: AgentHookStatus, hookPath: string): H
     const install = h("button", {
       class: "primary",
       text: status.installed ? t("Reinstall hooks…") : t("Install hooks…"),
-      onclick: () => void showReview(true),
+      onclick: () => void reviewChange(body, ANTIGRAVITY_CHANGE, true, redraw, () => void rebuild()),
     });
     if (!status.hookReady) {
       install.disabled = true;
@@ -347,7 +328,7 @@ function antigravitySection(initialStatus: AgentHookStatus, hookPath: string): H
       actions.append(h("button", {
         class: "danger",
         text: t("Uninstall hooks…"),
-        onclick: () => void showReview(false),
+        onclick: () => void reviewChange(body, ANTIGRAVITY_CHANGE, false, redraw, () => void rebuild()),
       }));
     }
     body.append(actions);
@@ -1607,7 +1588,7 @@ async function render() {
     installed: false,
     path: "~/.gemini/config/hooks.json",
     hookReady: status.hookReady,
-    approvals: false,
+    approvals: true,
     note: t("Start a new Antigravity conversation to pick the hooks up."),
   };
 

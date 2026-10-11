@@ -116,6 +116,32 @@ try {
   console.warn("Could not copy root exe:", e.message);
 }
 
+// If local installation in %LOCALAPPDATA%\Cocoa exists, keep it updated so running Cocoa runs the new build
+if (process.platform === "win32" && process.env.LOCALAPPDATA) {
+  const localDir = join(process.env.LOCALAPPDATA, "Cocoa");
+  try {
+    if (statSync(localDir).isDirectory()) {
+      if (statSync(standaloneExe).isFile()) {
+        const localExe = join(localDir, "cocoa.exe");
+        copyFileSync(standaloneExe, localExe);
+        written.push(localExe);
+      }
+      if (statSync(hookExe).isFile()) {
+        const localHook = join(localDir, "cocoa-hook.exe");
+        const binHook = join(localDir, "bin", "cocoa-hook.exe");
+        copyFileSync(hookExe, localHook);
+        written.push(localHook);
+        try {
+          copyFileSync(hookExe, binHook);
+          written.push(binHook);
+        } catch {}
+      }
+    }
+  } catch (e) {
+    console.warn("Could not sync local AppData installation:", e.message);
+  }
+}
+
 console.log("\n  Packages ready\n");
 for (const f of written) {
   const mb = (statSync(f).size / 1024 / 1024).toFixed(2);
