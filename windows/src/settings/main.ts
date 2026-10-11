@@ -3,7 +3,7 @@
 // integrations land here too in a later stage.
 
 import "./settings.css";
-import { Bridge, onEvent, type HookPreview, type HookStatus, type ShortcutsReport } from "../core/bridge";
+import { Bridge, onEvent, type AgentHookStatus, type HookPreview, type HookStatus, type ShortcutsReport } from "../core/bridge";
 import { CUSTOM_SERVER_KEY, providerDef, urlExposure } from "../core/providers";
 import {
   ISLAND_SHORTCUTS, SHORTCUTS, SHORTCUT_TEXT, activeKeys, displayKeys, duplicates, effective,
@@ -218,6 +218,136 @@ function claudeSection(status: HookStatus): HTMLElement {
         class: "danger",
         text: t("Uninstall hooks…"),
         onclick: () => void reviewChange(body, HOOKS_CHANGE, false, redraw, () => void rebuild()),
+      }));
+    }
+    body.append(actions);
+  }
+
+  draw();
+  return section;
+}
+
+// ── Antigravity section ───────────────────────────────────────────────────────
+
+function antigravitySection(initialStatus: AgentHookStatus, hookPath: string): HTMLElement {
+  let status = initialStatus;
+  const body = h("div", { style: "display:flex;flex-direction:column;gap:12px" });
+  const section = h(
+    "section",
+    {},
+    h("h2", {}, statusDot(status.installed), h("span", { text: "Antigravity" })),
+    body,
+  );
+
+  const redraw = () => {
+    clear(body);
+    draw();
+  };
+  const rebuild = async () => {
+    const list = await Bridge.agentHooksList();
+    const fresh = list?.find((a) => a.id === "antigravity");
+    if (fresh) status = fresh;
+    redraw();
+    const head = section.querySelector("h2")!;
+    clear(head);
+    head.append(statusDot(status.installed), h("span", { text: "Antigravity" }));
+  };
+
+  async function showReview(install: boolean) {
+    let plan;
+    try {
+      plan = await Bridge.agentHooksPreview("antigravity", install);
+    } catch (err) {
+      clear(body);
+      body.append(
+        h("div", { class: "notice err", text: String(err).replace(/^Error:\s*/, "") }),
+        h("div", { class: "row" }, h("button", { text: t("Back"), onclick: redraw })),
+      );
+      return;
+    }
+    clear(body);
+    body.append(
+      h("div", {
+        class: "hint",
+        text: install
+          ? t("This is exactly what changes for {name}. Nothing else is touched.", { name: "Antigravity" })
+          : t("This removes Cocoa's entries only. Everything else stays."),
+      }),
+      renderDiff(plan.diff),
+      h("div", { class: "row" },
+        h("span", {
+          class: "path",
+          text: plan.backup
+            ? t("Backup → {path}", { path: plan.backup })
+            : t("No existing file — nothing to back up."),
+        }),
+      ),
+    );
+    const confirm = h("button", {
+      class: install ? "primary" : "danger",
+      text: install ? t("Back up and write") : t("Back up and remove"),
+    });
+    confirm.addEventListener("click", async () => {
+      confirm.disabled = true;
+      try {
+        const backups = await Bridge.agentHooksApply("antigravity", install, plan.fingerprint);
+        clear(body);
+        const note = install ? t("Start a new Antigravity conversation to pick the hooks up.") : "";
+        const saved = backups
+          ? t("Done. Previous version saved as {paths}.", { paths: backups.split("\n").join(", ") })
+          : t("Done.");
+        body.append(h("div", { class: "notice ok", text: `${saved} ${note}`.trim() }));
+        window.setTimeout(() => void rebuild(), 2600);
+      } catch (err) {
+        confirm.disabled = false;
+        body.append(h("div", { class: "notice err", text: t("Could not write: {error}", { error: String(err) }) }));
+      }
+    });
+    body.append(h("div", { class: "row" }, confirm, h("button", { text: t("Cancel"), onclick: redraw })));
+  }
+
+  function draw() {
+    body.append(
+      h("div", {
+        class: "hint",
+        text: status.installed
+          ? t("Cocoa is hooked into your Antigravity sessions. Tool calls, questions and permission requests show up in the island, and you can answer them there.")
+          : t("Install the hooks to see your Antigravity sessions in the island and approve permissions without leaving what you are doing."),
+      }),
+      h("div", { class: "row" },
+        h("label", { text: "hooks.json" }),
+        h("span", { class: "path", text: status.path }),
+      ),
+      h("div", { class: "row" },
+        h("label", { text: t("Relay") }),
+        h("span", { class: "path", text: hookPath || status.path }),
+        statusDot(status.hookReady),
+      ),
+    );
+
+    if (!status.hookReady) {
+      body.append(h("div", {
+        class: "notice warn",
+        text: t("cocoa-hook.exe is not in place yet. Restart Cocoa; if it still fails, build it with `cargo build -p cocoa-hook`."),
+      }));
+    }
+
+    const actions = h("div", { class: "row" });
+    const install = h("button", {
+      class: "primary",
+      text: status.installed ? t("Reinstall hooks…") : t("Install hooks…"),
+      onclick: () => void showReview(true),
+    });
+    if (!status.hookReady) {
+      install.disabled = true;
+      install.title = t("The relay isn't installed yet.");
+    }
+    actions.append(install);
+    if (status.installed) {
+      actions.append(h("button", {
+        class: "danger",
+        text: t("Uninstall hooks…"),
+        onclick: () => void showReview(false),
       }));
     }
     body.append(actions);
@@ -1471,12 +1601,23 @@ async function render() {
   }
   const customKey = (await Bridge.secretPresent(CUSTOM_SERVER_KEY)) ?? false;
 
+  const antigravityStatus = agents?.find((a) => a.id === "antigravity") ?? {
+    id: "antigravity",
+    name: "Antigravity",
+    installed: false,
+    path: "~/.gemini/config/hooks.json",
+    hookReady: status.hookReady,
+    approvals: false,
+    note: t("Start a new Antigravity conversation to pick the hooks up."),
+  };
+
   declaredViews.length = 0;
   localRedraw = null;
   shortcutsListener = null;
   clear(root);
   root.append(
     h("h1", {}, h("span", { text: "Cocoa" }), h("span", { class: "version", text: version })),
+    antigravitySection(antigravityStatus, status.hookPath),
     claudeSection(status),
     agentsSection(agents, settings, () => void save()),
     planSection(status),

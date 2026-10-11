@@ -58,10 +58,11 @@ export function agentsSection(
   onSave?: () => void,
 ): HTMLElement {
   const blocks = h("div", { style: "display:flex;flex-direction:column;gap:14px" });
-  if (!list || list.length === 0) {
+  const remaining = (list ?? []).filter((a) => a.id !== "antigravity");
+  if (!remaining || remaining.length === 0) {
     blocks.append(h("div", { class: "hint", text: TEXT.none }));
   }
-  for (const status of list ?? []) blocks.append(agentBlock(status));
+  for (const status of remaining) blocks.append(agentBlock(status));
 
   const options: HTMLElement[] = [];
   if (settings && onSave) {
