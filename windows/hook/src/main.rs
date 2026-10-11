@@ -119,7 +119,8 @@ fn main() {
 
     // Only an agent whose decisions the island can give waits for one; any other
     // would be held for nothing, its decision being thrown away (reply.rs).
-    let waits_for_answer = event.name == "PermissionRequest" && reply::takes_decisions(&args.agent);
+    let is_antigravity_pre_tool = event.name == "PreToolUse" && args.agent.eq_ignore_ascii_case("antigravity");
+    let waits_for_answer = (event.name == "PermissionRequest" || is_antigravity_pre_tool) && reply::takes_decisions(&args.agent);
     let budget = if waits_for_answer { DECISION_BUDGET } else { FIRE_AND_FORGET_BUDGET };
 
     // The worker owns every blocking call. If it overruns the budget we simply

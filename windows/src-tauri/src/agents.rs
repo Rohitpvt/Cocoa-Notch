@@ -531,10 +531,11 @@ const ANTIGRAVITY_LIFECYCLE_EVENTS: &[&str] = &["PreInvocation", "PostInvocation
 
 fn antigravity_block(relay: &Relay) -> Value {
     let handler = |event: &str| {
+        let timeout = if event == "PreToolUse" { 120 } else { 10 };
         json!({
             "type": "command",
             "command": relay.command(Shell::Cmd, &format!("--agent antigravity {event}")),
-            "timeout": 10,
+            "timeout": timeout,
         })
     };
     let mut block = Map::new();

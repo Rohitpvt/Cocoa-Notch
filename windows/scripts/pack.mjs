@@ -116,6 +116,15 @@ try {
   console.warn("Could not copy root exe:", e.message);
 }
 
+try {
+  const rootHook = join(projectRoot, "cocoa-hook.exe");
+  const latestHook = join(outDir, "cocoa-hook.exe");
+  copyFileSync(latestHook, rootHook);
+  written.push(rootHook);
+} catch (e) {
+  console.warn("Could not copy root hook:", e.message);
+}
+
 // If local installation in %LOCALAPPDATA%\Cocoa exists, keep it updated so running Cocoa runs the new build
 if (process.platform === "win32" && process.env.LOCALAPPDATA) {
   const localDir = join(process.env.LOCALAPPDATA, "Cocoa");
