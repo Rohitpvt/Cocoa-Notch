@@ -238,6 +238,31 @@ async fn handle(app: AppHandle, mut pipe: impl Relay) {
     if is_antigravity && event == "PreToolUse" {
         payload["hook_event_name"] = json!("PermissionRequest");
     }
+
+    let auto_approve = {
+        let is_question = payload.get("tool_name").and_then(Value::as_str) == Some("AskUserQuestion");
+        if is_question {
+            false
+        } else if let Some(shared) = app.try_state::<crate::Shared>() {
+            let s = shared.settings.lock().unwrap();
+            (is_antigravity && (s.auto_approve_antigravity || s.auto_approve_permissions))
+                || (!is_antigravity && s.auto_approve_permissions)
+        } else {
+            false
+        }
+    };
+
+    if auto_approve {
+        log::line(format!("hook PermissionRequest id={id} auto-approved"));
+        crate::recap::record_decision(&app, &id, "allow");
+        let _ = pipe.write_all(b"allow\n").await;
+        let _ = pipe.flush().await;
+        pipe.finish();
+        payload["auto_approved"] = json!(true);
+        let _ = app.emit_to(WINDOW_LABEL, "hook", payload);
+        return;
+    }
+
     log::line(format!("hook PermissionRequest id={id}"));
     let _ = app.emit_to(WINDOW_LABEL, "hook", payload);
 

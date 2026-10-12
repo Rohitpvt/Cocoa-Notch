@@ -83,6 +83,14 @@ export function agentsSection(
         }),
         h("span", { class: "hint", text: t("Expand notch when coding agents perform actions") }),
       ),
+      h("div", { class: "row" },
+        h("label", { text: t("Auto-allow permissions") }),
+        toggle(settings.autoApprovePermissions, (v) => {
+          settings.autoApprovePermissions = v;
+          onSave();
+        }),
+        h("span", { class: "hint", text: t("Automatically approve tool permissions for coding agents without asking") }),
+      ),
     );
   }
 

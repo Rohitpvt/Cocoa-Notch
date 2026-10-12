@@ -70,16 +70,22 @@ export const Bridge = {
 
   /**
    * "Open terminal": the window the session runs in when Rust found it
-   * (Windows), else the folder in VS Code.
+   * (Windows), else the folder in the editor.
    */
-  openSession: (sessionId: string | null, path: string | null) =>
-    call<boolean>("open_session", { sessionId, path }),
+  openSession: (sessionId: string | null, path: string | null, agent?: string | null) =>
+    call<boolean>("open_session", { sessionId, path, agent: agent ?? null }),
+
+  /** The Antigravity IDE app, for Antigravity sessions and pill. */
+  openAntigravity: (path: string | null = null) => call<boolean>("open_antigravity", { path }),
 
   /** The Claude desktop app, for the Claude Desktop pill (Windows only). */
   openClaudeDesktop: () => call<boolean>("open_claude_desktop"),
 
   /** The diff card's ↗: an existing file, in VS Code; never launched by its type. */
   openFileInVSCode: (path: string) => call<boolean>("open_file_in_vscode", { path }),
+
+  /** The diff card's ↗: an existing file, in Antigravity IDE. */
+  openFileInAntigravity: (path: string) => call<boolean>("open_file_in_antigravity", { path }),
 
   quit: () => call<void>("quit_app"),
 

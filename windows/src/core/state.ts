@@ -149,6 +149,10 @@ export interface Settings {
   enableLiveDiffs: boolean;
   /** Auto-expand notch island when coding agents run tools. */
   autoExpandOnAgentTask: boolean;
+  /** Automatically approve tool permissions for Antigravity without asking in notch. */
+  autoApproveAntigravity: boolean;
+  /** Automatically approve tool permissions for all coding agents without asking. */
+  autoApprovePermissions: boolean;
   /** Who the chat talks to (see core/providers.ts); picked in the chat view. */
   chatProvider: ProviderId;
   /** The model picked for each provider other than Anthropic, by provider id. */
@@ -239,6 +243,8 @@ export const DEFAULT_SETTINGS: Settings = {
   enableHeroPillCard: true,
   enableLiveDiffs: true,
   autoExpandOnAgentTask: true,
+  autoApproveAntigravity: false,
+  autoApprovePermissions: false,
   chatProvider: "anthropic",
   chatModels: {},
   ollamaUrl: "",

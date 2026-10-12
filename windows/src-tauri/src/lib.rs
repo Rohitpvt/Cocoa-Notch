@@ -227,14 +227,23 @@ fn open_in_vscode(path: Option<String>) -> bool {
 /// runs in, when it was found (Windows, see session_window.rs); otherwise opens
 /// the folder in VS Code, as before.
 #[tauri::command]
-fn open_session(session_id: Option<String>, path: Option<String>) -> bool {
+fn open_session(session_id: Option<String>, path: Option<String>, agent: Option<String>) -> bool {
     if let Some(owner) = session_id.as_deref().and_then(session_window::lookup) {
         let folder = path.as_deref().map(session_window::folder_name).unwrap_or_default();
         if platform::focus_process_window(owner, folder) {
             return true;
         }
     }
+    if agent.as_deref() == Some("agent_antigravity") || agent.as_deref() == Some("antigravity") {
+        return platform::open_antigravity(path.as_deref());
+    }
     open_in_vscode(path)
+}
+
+/// The Antigravity IDE pill's target: brings forward or opens Antigravity IDE.
+#[tauri::command]
+fn open_antigravity(path: Option<String>) -> bool {
+    platform::open_antigravity(path.as_deref())
 }
 
 /// The Claude Desktop pill's target: the Claude app (Windows only — it has no
@@ -269,6 +278,13 @@ fn open_file_in_vscode(path: String) -> bool {
         platform::reveal_folder(&folder.to_string_lossy());
     }
     false
+}
+
+/// The diff card's ↗: opens the edited file in Antigravity IDE.
+#[tauri::command]
+fn open_file_in_antigravity(path: String) -> bool {
+    let Some(file) = diff_file(&path) else { return false };
+    platform::open_antigravity(Some(&file.to_string_lossy()))
 }
 
 #[tauri::command]
@@ -663,8 +679,10 @@ pub fn run() {
             open_url,
             open_in_vscode,
             open_session,
+            open_antigravity,
             open_claude_desktop,
             open_file_in_vscode,
+            open_file_in_antigravity,
             quit_app,
             hooks_status,
             agent_hooks_status,

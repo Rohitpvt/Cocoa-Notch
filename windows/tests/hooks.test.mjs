@@ -695,3 +695,40 @@ test("a declined permission request leaves the stop timer running", () => {
   assert.deepEqual(sent("approval_decline"), [{ requestId: "r1" }, { requestId: "r2" }]);
   assert.equal(task().state, "idle");
 });
+
+test("auto-approve allows Antigravity tool permissions without showing card", () => {
+  State.settings.autoApproveAntigravity = true;
+  asked = [];
+  calls.length = 0;
+  hook({
+    hook_event_name: "PermissionRequest",
+    request_id: "req-anti",
+    session_id: "s1",
+    coucou_agent: "antigravity",
+    tool_name: "Bash",
+    tool_input: { command: "npm test" },
+  });
+  assert.equal(State.pendingApproval, null);
+  assert.equal(task("agent_antigravity").state, "working");
+  assert.deepEqual(sent("approval_decision"), [{ requestId: "req-anti", decision: "allow" }]);
+  assert.deepEqual(asked, ["reveal"]);
+  State.settings.autoApproveAntigravity = false;
+});
+
+test("auto_approved payload flag marks task working without alerting or double sending", () => {
+  asked = [];
+  calls.length = 0;
+  hook({
+    hook_event_name: "PermissionRequest",
+    request_id: "req-preapproved",
+    session_id: "s1",
+    coucou_agent: "antigravity",
+    tool_name: "Bash",
+    tool_input: { command: "cargo build" },
+    auto_approved: true,
+  });
+  assert.equal(State.pendingApproval, null);
+  assert.equal(task("agent_antigravity").state, "working");
+  assert.deepEqual(sent("approval_decision"), []);
+  assert.deepEqual(asked, ["reveal"]);
+});

@@ -234,7 +234,8 @@ export class Island {
         const task = State.focusTask;
         // Sessions from the Claude desktop app live there, not in a terminal.
         if (task?.id === CLAUDE_DESKTOP_ID) void Bridge.openClaudeDesktop();
-        else void Bridge.openSession(task?.sessionId ?? null, task?.sessionCwd ?? null);
+        else if (task?.id === "agent_antigravity") void Bridge.openAntigravity(task?.sessionCwd ?? null);
+        else void Bridge.openSession(task?.sessionId ?? null, task?.sessionCwd ?? null, task?.id ?? null);
       },
       // The ↗ button — same targets as openAgentTarget() on macOS.
       openTarget: () => {
@@ -250,8 +251,9 @@ export class Island {
           integration_gcal: "https://calendar.google.com",
         };
         if (task.id === CLAUDE_DESKTOP_ID) void Bridge.openClaudeDesktop();
+        else if (task.id === "agent_antigravity") void Bridge.openAntigravity(task.sessionCwd ?? null);
         else if (task.id === "integration_claude" || task.sessionId) {
-          void Bridge.openSession(task.sessionId ?? null, task.sessionCwd ?? null);
+          void Bridge.openSession(task.sessionId ?? null, task.sessionCwd ?? null, task.id);
         } else if (task.id === "integration_n8n") void Bridge.openN8n();
         else if (urls[task.id]) void Bridge.openUrl(urls[task.id]);
       },

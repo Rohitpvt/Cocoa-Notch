@@ -70,6 +70,10 @@ pub struct Settings {
     pub enable_live_diffs: bool,
     /// Auto-expand notch island when coding agents run tools.
     pub auto_expand_on_agent_task: bool,
+    /// Automatically approve tool permissions for Antigravity without asking in the notch.
+    pub auto_approve_antigravity: bool,
+    /// Automatically approve tool permissions for all coding agents without asking.
+    pub auto_approve_permissions: bool,
     /// Who the chat talks to: "anthropic", a cloud provider of
     /// openai_compat.rs ("openai", "google", "openrouter"), or a model server
     /// of local_chat.rs ("ollama", "lmstudio", "custom"). Picked in the chat view.
@@ -165,6 +169,8 @@ impl Default for Settings {
             enable_hero_pill_card: true,
             enable_live_diffs: true,
             auto_expand_on_agent_task: true,
+            auto_approve_antigravity: false,
+            auto_approve_permissions: false,
             chat_provider: crate::chat::ANTHROPIC.into(),
             chat_models: BTreeMap::new(),
             ollama_url: String::new(),
@@ -461,6 +467,8 @@ mod tests {
   "enableHeroPillCard": false,
   "enableLiveDiffs": false,
   "autoExpandOnAgentTask": false,
+  "autoApproveAntigravity": false,
+  "autoApprovePermissions": false,
   "chatProvider": "ollama",
   "chatModels": { "ollama": "llama3.2", "openai": "gpt-x" },
   "ollamaUrl": "http://127.0.0.1:11434",
@@ -883,6 +891,8 @@ mod tests {
                 "enableHeroPillCard",
                 "enableLiveDiffs",
                 "autoExpandOnAgentTask",
+                "autoApproveAntigravity",
+                "autoApprovePermissions",
                 "chatProvider",
                 "chatModels",
                 "ollamaUrl",

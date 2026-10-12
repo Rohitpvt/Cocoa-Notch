@@ -282,6 +282,25 @@ pub fn open_claude_desktop() -> bool {
     false
 }
 
+pub fn open_antigravity(path: Option<&str>) -> bool {
+    let path = path.filter(|p| !p.is_empty());
+    for name in ["antigravity-ide", "antigravity", "agy"] {
+        if let Some(bin) = find_on_path(name) {
+            let mut cmd = Command::new(bin);
+            if let Some(p) = path {
+                cmd.arg(p);
+            }
+            if cmd.spawn().is_ok() {
+                return true;
+            }
+        }
+    }
+    if let Some(p) = path {
+        let _ = Command::new("xdg-open").arg(p).spawn();
+    }
+    false
+}
+
 /// Where the Codex CLI may be, best first: $PATH, then the usual per-user
 /// install folders, which a desktop launch often leaves out of $PATH (npm's
 /// global prefix, Volta, Bun, pnpm, and nvm with its newest Node first).

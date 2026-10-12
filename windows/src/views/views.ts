@@ -362,12 +362,20 @@ function buildOverview(actions: ViewActions): ViewHost {
           cardKey = key;
           mode = "diff";
           clear(leftBody);
+          const isAntigravity = task.id === "agent_antigravity" || (task.id !== "integration_claude" && State.settings.mainPill === "agent_antigravity");
           leftBody.append(buildDiffCard(diff, {
             dismiss: () => {
               actions.blip();
               closeDiff();
             },
-            open: (path) => void Bridge.openFileInVSCode(path),
+            open: (path) => {
+              if (isAntigravity) {
+                void Bridge.openFileInAntigravity(path);
+              } else {
+                void Bridge.openFileInVSCode(path);
+              }
+            },
+            editorName: isAntigravity ? "Antigravity" : "VS Code",
           }));
         }
       } else if (task && sessionActive) {
@@ -764,7 +772,11 @@ function buildFinished(actions: ViewActions): ViewHost {
       const task = State.focusTask;
       title.textContent = task?.finalLine || (task && lastTextStep(task.steps)) || t("Session finished");
       // Sessions from the Claude desktop app live there, not in a terminal.
-      const label = task?.id === "agent_claude-desktop" ? t("Open Claude") : t("Open terminal");
+      const label = task?.id === "agent_claude-desktop"
+        ? t("Open Claude")
+        : task?.id === "agent_antigravity"
+          ? t("Open Antigravity")
+          : t("Open terminal");
       const span = open.firstElementChild as HTMLElement;
       if (span.textContent !== label) span.textContent = label;
     },

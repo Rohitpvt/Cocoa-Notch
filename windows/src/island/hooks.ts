@@ -63,6 +63,8 @@ interface HookPayload {
   coucou_diff_truncated?: boolean;
   /** Optional agent tag: lowercase, digits and hyphens, ≤ 24 chars. */
   coucou_agent?: string;
+  cocoa_agent?: string;
+  auto_approved?: boolean;
   /** Hermes: where the session runs (telegram, discord…; "cli" in a terminal). */
   platform?: string;
   /** "cursor" when Claude Code runs in Cursor's terminal (set by the relay). */
@@ -260,10 +262,10 @@ function handleHook(island: Island, payload: HookPayload) {
   const raw = lastPathComponent(cwd);
   const projectName = aliasProjectName(raw || "Session");
 
-  // Route to the right pill. Valid coucou_agent → dynamic "agent_<name>" pill.
+  // Route to the right pill. Valid coucou_agent / cocoa_agent → dynamic "agent_<name>" pill.
   // "claude" is reserved; absent or invalid → Claude Code's own pill: Cursor's
   // when it runs in Cursor's terminal (Mac #120), VS Code's otherwise.
-  const validAgent = validateAgent(payload.coucou_agent);
+  const validAgent = validateAgent(payload.coucou_agent ?? payload.cocoa_agent);
   const workspaceId = payload.term_editor === "cursor" ? CURSOR_ID : CLAUDE_ID;
   const agentId = validAgent ? `agent_${validAgent}` : workspaceId;
   const isExternalAgent = validAgent !== null;
@@ -490,6 +492,23 @@ function handleHook(island: Island, payload: HookPayload) {
       // shows the options and sends back the one that was picked. Only Claude
       // Code asks questions this way.
       const questions = isExternalAgent ? null : askedQuestions(tool, input);
+      const isAntigravity = validAgent === "antigravity" || agentId === "agent_antigravity";
+      const autoAllow = !questions && (
+        Boolean(payload.auto_approved) ||
+        (isAntigravity && (State.settings.autoApproveAntigravity || State.settings.autoApprovePermissions)) ||
+        (!isAntigravity && State.settings.autoApprovePermissions)
+      );
+
+      if (autoAllow) {
+        if (!payload.auto_approved && requestId) {
+          void Bridge.approvalDecision(requestId, "allow");
+        }
+        State.updateTask(agentId, "working");
+        State.appendStep(agentId, stepLabel(tool, input));
+        surface("overview", false);
+        break;
+      }
+
       const view = questions ? "question" : "approval";
       // The card always comes up, even over another pill or an island that is
       // already open: its pill comes to the front, and the one you were on

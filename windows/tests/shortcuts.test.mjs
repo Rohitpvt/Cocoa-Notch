@@ -370,10 +370,12 @@ test("the island toggle opens on a waiting card, and folds it rather than droppi
 });
 
 test("the terminal shortcut is the existing Open terminal (the session's window), and folds the island", () => {
-  State.tasks[0].sessionCwd = "C:\\work\\proj";
+  State.upsertExternalAgent("integration_claude", "Claude Code", "#D97757");
+  State.setFocus("integration_claude");
+  State.focusTask.sessionCwd = "C:\\work\\proj";
   State.mode = "expanded";
   runGlobalShortcut(host, "jumpToTerminal", resume);
-  assert.deepEqual(sent("open_session"), [{ sessionId: null, path: "C:\\work\\proj" }]);
+  assert.deepEqual(sent("open_session"), [{ sessionId: null, path: "C:\\work\\proj", agent: "integration_claude" }]);
   assert.deepEqual(did, ["collapse"]);
 
   // A Claude Desktop session lives in the Claude app.
@@ -382,6 +384,14 @@ test("the terminal shortcut is the existing Open terminal (the session's window)
   State.setFocus("agent_claude-desktop");
   runGlobalShortcut(host, "jumpToTerminal", resume);
   assert.equal(sent("open_claude_desktop").length, 1);
+
+  // An Antigravity session lives in Antigravity.
+  did = [];
+  State.upsertExternalAgent("agent_antigravity", "Antigravity", "#E879F9");
+  State.setFocus("agent_antigravity");
+  State.focusTask.sessionCwd = "C:\\work\\antigrav";
+  runGlobalShortcut(host, "jumpToTerminal", resume);
+  assert.deepEqual(sent("open_antigravity"), [{ path: "C:\\work\\antigrav" }]);
 });
 
 test("next and previous pill wrap around and open the overview", () => {

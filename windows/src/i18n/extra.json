@@ -2316,6 +2316,61 @@
    "ru": "Добавлять можно только файлы, перетащенные на остров.",
    "id": "Hanya file yang diletakkan di pulau yang bisa ditambahkan."
   },
+  "Open Antigravity": {
+   "zh-Hans": "打开 Antigravity",
+   "hi": "Antigravity खोलें",
+   "es": "Abrir Antigravity",
+   "ar": "فتح Antigravity",
+   "fr": "Ouvrir Antigravity",
+   "bn": "Antigravity খুলুন",
+   "pt-BR": "Abrir o Antigravity",
+   "ru": "Открыть Antigravity",
+   "id": "Buka Antigravity"
+  },
+  "Open in Antigravity": {
+   "zh-Hans": "在 Antigravity 中打开",
+   "hi": "Antigravity में खोलें",
+   "es": "Abrir en Antigravity",
+   "ar": "فتح في Antigravity",
+   "fr": "Ouvrir dans Antigravity",
+   "bn": "Antigravity-এ খুলুন",
+   "pt-BR": "Abrir no Antigravity",
+   "ru": "Открыть в Antigravity",
+   "id": "Buka di Antigravity"
+  },
+  "Auto-allow permissions": {
+   "zh-Hans": "自动允许权限",
+   "hi": "अनुमतियों को स्वतः अनुमति दें",
+   "es": "Permitir permisos automáticamente",
+   "ar": "السماح بالأذونات تلقائيًا",
+   "fr": "Autoriser automatiquement les permissions",
+   "bn": "স্বয়ংক্রিয়ভাবে অনুমতি দিন",
+   "pt-BR": "Permitir permissões automaticamente",
+   "ru": "Автоматически разрешать разрешения",
+   "id": "Izinkan izin secara otomatis"
+  },
+  "Automatically approve tool permissions without asking in the notch": {
+   "zh-Hans": "自动批准工具权限，无需在灵动岛中询问",
+   "hi": "नॉच में पूछे बिना टूल अनुमतियों को स्वतः स्वीकृत करें",
+   "es": "Aprobar automáticamente los permisos de herramientas sin preguntar en el notch",
+   "ar": "الموافقة تلقائيًا على أذونات الأدوات دون السؤال في النوتش",
+   "fr": "Approuver automatiquement les permissions des outils sans demander dans l'encoche",
+   "bn": "নচে জিজ্ঞাসা না করেই সরঞ্জামের অনুমতি স্বয়ংক্রিয়ভাবে অনুমোদন করুন",
+   "pt-BR": "Aprovar automaticamente as permissões de ferramentas sem perguntar no notch",
+   "ru": "Автоматически подтверждать разрешения инструментов без запроса в вырезе",
+   "id": "Setujui izin alat secara otomatis tanpa bertanya di notch"
+  },
+  "Automatically approve tool permissions for coding agents without asking": {
+   "zh-Hans": "自动批准编程代理的工具权限，无需询问",
+   "hi": "बिना पूछे कोडिंग एजेंटों के लिए टूल अनुमतियों को स्वतः स्वीकृत करें",
+   "es": "Aprobar automáticamente los permisos de herramientas para los agentes de código sin preguntar",
+   "ar": "الموافقة تلقائيًا على أذونات الأدوات لوكلاء البرمجة دون سؤال",
+   "fr": "Approuver automatiquement les permissions des outils pour les agents de code sans demander",
+   "bn": "জিজ্ঞাসা না করেই কোডিং এজেন্টদের জন্য সরঞ্জামের অনুমতি স্বয়ংক্রিয়ভাবে অনুমোদন করুন",
+   "pt-BR": "Aprovar automaticamente as permissões de ferramentas para agentes de código sem perguntar",
+   "ru": "Автоматически подтверждать разрешения инструментов для агентов кода без запроса",
+   "id": "Setujui izin alat untuk agen pengkodean secara otomatis tanpa bertanya"
+  },
   "Open Claude": {
    "zh-Hans": "打开 Claude",
    "hi": "Claude खोलें",

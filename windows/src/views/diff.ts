@@ -19,6 +19,7 @@ export interface DiffCardHooks {
   dismiss(): void;
   /** ↗ — opens the file in the editor. */
   open(path: string): void;
+  editorName?: string;
 }
 
 export function buildDiffCard(diff: FileDiff, hooks: DiffCardHooks): HTMLElement {
@@ -36,7 +37,11 @@ export function buildDiffCard(diff: FileDiff, hooks: DiffCardHooks): HTMLElement
     diff.removed > 0 ? h("span", { class: "tick-count minus", text: `−${diff.removed}` }) : null,
     h(
       "button",
-      { class: "icon-btn", title: tl(STRINGS.open), onclick: () => hooks.open(diff.path) },
+      {
+        class: "icon-btn",
+        title: hooks.editorName === "Antigravity" ? tl("Open in Antigravity") : tl(STRINGS.open),
+        onclick: () => hooks.open(diff.path),
+      },
       svg(ICONS.arrowUpRight, 8),
     ),
   );

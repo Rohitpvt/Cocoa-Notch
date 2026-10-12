@@ -481,6 +481,82 @@ pub fn open_claude_desktop() -> bool {
     exe.is_file() && Command::new(exe).spawn().is_ok()
 }
 
+/// Where Antigravity IDE executable/CLI may be on Windows.
+pub fn antigravity_candidates() -> Vec<PathBuf> {
+    let mut out: Vec<PathBuf> = Vec::new();
+    for name in ["antigravity-ide", "antigravity", "agy"] {
+        if let Some(p) = find_on_path(name) {
+            out.push(p);
+        }
+    }
+    let var = |k: &str| std::env::var_os(k).map(PathBuf::from).filter(|p| p.is_absolute());
+    if let Some(local) = var("LOCALAPPDATA") {
+        out.push(local.join("Programs").join("Antigravity IDE").join("bin").join("antigravity-ide.cmd"));
+        out.push(local.join("Programs").join("Antigravity IDE").join("Antigravity IDE.exe"));
+    }
+    if let Some(prog) = var("ProgramFiles") {
+        out.push(prog.join("Antigravity IDE").join("bin").join("antigravity-ide.cmd"));
+        out.push(prog.join("Antigravity IDE").join("Antigravity IDE.exe"));
+    }
+    out.retain(|p| p.is_file());
+    out
+}
+
+/// The Antigravity IDE app: brought forward when it runs, or started via
+/// antigravity-ide / Antigravity IDE.exe with the optional file or project path.
+pub fn open_antigravity(path: Option<&str>) -> bool {
+    let path = path.filter(|p| !p.is_empty());
+    let folder = path.map(crate::session_window::folder_name).unwrap_or_default();
+
+    // 1. Try bringing the running Antigravity IDE window to the front
+    let pids: Vec<u32> = process_table()
+        .into_iter()
+        .filter(|(_, p)| {
+            p.exe.eq_ignore_ascii_case("Antigravity IDE.exe")
+                || p.exe.eq_ignore_ascii_case("antigravity-ide.exe")
+        })
+        .map(|(pid, _)| pid)
+        .collect();
+
+    if !pids.is_empty() {
+        let windows: Vec<(isize, String)> = top_windows()
+            .into_iter()
+            .filter(|(_, owner, _)| pids.contains(owner))
+            .map(|(hwnd, _, title)| (hwnd, title))
+            .collect();
+
+        let target_hwnd = if path.is_none() || folder.is_empty() {
+            windows.first().map(|(hwnd, _)| hwnd)
+        } else {
+            crate::session_window::pick_window(&windows, folder)
+                .or_else(|| windows.first().map(|(hwnd, _)| hwnd))
+        };
+
+        if let Some(hwnd) = target_hwnd {
+            if bring_forward(*hwnd) && path.is_none() {
+                return true;
+            }
+        }
+    }
+
+    // 2. Spawn via launcher / candidates (handles opening file or folder in Antigravity)
+    for exe in antigravity_candidates() {
+        let mut cmd = Command::new(&exe);
+        if let Some(p) = path {
+            cmd.arg(p);
+        }
+        if no_console(&mut cmd).spawn().is_ok() {
+            return true;
+        }
+    }
+
+    // 3. Fallback: reveal folder in Explorer if path exists
+    if let Some(p) = path {
+        reveal_folder(p);
+    }
+    false
+}
+
 // ── Global shortcuts ──────────────────────────────────────────────────────────
 
 /// RegisterHotKey works in every Windows session.

@@ -304,6 +304,14 @@ function antigravitySection(initialStatus: AgentHookStatus, hookPath: string): H
         h("span", { class: "path", text: hookPath || status.path }),
         statusDot(status.hookReady),
       ),
+      h("div", { class: "row" },
+        h("label", { text: t("Auto-allow permissions") }),
+        toggle(settings.autoApproveAntigravity, (v) => {
+          settings.autoApproveAntigravity = v;
+          void save();
+        }),
+        h("span", { class: "hint", text: t("Automatically approve tool permissions without asking in the notch") }),
+      ),
     );
 
     if (!status.hookReady) {
