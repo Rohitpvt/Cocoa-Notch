@@ -4372,6 +4372,28 @@
    "pt-BR": "segundos de inatividade antes do notch desaparecer",
    "ru": "секунд бездействия перед исчезновением выреза",
    "id": "detik tidak aktif sebelum notch menghilang"
+  },
+  "Install the hooks to see your Antigravity sessions in the island and approve permissions without leaving what you are doing.": {
+   "zh-Hans": "安装 hooks，即可在岛中查看 Antigravity 会话，并在不打断手头工作的情况下批准权限。",
+   "hi": "आइलैंड में अपने Antigravity सत्र देखने और अपना काम छोड़े बिना अनुमतियाँ देने के लिए hooks इंस्टॉल करें।",
+   "es": "Instala los hooks para ver tus sesiones de Antigravity en la isla y aprobar permisos sin dejar lo que estás haciendo.",
+   "ar": "ثبّت الـ hooks لترى جلسات Antigravity في الشريط وتوافق على الأذونات دون أن تترك ما تفعله.",
+   "fr": "Installe les hooks pour voir tes sessions Antigravity dans l'île et valider les permissions sans quitter ce que tu fais.",
+   "bn": "আইল্যান্ডে আপনার Antigravity সেশন দেখতে এবং কাজ না থামিয়ে অনুমতি দিতে hooks ইনস্টল করুন।",
+   "pt-BR": "Instale os hooks para ver suas sessões do Antigravity na ilha e aprovar permissões sem largar o que está fazendo.",
+   "ru": "Установите хуки, чтобы видеть сессии Antigravity в острове и давать разрешения, не отрываясь от работы.",
+   "id": "Pasang hooks untuk melihat sesi Antigravity di pulau dan menyetujui izin tanpa meninggalkan pekerjaan Anda."
+  },
+  "Cocoa is hooked into your Antigravity sessions. Tool calls, questions and permission requests show up in the island, and you can answer them there.": {
+   "zh-Hans": "Cocoa 已接入你的 Antigravity 会话。工具调用、问题和权限请求都会显示在岛中，你可以直接在那里回应。",
+   "hi": "Cocoa आपके Antigravity सत्रों से जुड़ा है। टूल कॉल, प्रश्न और अनुमति अनुरोध आइलैंड में दिखते हैं, और आप वहीं उनका जवाब दे सकते हैं।",
+   "es": "Cocoa está conectado a tus sesiones de Antigravity. Las llamadas a herramientas, las preguntas y las solicitudes de permiso aparecen en la isla y puedes responderlas ahí.",
+   "ar": "Cocoa متصل بجلسات Antigravity لديك. تظهر استدعاءات الأدوات والأسئلة وطلبات الإذن في الشريط، ويمكنك الرد عليها من هناك.",
+   "fr": "Cocoa est branché sur tes sessions Antigravity. Les appels d'outils, les questions et les demandes de permission s'affichent dans l'île, et tu peux y répondre directement.",
+   "bn": "Cocoa আপনার Antigravity সেশনের সঙ্গে যুক্ত। টুল কল, প্রশ্ন আর অনুমতির অনুরোধ আইল্যান্ডে দেখা যায়, এবং আপনি সেখানেই উত্তর দিতে পারেন।",
+   "pt-BR": "O Cocoa está conectado às suas sessões do Antigravity. Chamadas de ferramentas, perguntas e pedidos de permissão aparecem na ilha, e você pode respondê-los ali.",
+   "ru": "Cocoa подключён к вашим сессиям Antigravity. Вызовы инструментов, вопросы и запросы разрешений появляются в острове, и отвечать можно прямо там.",
+   "id": "Cocoa terhubung ke sesi Antigravity Anda. Panggilan alat, pertanyaan, dan permintaan izin muncul di pulau, dan Anda bisa menjawabnya di sana."
   }
  }
 }

@@ -210,7 +210,14 @@ async fn handle(app: AppHandle, mut pipe: impl Relay) {
     // Counts for the weekly recap — never the command, path or prompt itself.
     crate::recap::observe(&app, &payload);
 
-    if event != "PermissionRequest" {
+    let is_antigravity = payload
+        .get("cocoa_agent")
+        .or_else(|| payload.get("coucou_agent"))
+        .and_then(Value::as_str)
+        .is_some_and(|a| a.eq_ignore_ascii_case("antigravity"));
+    let is_permission_request = event == "PermissionRequest" || (is_antigravity && event == "PreToolUse");
+
+    if !is_permission_request {
         // The status line relay calls in with every Claude Code update: not log-worthy.
         if event != "StatusLine" {
             log::line(format!("hook {event}"));
@@ -228,6 +235,9 @@ async fn handle(app: AppHandle, mut pipe: impl Relay) {
     }
     crate::recap::note_request(&app, &id, &payload);
     payload["request_id"] = json!(id);
+    if is_antigravity && event == "PreToolUse" {
+        payload["hook_event_name"] = json!("PermissionRequest");
+    }
     log::line(format!("hook PermissionRequest id={id}"));
     let _ = app.emit_to(WINDOW_LABEL, "hook", payload);
 

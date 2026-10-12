@@ -9,10 +9,10 @@
 use serde_json::{json, Map, Value};
 
 /// The agents whose permission requests the island can answer: Claude Code
-/// (no `--agent`), Codex, Copilot CLI and Muse Code. Any decision for another
+/// (no `--agent`), Codex, Copilot CLI, Muse Code and Antigravity. Any decision for another
 /// agent is ignored here too, whatever the app sent.
 pub fn takes_decisions(agent: &str) -> bool {
-    matches!(agent, "" | "codex" | "copilot" | "muse")
+    matches!(agent, "" | "codex" | "copilot" | "muse" | "antigravity")
 }
 
 /// Agents that read a JSON object on stdout after every hook and get `{}` —
@@ -26,10 +26,15 @@ fn wants_json(agent: &str) -> bool {
 /// question as it was asked.
 pub fn stdout(agent: &str, event: &str, decision: Option<&str>, question: Option<&Value>) -> Option<String> {
     if event != "PermissionRequest" {
-        // Antigravity reads "{}" on PreToolUse as a denial. "ask" keeps its own prompt
-        // (and the user's Always Allow): Coucou never allows a tool by itself.
+        // Antigravity gates tool permissions via PreToolUse: allow/deny from the island,
+        // or "ask" to keep its own prompt when nobody made a decision.
         if agent.eq_ignore_ascii_case("antigravity") && event == "PreToolUse" {
-            return Some(r#"{"decision":"ask"}"#.to_string());
+            let decision = decision.filter(|_| takes_decisions(agent));
+            return match decision.map(str::trim) {
+                Some("allow" | "always") => Some(r#"{"decision":"allow"}"#.to_string()),
+                Some("deny") => Some(r#"{"decision":"deny","reason":"Denied from Cocoa"}"#.to_string()),
+                _ => Some(r#"{"decision":"ask"}"#.to_string()),
+            };
         }
         return wants_json(agent).then(|| "{}".to_string());
     }
@@ -173,6 +178,10 @@ mod tests {
     fn a_decision_only_counts_on_a_permission_request_from_an_agent_that_takes_one() {
         for agent in AGENTS {
             for event in EVENTS.iter().filter(|e| **e != "PermissionRequest") {
+                // Antigravity takes its decisions on PreToolUse; all other agents only on PermissionRequest.
+                if *agent == "antigravity" && *event == "PreToolUse" {
+                    continue;
+                }
                 if let Some(out) = stdout(agent, event, Some("allow"), None) {
                     assert!(!allows(&out), "{agent:?} {event}: {out}");
                 }
@@ -180,18 +189,22 @@ mod tests {
             let out = stdout(agent, "PermissionRequest", Some("allow"), None);
             assert_eq!(out.as_deref().is_some_and(allows), takes_decisions(agent), "{agent:?}: {out:?}");
         }
+        let out = stdout("antigravity", "PreToolUse", Some("allow"), None);
+        assert!(out.as_deref().is_some_and(allows), "antigravity PreToolUse allow failed: {out:?}");
     }
 
     #[test]
     fn each_agent_gets_its_own_reply_shape() {
         let allow = r#"{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decision":{"behavior":"allow"}}}"#;
         let deny = r#"{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decision":{"behavior":"deny","message":"Denied from Cocoa"}}}"#;
-        for agent in ["", "codex"] {
+        for agent in ["", "codex", "antigravity"] {
             assert_eq!(stdout(agent, "PermissionRequest", Some("allow"), None).unwrap(), allow);
             assert_eq!(stdout(agent, "PermissionRequest", Some("always"), None).unwrap(), allow);
             assert_eq!(stdout(agent, "PermissionRequest", Some("deny"), None).unwrap(), deny);
             assert_eq!(stdout(agent, "PermissionRequest", None, None), None);
-            assert_eq!(stdout(agent, "PreToolUse", None, None), None);
+            if agent != "antigravity" {
+                assert_eq!(stdout(agent, "PreToolUse", None, None), None);
+            }
         }
         for agent in ["copilot", "muse"] {
             assert_eq!(stdout(agent, "PermissionRequest", Some("allow"), None).unwrap(), r#"{"permissionDecision":"allow"}"#);
@@ -202,8 +215,10 @@ mod tests {
         assert_eq!(stdout("copilot", "PermissionRequest", None, None).unwrap(), r#"{"permissionDecision":"ask"}"#);
         assert_eq!(stdout("muse", "PermissionRequest", None, None), None);
         // Antigravity needs a decision on PreToolUse: "ask" leaves it to Antigravity's own prompt;
-        // other lifecycle events receive "{}".
+        // allow/deny returns appropriate decision; other lifecycle events receive "{}".
         assert_eq!(stdout("antigravity", "PreToolUse", None, None).unwrap(), r#"{"decision":"ask"}"#);
+        assert_eq!(stdout("antigravity", "PreToolUse", Some("allow"), None).unwrap(), r#"{"decision":"allow"}"#);
+        assert_eq!(stdout("antigravity", "PreToolUse", Some("deny"), None).unwrap(), r#"{"decision":"deny","reason":"Denied from Cocoa"}"#);
         for event in ["PostToolUse", "UserPromptSubmit", "Stop"] {
             assert_eq!(stdout("antigravity", event, None, None).unwrap(), "{}");
         }

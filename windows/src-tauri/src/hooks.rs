@@ -367,6 +367,10 @@ pub fn ensure_hook_exe(app: &AppHandle) {
             // release hook the pre-build step produces.
             candidates.push(parent.join(platform::HOOK_EXE));
             candidates.push(parent.join("../release").join(platform::HOOK_EXE));
+            candidates.push(parent.join("windows").join("release").join(platform::HOOK_EXE));
+            candidates.push(parent.join("windows").join("target").join("release").join(platform::HOOK_EXE));
+            candidates.push(parent.join("release").join(platform::HOOK_EXE));
+            candidates.push(parent.join("target").join("release").join(platform::HOOK_EXE));
             // Belt and braces: where the old glob form used to land it.
             candidates.push(parent.join("_up_/target/release").join(platform::HOOK_EXE));
         }
