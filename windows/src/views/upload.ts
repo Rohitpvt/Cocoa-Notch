@@ -82,21 +82,27 @@ export function buildUploading(): ViewHost {
   );
   const el = h("div", { class: "view" }, card);
 
+  const update = () => {
+    const done = State.uploadProgress >= 0.999;
+    const pct = Math.round(State.uploadProgress * 100);
+    label.textContent = done
+      ? `✓  ${State.droppedFile?.name ?? t("File")}`
+      : t("Uploading {name}", { name: State.droppedFile?.name ?? t("file") });
+    label.classList.toggle("done", done);
+    percent.textContent = done ? "" : `${pct} %`;
+    const w = State.uploadProgress * 526;
+    fill.style.width = `${w}px`;
+    glow.style.transform = `translateX(${Math.max(0, w - 14)}px)`;
+    glow.style.opacity = State.uploadProgress > 0.01 ? "1" : "0";
+    card.classList.toggle("done", done);
+  };
+
   return {
     el,
-    sync() {
-      const done = State.uploadProgress >= 0.999;
-      const pct = Math.round(State.uploadProgress * 100);
-      label.textContent = done
-        ? `✓  ${State.droppedFile?.name ?? t("File")}`
-        : t("Uploading {name}", { name: State.droppedFile?.name ?? t("file") });
-      label.classList.toggle("done", done);
-      percent.textContent = done ? "" : `${pct} %`;
-      const w = State.uploadProgress * 526;
-      fill.style.width = `${w}px`;
-      glow.style.transform = `translateX(${Math.max(0, w - 14)}px)`;
-      glow.style.opacity = State.uploadProgress > 0.01 ? "1" : "0";
-      card.classList.toggle("done", done);
+    sync: update,
+    tick() {
+      update();
+      return State.uploadProgress < 1;
     },
   };
 }

@@ -278,6 +278,8 @@ class UploadSequence {
   performDrop(uploadDuration: number) {
     this.uploadDuration = uploadDuration;
     this.dropWall = this.now();
+    this.isActive = true;
+    if (!this.entryWall) this.entryWall = this.dropWall;
     // Restart the canonical post-drop timeline however long the user hovered.
     // Spring state (position and velocity) is deliberately preserved.
     this.t = USC.T_DROP;

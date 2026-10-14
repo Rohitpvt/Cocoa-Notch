@@ -388,12 +388,15 @@ export class Island {
           this.setMode("compact");
           if (from === "coucou") State.view = State.defaultView();
           break;
-        case "home":
-          this.expand(State.defaultView());
+        case "home": {
+          const target = (this.fsm.pendingHomeView as IslandViewName | undefined) ?? State.defaultView();
+          this.fsm.pendingHomeView = undefined;
+          this.expand(target);
           // Hooks may have been installed in a terminal since: the idle cards
           // say so on the next open, without polling while the island is shut.
           void refreshHookPills();
           break;
+        }
         case "coucou":
           this.expand("greeting");
           this.greeting.start();
@@ -458,10 +461,8 @@ export class Island {
     this.stopSequenceIfLeaving(view);
     if (view !== "overview") closePlanCard();
     if (State.mode !== "expanded") {
-      this.fsm.forceHome();
-      State.view = view;
-      this.animateGeometry(false);
-      State.notify();
+      this.fsm.forceHome(view);
+      this.expand(view);
       return;
     }
     const grew = VIEW_LAYOUTS[view].height >= VIEW_LAYOUTS[State.view].height;
@@ -488,7 +489,7 @@ export class Island {
   /** Alert from the hook server: open on this view. Pinned alerts never auto-close. */
   alert(view: IslandViewName) {
     this.fsm.pinned = State.isPinned;
-    this.fsm.forceHome();
+    this.fsm.forceHome(view);
     this.expand(view);
   }
 
@@ -660,6 +661,7 @@ export class Island {
     if (since == null) return;
     const dur = State.uploadDuration;
     const p = Math.max(0, Math.min(1, (since - PRE_PROGRESS) / dur));
+    State.uploadProgress = p;
 
     const tens = Math.floor(p * 10);
     if (tens > this.uploadTens && tens < 10) {
@@ -669,6 +671,7 @@ export class Island {
 
     if (!this.uploadDone && since >= PRE_PROGRESS + dur) {
       this.uploadDone = true;
+      State.uploadProgress = 1;
       Sound.play("approve");
       this.engine.triggerEmote("happy");
     }

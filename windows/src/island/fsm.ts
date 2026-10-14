@@ -5,6 +5,7 @@ export type FsmState = "hidden" | "petit" | "home" | "coucou";
 
 export class IslandStateMachine {
   state: FsmState = "hidden";
+  pendingHomeView?: string;
 
   onTransition: ((from: FsmState, to: FsmState) => void) | null = null;
 
@@ -164,9 +165,10 @@ export class IslandStateMachine {
   }
 
   /** Alert or explicit request: open straight to expanded. */
-  forceHome() {
+  forceHome(targetView?: string) {
     this.cancelTimers();
     this.openedByHover = false;
+    this.pendingHomeView = targetView;
     this.transition("home");
   }
 
