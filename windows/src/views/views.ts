@@ -110,6 +110,18 @@ export function buildHeader(actions: ViewActions): ViewHost {
 
   const gearBtn = h("button", { title: tl("Settings"), onclick: () => go("settings") }, svg(ICONS.gear, 14));
   const soundBtn = h("button", { title: tl("Mute"), onclick: () => actions.toggleSound() }, svg(ICONS.speakerOn, 14));
+  const collapseBtn = h(
+    "button",
+    {
+      class: "btn-collapse",
+      title: tl("Collapse"),
+      onclick: () => {
+        actions.blip();
+        actions.collapse();
+      },
+    },
+    svg(ICONS.chevronUp, 12, { stroke: 2.4 }),
+  );
   // Plan usage pills (off by default): before the gear, Claude first, as on the Mac.
   const claudePill = buildPlanPill(false);
   const codexPill = buildPlanPill(true);
@@ -118,7 +130,11 @@ export function buildHeader(actions: ViewActions): ViewHost {
 
   function go(v: IslandViewName) {
     actions.blip();
-    actions.setView(v);
+    if (State.view === v) {
+      actions.collapse();
+    } else {
+      actions.setView(v);
+    }
   }
 
   const el = h(
@@ -126,7 +142,7 @@ export function buildHeader(actions: ViewActions): ViewHost {
     { id: "header" },
     h("div", { class: "tabs" }, tabHome, tabChat, tabDrop),
     headerStats,
-    h("div", { class: "header-actions" }, planPills, gearBtn, soundBtn),
+    h("div", { class: "header-actions" }, planPills, gearBtn, soundBtn, collapseBtn),
   );
   const headerActions = el.lastElementChild as HTMLElement;
 
@@ -510,7 +526,11 @@ function buildPill(task: AgentTask, actions: ViewActions, totalCount: number): H
   const canvas = createMiniBot(task, totalCount === 2 ? 22 : 24);
   const pill = h(
     "div",
-    { class: `pill ${totalCount === 2 ? "pill-row" : ""}`.trim(), onclick: () => actions.setFocus(task.id) },
+    {
+      class: `pill ${totalCount === 2 ? "pill-row" : ""}`.trim(),
+      onclick: () => actions.setFocus(task.id),
+      title: label,
+    },
     canvas,
     h("span", { class: "lbl", text: label }),
   );

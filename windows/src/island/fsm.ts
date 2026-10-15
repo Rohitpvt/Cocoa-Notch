@@ -170,6 +170,9 @@ export class IslandStateMachine {
     this.openedByHover = false;
     this.pendingHomeView = targetView;
     this.transition("home");
+    if (!this.pinned) {
+      this.scheduleHomeCollapse();
+    }
   }
 
   /// Explicit close (OK button, Escape, an alert being answered).
@@ -214,7 +217,7 @@ export class IslandStateMachine {
     }, delay * 1000);
   }
 
-  private scheduleHomeCollapse() {
+  scheduleHomeCollapse() {
     this.clear("homeCollapse");
     if (this.pinned) return;
     const delay = this.openedByHover ? this.hoverCloseDelay : this.homeDelay;

@@ -86,6 +86,9 @@ export class Island {
   private collapsed = false;
   private collapseTimer: number | null = null;
   private wasInIsland = false;
+  get isMouseInIsland(): boolean {
+    return this.wasInIsland;
+  }
   /** Last shape handed to Rust for the click-through test. */
   private pushedRect = { x: -1, y: -1, w: -1, h: -1 };
 
@@ -198,7 +201,7 @@ export class Island {
   /** The request has its answer: the card goes and the session carries on. */
   private closeApproval() {
     State.endApproval();
-    this.fsm.pinned = false;
+    this.dropPin();
     this.setView(State.defaultView());
   }
 
@@ -809,6 +812,13 @@ export class Island {
       if (this.isBotHit(e.clientX, e.clientY)) {
         this.cancelBotHover();
         this.engine.slap();
+        return;
+      }
+      // Clicking the top notch area collapses the expanded island back to compact
+      const rect = this.islandRect();
+      if (e.clientY <= NOTCH_H + 10 && Math.abs(e.clientX - (rect.x + rect.w / 2)) <= NOTCH_W / 2 + 50) {
+        this.collapse();
+        return;
       }
     });
 
