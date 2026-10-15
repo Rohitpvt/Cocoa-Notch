@@ -149,7 +149,9 @@ export class Island {
     });
     Bridge.onSystemNotification((notif) => {
       if (!State.settings.showSystemNotifications) return;
-      State.setSystemNotification(notif);
+      const shouldAlert = State.addSystemNotification(notif);
+      if (!shouldAlert) return;
+
       if (State.settings.notificationSound !== false) {
         Sound.play("blip");
       }

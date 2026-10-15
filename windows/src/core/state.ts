@@ -333,6 +333,95 @@ class AppState {
     this.notify();
   }
 
+  /** System notification history (most recent first, up to 60 items) */
+  notificationHistory: SystemNotification[] = [];
+
+  private recentNotifFingerprints = new Map<string, number>();
+
+  loadNotificationHistory() {
+    try {
+      if (typeof localStorage !== "undefined") {
+        const raw = localStorage.getItem("cocoa_notif_history");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            this.notificationHistory = parsed.slice(0, 60);
+          }
+        }
+      }
+    } catch {}
+  }
+
+  saveNotificationHistory() {
+    try {
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem("cocoa_notif_history", JSON.stringify(this.notificationHistory.slice(0, 60)));
+      }
+    } catch {}
+  }
+
+  /**
+   * Adds a system notification with deduplication.
+   * Returns true if the notification is fresh and should trigger a notch alert/chime,
+   * or false if it is a duplicate within the cooldown window.
+   */
+  addSystemNotification(notif: SystemNotification): boolean {
+    const now = Date.now();
+    const fp = `${(notif.appName || "").trim()}|${(notif.title || "").trim()}|${(notif.body || "").trim()}`;
+    const lastSeen = this.recentNotifFingerprints.get(fp) || 0;
+
+    // Suppress repeated identical notifications within 30 seconds
+    const isDuplicate = (now - lastSeen) < 30000;
+    this.recentNotifFingerprints.set(fp, now);
+
+    // Clean up old fingerprints
+    for (const [key, time] of this.recentNotifFingerprints) {
+      if (now - time > 120000) {
+        this.recentNotifFingerprints.delete(key);
+      }
+    }
+
+    // Standardize timestamp to milliseconds
+    const tsMs = notif.timestamp && notif.timestamp < 1e11 ? notif.timestamp * 1000 : (notif.timestamp || now);
+    const item: SystemNotification = { ...notif, timestamp: tsMs };
+
+    this.activeNotification = item;
+
+    // Prepend to history, filtering out near-identical recent items
+    this.notificationHistory = [
+      item,
+      ...this.notificationHistory.filter(
+        (n) => !(n.id === item.id && Math.abs((n.timestamp || 0) - tsMs) < 10000) &&
+               !(n.appName === item.appName && n.title === item.title && n.body === item.body && Math.abs((n.timestamp || 0) - tsMs) < 30000)
+      ),
+    ].slice(0, 60);
+
+    this.saveNotificationHistory();
+    this.notify();
+
+    return !isDuplicate;
+  }
+
+  removeSystemNotification(id: number, timestamp?: number) {
+    this.notificationHistory = this.notificationHistory.filter((n) => {
+      if (timestamp && n.timestamp === timestamp) return false;
+      if (!timestamp && n.id === id) return false;
+      return true;
+    });
+    if (this.activeNotification && (this.activeNotification.id === id || (timestamp && this.activeNotification.timestamp === timestamp))) {
+      this.activeNotification = null;
+    }
+    this.saveNotificationHistory();
+    this.notify();
+  }
+
+  clearNotificationHistory() {
+    this.notificationHistory = [];
+    this.activeNotification = null;
+    this.saveNotificationHistory();
+    this.notify();
+  }
+
   /** Latest Mochi welfare/wellness reminder prompt */
   activeWelfarePrompt: WelfarePrompt | null = null;
 
@@ -591,3 +680,4 @@ class AppState {
 }
 
 export const State = new AppState();
+State.loadNotificationHistory();

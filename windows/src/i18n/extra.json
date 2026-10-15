@@ -12,6 +12,39 @@
    "ru": "Свернуть",
    "id": "Ciutkan"
   },
+  "Notifications": {
+   "zh-Hans": "通知",
+   "hi": "सूचनाएं",
+   "es": "Notificaciones",
+   "ar": "الإشعارات",
+   "fr": "Notifications",
+   "bn": "বিজ্ঞপ্তি",
+   "pt-BR": "Notificações",
+   "ru": "Уведомления",
+   "id": "Notifikasi"
+  },
+  "Clear all": {
+   "zh-Hans": "清空全部",
+   "hi": "सभी हटाएं",
+   "es": "Borrar todo",
+   "ar": "مسح الكل",
+   "fr": "Tout effacer",
+   "bn": "সব মুছুন",
+   "pt-BR": "Limpar tudo",
+   "ru": "Очистить все",
+   "id": "Hapus semua"
+  },
+  "No notifications yet": {
+   "zh-Hans": "暂无通知",
+   "hi": "अभी कोई सूचना नहीं है",
+   "es": "Sin notificaciones aún",
+   "ar": "لا توجد إشعارات حتى الآن",
+   "fr": "Pas encore de notifications",
+   "bn": "এখনও কোনও বিজ্ঞপ্তি নেই",
+   "pt-BR": "Nenhuma notificação ainda",
+   "ru": "Пока нет уведомлений",
+   "id": "Belum ada notifikasi"
+  },
   " · until {date}": {
    "zh-Hans": " · 截至 {date}",
    "hi": " · {date} तक",

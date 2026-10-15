@@ -2,7 +2,7 @@
 // Captures toast notifications from any app / software and forwards them to the island.
 
 use serde::{Deserialize, Serialize};
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::time::Duration;
 use tauri::{AppHandle, Emitter};
 
@@ -61,6 +61,8 @@ fn run_listener(app: AppHandle) {
     }
 
     let mut seen_ids: HashSet<u32> = HashSet::new();
+    let mut seen_id_order: VecDeque<u32> = VecDeque::new();
+    let mut recent_content: HashMap<(String, String, String), u64> = HashMap::new();
     let mut initial_scan = true;
 
     loop {
@@ -81,41 +83,45 @@ fn run_listener(app: AppHandle) {
             Err(_) => continue,
         };
 
-        let mut current_ids = HashSet::new();
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_secs())
+            .unwrap_or(0);
 
         for i in 0..count {
             if let Ok(un) = notifications.GetAt(i) {
                 let id = un.Id().unwrap_or(0);
-                current_ids.insert(id);
 
-                if !initial_scan && !seen_ids.contains(&id) {
-                    let app_name = un.AppInfo()
-                        .and_then(|info| info.DisplayInfo())
-                        .and_then(|disp| disp.DisplayName())
-                        .map(|h| h.to_string())
-                        .unwrap_or_else(|_| "System".to_string());
+                if id != 0 && seen_ids.contains(&id) {
+                    continue;
+                }
 
-                    let mut title = String::new();
-                    let mut body = String::new();
+                let app_name = un.AppInfo()
+                    .and_then(|info| info.DisplayInfo())
+                    .and_then(|disp| disp.DisplayName())
+                    .map(|h| h.to_string())
+                    .unwrap_or_else(|_| "System".to_string());
 
-                    if let Ok(notif) = un.Notification() {
-                        if let Ok(visual) = notif.Visual() {
-                            let generic_binding = KnownNotificationBindings::ToastGeneric().unwrap_or_default();
-                            if let Ok(binding) = visual.GetBinding(&generic_binding) {
-                                if let Ok(text_elements) = binding.GetTextElements() {
-                                    if let Ok(elem_count) = text_elements.Size() {
-                                        for idx in 0..elem_count {
-                                            if let Ok(elem) = text_elements.GetAt(idx) {
-                                                if let Ok(text) = elem.Text() {
-                                                    let t = text.to_string();
-                                                    if idx == 0 {
-                                                        title = t;
-                                                    } else if body.is_empty() {
-                                                        body = t;
-                                                    } else {
-                                                        body.push_str(" ");
-                                                        body.push_str(&t);
-                                                    }
+                let mut title = String::new();
+                let mut body = String::new();
+
+                if let Ok(notif) = un.Notification() {
+                    if let Ok(visual) = notif.Visual() {
+                        let generic_binding = KnownNotificationBindings::ToastGeneric().unwrap_or_default();
+                        if let Ok(binding) = visual.GetBinding(&generic_binding) {
+                            if let Ok(text_elements) = binding.GetTextElements() {
+                                if let Ok(elem_count) = text_elements.Size() {
+                                    for idx in 0..elem_count {
+                                        if let Ok(elem) = text_elements.GetAt(idx) {
+                                            if let Ok(text) = elem.Text() {
+                                                let t = text.to_string();
+                                                if idx == 0 {
+                                                    title = t;
+                                                } else if body.is_empty() {
+                                                    body = t;
+                                                } else {
+                                                    body.push_str(" ");
+                                                    body.push_str(&t);
                                                 }
                                             }
                                         }
@@ -124,19 +130,40 @@ fn run_listener(app: AppHandle) {
                             }
                         }
                     }
+                }
 
-                    // Fallback if title is empty
-                    if title.is_empty() && !body.is_empty() {
-                        title = app_name.clone();
-                    } else if title.is_empty() && body.is_empty() {
-                        title = format!("{app_name} Notification");
+                // Fallback if title is empty
+                if title.is_empty() && !body.is_empty() {
+                    title = app_name.clone();
+                } else if title.is_empty() && body.is_empty() {
+                    title = format!("{app_name} Notification");
+                }
+
+                // Content fingerprint deduplication (45-second cooldown for identical content)
+                let fingerprint = (app_name.clone(), title.clone(), body.clone());
+                if let Some(&last_seen) = recent_content.get(&fingerprint) {
+                    if now.saturating_sub(last_seen) < 45 {
+                        if id != 0 && !seen_ids.contains(&id) {
+                            seen_ids.insert(id);
+                            seen_id_order.push_back(id);
+                        }
+                        continue;
                     }
+                }
 
-                    let now = std::time::SystemTime::now()
-                        .duration_since(std::time::UNIX_EPOCH)
-                        .map(|d| d.as_secs())
-                        .unwrap_or(0);
+                // Mark seen
+                if id != 0 {
+                    seen_ids.insert(id);
+                    seen_id_order.push_back(id);
+                    while seen_id_order.len() > 1000 {
+                        if let Some(old_id) = seen_id_order.pop_front() {
+                            seen_ids.remove(&old_id);
+                        }
+                    }
+                }
+                recent_content.insert(fingerprint, now);
 
+                if !initial_scan {
                     let payload = SystemNotification {
                         id,
                         app_name,
@@ -154,7 +181,11 @@ fn run_listener(app: AppHandle) {
             }
         }
 
-        seen_ids = current_ids;
+        // Periodically purge fingerprints older than 300 seconds
+        if recent_content.len() > 100 {
+            recent_content.retain(|_, ts| now.saturating_sub(*ts) < 300);
+        }
+
         initial_scan = false;
     }
 }

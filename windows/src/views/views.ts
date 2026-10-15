@@ -20,6 +20,7 @@ import { lastTextStep } from "../core/diff";
 import { Bridge } from "../core/bridge";
 import { buildRecap } from "./recap";
 import { buildWardrobe } from "./wardrobe";
+import { buildNotificationHistory } from "./notifications";
 import type { Outfit, OutfitSelection } from "../mochi/wardrobe";
 import { welfareManager } from "../core/welfare";
 import { language, t, tl, type Msg } from "../i18n/i18n";
@@ -63,7 +64,7 @@ export interface ViewHost {
 
 // ── Shared pieces ─────────────────────────────────────────────────────────────
 
-function card(wash: Wash, ...children: (Node | string)[]): HTMLElement {
+export function card(wash: Wash, ...children: (Node | string)[]): HTMLElement {
   const el = h("div", { class: wash ? "card wash" : "card" }, ...children);
   if (wash) el.style.setProperty("--wash", washRGBA(wash));
   return el;
@@ -105,6 +106,7 @@ export function buildHeader(actions: ViewActions): ViewHost {
   const tabHome = h("button", { class: "tab", title: tl("Overview"), onclick: () => go("overview") }, svg(ICONS.house, 13));
   const tabChat = h("button", { class: "tab", title: tl("Ask"), onclick: () => go("prompt") }, svg(ICONS.bubble, 13));
   const tabDrop = h("button", { class: "tab", title: tl("Drop"), onclick: () => go("upload") }, svg(ICONS.plus, 13));
+  const tabNotifs = h("button", { class: "tab tab-notifs", title: tl("Notifications"), onclick: () => go("notifications") }, svg(ICONS.bell, 13));
 
   const headerStats = h("div", { class: "header-stats" });
 
@@ -140,7 +142,7 @@ export function buildHeader(actions: ViewActions): ViewHost {
   const el = h(
     "div",
     { id: "header" },
-    h("div", { class: "tabs" }, tabHome, tabChat, tabDrop),
+    h("div", { class: "tabs" }, tabHome, tabChat, tabDrop, tabNotifs),
     headerStats,
     h("div", { class: "header-actions" }, planPills, gearBtn, soundBtn, collapseBtn),
   );
@@ -153,6 +155,8 @@ export function buildHeader(actions: ViewActions): ViewHost {
       tabHome.classList.toggle("on", v === "overview" || v === "empty");
       tabChat.classList.toggle("on", v === "prompt");
       tabDrop.classList.toggle("on", v === "upload");
+      tabNotifs.classList.toggle("on", v === "notifications");
+      tabNotifs.classList.toggle("has-unread", State.notificationHistory.length > 0);
       gearBtn.classList.toggle("on", v === "settings");
       clear(gearBtn);
       gearBtn.append(svg(v === "settings" ? ICONS.gearFill : ICONS.gear, 14));
@@ -1058,6 +1062,7 @@ export function buildViews(
   map.set("recap", buildRecap(actions));
   map.set("wardrobe", buildWardrobe(actions));
   map.set("notification", buildNotification(actions));
+  map.set("notifications", buildNotificationHistory(actions));
   map.set("welfare", buildWelfare(actions));
   // Not in the Windows v1: sending a file by email, window attach + web result.
   map.set("mail", buildPlaceholder(tl("Sending by email isn't in this version."), ""));
