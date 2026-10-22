@@ -58,7 +58,9 @@ You can also [build it yourself](#build-it-yourself).
 | Drag Mochi out of the island | He moves onto your desktop and hangs out there, in his outfit, watching your cursor. Drop him back on the island to bring him home |
 | On the desktop: click / right-click / double-click Mochi | Poke him / the wardrobe / he flies home. Drag him to move him |
 | Drag a file onto the island | Mochi turns into a box, swallows it, then offers to answer questions about it |
-| Click a file in the session ticker | Its diff opens in the island; ↗ opens the file in VS Code, ‹ or `Esc` goes back |
+| Click a file in the session ticker | Its diff opens in the island; ↗ opens the file in VS Code or Antigravity IDE, ‹ or `Esc` goes back |
+| Click 🔼 (collapse chevron) | Folds the island back to the compact bar |
+| Click 🔔 (Notifications tab) | Opens the notification history view (view past system toast alerts, dismiss items, clear all) |
 | `Esc` | Closes the island |
 | Tray icon | Open, Weekly recap, Wardrobe…, Settings…, Pause, Quit |
 | `Ctrl+Alt+Space` | Opens the chat, from any app |
@@ -352,7 +354,7 @@ Linux.
 | GitHub Copilot CLI | `.copilot\hooks\cocoa.json` | Allow / Deny in the island |
 | Muse Code | `.config\muse\settings.json` | Allow / Deny in the island |
 | Gemini CLI | `.gemini\settings.json` | asked in Gemini CLI |
-| Antigravity | `.gemini\config\hooks.json` (a `cocoa` hook group) | asked in Antigravity |
+| Antigravity | `.gemini\config\hooks.json` (a `cocoa` hook group) | Allow / Deny and interactive reviewChange in the island (with auto-allow option and Antigravity IDE focus) |
 | Cursor Agent | `.cursor\hooks.json` — Claude Code in Cursor's terminal also goes on the Cursor pill, through the Claude Code hooks | asked in Cursor |
 | Claude Desktop (Windows) | nothing to install: Claude Code sessions from the Claude app are tagged by the relay | asked in the Claude app |
 | OpenCode | plugin `.config\opencode\plugins\cocoa.js` | asked in OpenCode |
@@ -374,17 +376,17 @@ a verdict, and Cocoa never gives one.
 **How each agent runs the relay on Windows.** Hook commands are written for the
 shell that runs them: Git Bash for Claude Code (quoted, forward slashes),
 PowerShell for Gemini CLI and Copilot CLI (`& '…\cocoa-hook.exe'`), `cmd /C`
-for Codex. Cursor, Antigravity and Muse Code do not document theirs: the relay
-path is written bare when it has no space or special character — which works in
-cmd, PowerShell and when started directly — and in double quotes otherwise.
-These three are untested on Windows.
+for Codex. Cursor and Muse Code write the relay path bare when it has no space
+or special character — which works in cmd, PowerShell and when started directly —
+and in double quotes otherwise. Antigravity has full native integration, automated
+hook installation with diff preview, and test verification.
 
 A pill is **connected** when Cocoa finds its own entries in the files above —
 the same check as Settings → Agents (for Claude Code: a SessionStart hook
 running Cocoa's relay; the Cursor pill also counts Claude Code's hooks).
 Cocoa only reads these files, each time the island opens. Permission requests
 get the island's card for Claude Code (in any terminal, and in Cursor's),
-Codex, Copilot CLI and Muse Code; other agents and Claude Desktop ask in their
+Codex, Copilot CLI, Muse Code, and Antigravity; other agents and Claude Desktop ask in their
 own window.
 
 ## What's different from the Mac version
@@ -398,8 +400,8 @@ own window.
   console window (`cmd.exe` or PowerShell without Windows Terminal) has no such
   ancestor — conhost owns that window — so its folder opens in VS Code instead,
   as it does when `code` is on your `PATH` and nothing was found.
-- No global keyboard shortcuts yet: a waiting card is folded with its **⌃** or
-  `Esc` in the island, and reopened by clicking the island or Open in the tray.
+- Global keyboard shortcuts are tailored for Windows (`Ctrl+Alt+Space`, `Ctrl+Alt+A`,
+  `Ctrl+Alt+T`, `Ctrl+Alt+arrows`), thoroughly avoiding conflicts with the Windows AltGr layer.
 - Apple Music, the one pill from the Mac catalog with nothing behind it here,
   is left out.
 - Not in this version: sending a dropped file by email and dragging Mochi onto

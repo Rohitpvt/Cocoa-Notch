@@ -4493,6 +4493,39 @@
    "pt-BR": "O Cocoa está conectado às suas sessões do Antigravity. Chamadas de ferramentas, perguntas e pedidos de permissão aparecem na ilha, e você pode respondê-los ali.",
    "ru": "Cocoa подключён к вашим сессиям Antigravity. Вызовы инструментов, вопросы и запросы разрешений появляются в острове, и отвечать можно прямо там.",
    "id": "Cocoa terhubung ke sesi Antigravity Anda. Panggilan alat, pertanyaan, dan permintaan izin muncul di pulau, dan Anda bisa menjawabnya di sana."
+  },
+  "Just now": {
+   "zh-Hans": "刚刚",
+   "hi": "अभी-अभी",
+   "es": "Ahora mismo",
+   "ar": "الآن",
+   "fr": "À l'instant",
+   "bn": "এইমাত্র",
+   "pt-BR": "Agora mesmo",
+   "ru": "Только что",
+   "id": "Baru saja"
+  },
+  "Clear all notifications": {
+   "zh-Hans": "清空全部通知",
+   "hi": "सभी सूचनाएं हटाएं",
+   "es": "Borrar todas las notificaciones",
+   "ar": "مسح جميع الإشعارات",
+   "fr": "Effacer toutes les notifications",
+   "bn": "সমস্ত বিজ্ঞপ্তি মুছুন",
+   "pt-BR": "Limpar todas as notificações",
+   "ru": "Очистить все уведомления",
+   "id": "Hapus semua notifikasi"
+  },
+  "System alerts from your apps will appear here": {
+   "zh-Hans": "来自应用的系统提醒将显示在此处",
+   "hi": "आपके ऐप्स से सिस्टम अलर्ट यहां दिखाई देंगे",
+   "es": "Las alertas del sistema de tus aplicaciones aparecerán aquí",
+   "ar": "ستظهر تنبيهات النظام من تطبيقاتك هنا",
+   "fr": "Les alertes système de vos applications apparaîtront ici",
+   "bn": "আপনার অ্যাপ থেকে সিস্টেম সতর্কতা এখানে প্রদর্শিত হবে",
+   "pt-BR": "Os alertas do sistema dos seus aplicativos aparecerão aqui",
+   "ru": "Здесь будут отображаться системные уведомления ваших приложений",
+   "id": "Peringatan sistem dari aplikasi Anda akan muncul di sini"
   }
  }
 }

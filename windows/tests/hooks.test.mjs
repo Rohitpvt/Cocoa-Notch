@@ -17,6 +17,7 @@ const island = {
   setView: (view) => asked.push(`setView:${view}`),
   reveal: () => asked.push("reveal"),
   dropPin: () => asked.push("dropPin"),
+  collapse: () => asked.push("collapse"),
 };
 registerHookHandlers(island);
 

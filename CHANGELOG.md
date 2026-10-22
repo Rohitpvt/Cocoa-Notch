@@ -1,5 +1,20 @@
 # Changelog
 
+## Windows 0.2.2 — October 15, 2026
+
+- **Notification History (4th tab)**: A dedicated 4th tab (bell icon) in the expanded notch island to review past system notifications and toast alerts from Windows apps, with relative timestamps, app badges, individual dismiss (X), and "Clear all" action.
+- **Duplicate alert suppression**: Fixed repeated duplicate notifications from cluttering the island.
+- **Antigravity deep integration**: Full parity with Claude Code approvals on Windows — interactive `reviewChange` approvals directly in the island, auto-allow permissions option in Settings, and redirecting open actions or diff clicks to Antigravity IDE.
+- **Customizable idle auto-hide**: Animate notch upwards and hide after configurable idle timeout (default 15s) in collapsed mode, with intelligent suspension during active compiler/build tasks so you never lose visibility during work.
+- **Installer & distribution**: Updated packaged releases for `Cocoa-Windows-setup.exe` and `Cocoa-Windows.msi`.
+
+## Windows 0.2.1 — October 15, 2026
+
+- **Manual collapse button**: Added a dedicated chevron-up collapse button in the island header to easily fold the expanded island back into the compact notch at any time.
+- **Task-aware auto-collapse**: Fixed unintended auto-collapse during long-running compiler or build tasks.
+- **Pill avatar overlap**: Fixed pill avatar alignment and overlap in the pill bar.
+- **File drop upload fix**: Resolved file drop upload freeze when dropping files from non-upload views.
+
 ## Windows and Linux 0.2.0 — October 8, 2026
 
 The Windows and Linux app catches up with the Mac, from 0.1.1 to 0.2.1 — everything except Apple Music and the iPhone, which depend on macOS and iCloud.

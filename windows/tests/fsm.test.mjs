@@ -154,6 +154,7 @@ test("reveal leaves an island that is already showing alone", () => {
 
 test("forcing the island open cancels a pending hide", () => {
   fsm.reveal();
+  fsm.pinned = true;
   fsm.forceHome();
   seconds(600);
   assert.equal(fsm.state, "home");

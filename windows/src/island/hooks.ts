@@ -426,7 +426,7 @@ function handleHook(island: Island, payload: HookPayload) {
             State.setPillBadge(agentId, null);
           }
           if (State.mode === "expanded" && !State.isPinned && !State.pendingApproval && !island.isMouseInIsland) {
-            island.collapse();
+            island.collapse?.();
           }
         }, 5200),
       );
