@@ -3076,7 +3076,7 @@ input[type="range"]::-webkit-slider-thumb {
    their places, and code, commands and the contribution grid stay left to
    right. A chat message follows its own text's direction (an English answer
    stays left to right). */
-html[data-dir="rtl"] #views :is(.stack, .int-card, .plan-card, .drop-body, .up-card, .notifs-card-body) {
+html[data-dir="rtl"] #views :is(.stack, .int-card, .plan-card, .drop-body, .up-card, .notifs-card-body, .shelf-card-body) {
   direction: rtl;
 }
 
@@ -3087,4 +3087,266 @@ html[data-dir="rtl"] #views :is(.code, .gh-grid, .diff-card, .md-pre) {
 html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-item, .reply .md-quote, .chat-input) {
   unicode-bidi: plaintext;
   text-align: start;
+}
+
+/* ── Ambient Artwork Glow (Bloom Integration) ────────────────────────────────── */
+.notch-ambient-glow {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  height: 100%;
+  border-radius: 28px;
+  filter: blur(20px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
+  transition: opacity 0.3s ease, background 0.3s ease;
+}
+
+/* ── Pomodoro & Accessory Header Chips ───────────────────────────────────────── */
+.stat-chip.pomodoro-chip {
+  cursor: pointer;
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+}
+
+.stat-chip.pomodoro-chip:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.stat-chip.accessory-chip {
+  border-color: rgba(56, 189, 248, 0.3);
+  background: rgba(56, 189, 248, 0.1);
+  color: #7dd3fc;
+}
+
+/* ── Welfare Pomodoro Row ────────────────────────────────────────────────────── */
+.welfare-pomodoro-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  margin-top: 4px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.pomodoro-info {
+  font: 600 11.5px var(--font);
+  color: #fca5a5;
+  flex: 1;
+}
+
+.welfare-btn.sm {
+  padding: 3px 8px;
+  font-size: 10px;
+}
+
+.welfare-btn.pomodoro-start-btn {
+  width: 100%;
+  justify-content: center;
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+.welfare-btn.pomodoro-start-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+
+/* ── Shelf View (Dual-mode File Drop) ───────────────────────────────────────── */
+.shelf-view .card {
+  padding: 10px 14px 10px 108px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.shelf-card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 6px;
+}
+
+.shelf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex: 0 0 auto;
+}
+
+.shelf-title-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #22c55e;
+}
+
+.shelf-title-text {
+  font: 600 12px var(--font);
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.shelf-count-badge {
+  font: 700 9.5px var(--font);
+  padding: 1px 6px;
+  border-radius: 9px;
+  background: rgba(34, 197, 94, 0.14);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.28);
+  font-variant-numeric: tabular-nums;
+}
+
+.shelf-clear-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font: 500 10px var(--font);
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--dim-2);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.shelf-clear-all-btn:hover {
+  background: rgba(244, 80, 94, 0.15);
+  border-color: rgba(244, 80, 94, 0.3);
+  color: #fca5a5;
+}
+
+.shelf-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  max-height: 110px;
+  padding-right: 4px;
+}
+
+.shelf-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 8px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 8px;
+  transition: background 0.15s;
+}
+
+.shelf-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.shelf-item-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.shelf-item-name {
+  font: 500 11px var(--font);
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shelf-item-meta {
+  font: 400 9.5px var(--font);
+  color: var(--dim-2);
+}
+
+.shelf-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 0 auto;
+}
+
+.shelf-item-action-btn {
+  font: 500 9.5px var(--font);
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  color: #7dd3fc;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.shelf-item-action-btn:hover {
+  background: rgba(56, 189, 248, 0.22);
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.shelf-item-action-btn.secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.09);
+  color: var(--dim-2);
+}
+
+.shelf-item-action-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--ink);
+}
+
+.shelf-item-dismiss {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  color: var(--dim-3);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.shelf-item-dismiss:hover {
+  background: rgba(244, 80, 94, 0.2);
+  color: #fca5a5;
+}
+
+.shelf-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 4px;
+  text-align: center;
+  padding: 14px 0;
+}
+
+.shelf-empty-icon {
+  color: var(--dim-3);
+  opacity: 0.6;
+}
+
+.shelf-empty-title {
+  font: 600 11.5px var(--font);
+  color: var(--dim-1);
+}
+
+.shelf-empty-sub {
+  font: 400 10px var(--font);
+  color: var(--dim-2);
+  max-width: 280px;
 }

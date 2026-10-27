@@ -5,6 +5,8 @@ name: Windows
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'windows-v*'
   workflow_dispatch:
@@ -99,6 +101,14 @@ jobs:
           path: windows/release/Cocoa-Windows-${{ steps.pack.outputs.version }}.msi
           retention-days: 3
 
+      # Standalone executable
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'workflow_dispatch' || env.PUBLISH == 'true'
+        with:
+          name: Cocoa-Windows-exe
+          path: windows/release/Cocoa-Windows.exe
+          retention-days: 3
+
       # The unsigned NSIS installer is what Defender false-positives on, so the
       # bare binaries go up as well. hooks.rs already falls back to looking for
       # cocoa-hook.exe next to cocoa.exe, which is exactly this layout, so the
@@ -122,7 +132,7 @@ jobs:
           $notes = @"
           Cocoa for Windows $v — Mochi at the top of your screen.
 
-          Download ``Cocoa-Windows-$v.msi`` (Windows Installer) or ``Cocoa-Windows-$v-setup.exe`` and run it. The installer is not
+          Download ``Cocoa-Windows-$v.msi`` (Windows Installer), ``Cocoa-Windows-$v-setup.exe``, or standalone ``Cocoa-Windows.exe`` and run it. The installer is not
           code-signed yet, so Windows SmartScreen shows a warning: click
           **More info → Run anyway**.
           "@
@@ -133,6 +143,7 @@ jobs:
           gh release create "${{ github.ref_name }}" `
             "release/Cocoa-Windows-$v-setup.exe" `
             "release/Cocoa-Windows-$v.msi" `
+            "release/Cocoa-Windows.exe" `
             --title "Cocoa for Windows $v" `
             --notes $notes `
             --latest=false
@@ -152,11 +163,12 @@ jobs:
             git tag -f windows-latest "${{ github.sha }}"
             git push -f origin windows-latest
             gh release edit windows-latest --title "Cocoa for Windows (latest)" --notes "Always the newest Windows build — currently $v."
-            gh release upload windows-latest "release/Cocoa-Windows-setup.exe" "release/Cocoa-Windows.msi" --clobber
+            gh release upload windows-latest "release/Cocoa-Windows-setup.exe" "release/Cocoa-Windows.msi" "release/Cocoa-Windows.exe" --clobber
           } else {
             gh release create windows-latest `
               "release/Cocoa-Windows-setup.exe" `
               "release/Cocoa-Windows.msi" `
+              "release/Cocoa-Windows.exe" `
               --title "Cocoa for Windows (latest)" `
               --notes "Always the newest Windows build — currently $v." `
               --latest=false

@@ -202,6 +202,16 @@ export class BotEngine {
   // Mouth spring (fraction of R)
   slotH = 0; slotHTarget = 0; slotHVel = 0; isChewing = false;
 
+  // Music beat dancing (port of BotEngine.swift dancing)
+  isDancing = false;
+  dancingLevel = 0;
+  dancingBpm = 112;
+
+  setDancing(dancing: boolean, bpm = 112) {
+    this.isDancing = dancing;
+    if (bpm > 0) this.dancingBpm = bpm;
+  }
+
   col: RGB = C.idle;
   colT: RGB = C.idle;
 
@@ -512,6 +522,7 @@ export class BotEngine {
       this.tweens.size > 0 ||
       this.particles.length > 0 ||
       this.cfg.bounces || this.cfg.scans || this.cfg.breathes || this.cfg.zz || this.cfg.sweat ||
+      this.dancingLevel > 0.001 ||
       this.isMini ||
       Math.abs(this.tgYaw - this.yaw) > 0.002 ||
       Math.abs(this.tgPitch - this.pitch) > 0.002 ||
@@ -539,6 +550,13 @@ export class BotEngine {
   // ── Update ──────────────────────────────────────────────────────────────────
 
   update(dt: number) {
+    const dancingTarget = this.isDancing ? 1 : 0;
+    if (this.dancingLevel < dancingTarget) {
+      this.dancingLevel = Math.min(dancingTarget, this.dancingLevel + dt / 0.3);
+    } else if (this.dancingLevel > dancingTarget) {
+      this.dancingLevel = Math.max(dancingTarget, this.dancingLevel - dt / 0.5);
+    }
+
     const n = now();
     const nowMs = performance.now();
 
@@ -730,6 +748,19 @@ export class BotEngine {
       x.translate(-cx, -cy);
     }
 
+    if (this.dancingLevel > 0.001) {
+      const beat = (performance.now() / 1000) * (this.dancingBpm / 60);
+      const hop = Math.abs(Math.sin(Math.PI * beat));
+      const land = Math.pow(1 - hop, 6);
+      const l = this.dancingLevel;
+      const px = cx;
+      const py = cy + ry;
+      x.translate(px + 0.08 * R * Math.sin(Math.PI * beat) * l, py - 0.20 * R * hop * l);
+      x.rotate(0.10 * Math.sin(Math.PI * beat) * l);
+      x.scale(1 + 0.045 * land * l, 1 - 0.06 * land * l);
+      x.translate(-px, -py);
+    }
+
     this.drawHandsBehind(x, R, rx, ry, cx, cy);
 
     x.save();
@@ -862,6 +893,9 @@ export class BotEngine {
     if (this.morph > 0.5) {
       if (this.isChewing) shape = "happy";
       else if (this.slotHTarget > 0.05 || this.slotH > 0.1) shape = "cup";
+    }
+    if (this.isDancing && this.dancingLevel > 0.15 && !this.isMini && (this.state === "idle" || this.state === "finished")) {
+      shape = "happy";
     }
 
     x.save();

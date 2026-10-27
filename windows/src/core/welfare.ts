@@ -235,6 +235,52 @@ export class WelfareManager {
 
     return this.createPrompt(chosenCategory, now);
   }
+
+  tickPomodoro(now = Date.now()): WelfarePrompt | null {
+    if (!State.pomodoro.active || State.pomodoro.paused) return null;
+    if (State.pomodoro.remainingSec > 1) {
+      State.pomodoro.remainingSec -= 1;
+      State.notify();
+      return null;
+    }
+
+    if (State.pomodoro.phase === "work") {
+      State.pomodoro.completedCount += 1;
+      State.pomodoro.phase = "break";
+      State.pomodoro.totalSec = 5 * 60;
+      State.pomodoro.remainingSec = 5 * 60;
+      const prompt: WelfarePrompt = {
+        id: `pomodoro-${now}`,
+        category: "break",
+        categoryLabel: t("Break Time"),
+        quote: t("Mission accomplished!"),
+        tip: t("You've been working hard. Stretch your arms and give your eyes a quick rest."),
+        emote: "happy",
+        color: "#ef4444",
+        timestamp: now,
+      };
+      State.setWelfarePrompt(prompt);
+      return prompt;
+    } else if (State.pomodoro.phase === "break") {
+      State.pomodoro.phase = "idle";
+      State.pomodoro.active = false;
+      State.pomodoro.remainingSec = 25 * 60;
+      State.pomodoro.totalSec = 25 * 60;
+      const prompt: WelfarePrompt = {
+        id: `pomodoro-${now}`,
+        category: "break",
+        categoryLabel: t("Break Time"),
+        quote: t("Time for a breather!"),
+        tip: t("Rise and shine!"),
+        emote: "proud",
+        color: "#22c55e",
+        timestamp: now,
+      };
+      State.setWelfarePrompt(prompt);
+      return prompt;
+    }
+    return null;
+  }
 }
 
 export const welfareManager = new WelfareManager();

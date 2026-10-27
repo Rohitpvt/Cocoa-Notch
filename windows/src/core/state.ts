@@ -207,6 +207,43 @@ export interface SystemNotification {
   timestamp: number;
 }
 
+export interface PomodoroState {
+  active: boolean;
+  phase: "idle" | "work" | "break";
+  remainingSec: number;
+  totalSec: number;
+  completedCount: number;
+  paused: boolean;
+}
+
+export interface ShelfItem {
+  id: string;
+  name: string;
+  path?: string;
+  size?: number;
+  timestamp: number;
+}
+
+export interface AccessoryDevice {
+  id: string;
+  name: string;
+  kind: "headphones" | "earbuds" | "device";
+  battery: number;
+  leftBud?: number | null;
+  rightBud?: number | null;
+  caseBattery?: number | null;
+  connected: boolean;
+}
+
+export interface MusicPlaybackState {
+  isPlaying: boolean;
+  title?: string;
+  artist?: string;
+  albumArtUrl?: string;
+  albumColor?: string;
+  bpm?: number;
+}
+
 export const DEFAULT_SETTINGS: Settings = {
   soundEnabled: true,
   soundVolume: 0.12,
@@ -285,7 +322,7 @@ class AppState {
   fileDragOver = false;
 
   promptContext: PromptContext | null = null;
-  droppedFile: { name: string; path: string } | null = null;
+  droppedFile: { name: string; path: string; size?: number } | null = null;
   noteMessage: string | null = null;
   searchResult: SearchResult | null = null;
   chatHistory: ChatMessage[] = [];
@@ -427,6 +464,97 @@ class AppState {
 
   setWelfarePrompt(prompt: WelfarePrompt | null) {
     this.activeWelfarePrompt = prompt;
+    this.notify();
+  }
+
+  /** Pomodoro focus sprint state */
+  pomodoro: PomodoroState = {
+    active: false,
+    phase: "idle",
+    remainingSec: 25 * 60,
+    totalSec: 25 * 60,
+    completedCount: 0,
+    paused: false,
+  };
+
+  startPomodoro(minutes = 25) {
+    const totalSec = Math.max(1, minutes) * 60;
+    this.pomodoro = {
+      active: true,
+      phase: "work",
+      remainingSec: totalSec,
+      totalSec,
+      completedCount: this.pomodoro.completedCount,
+      paused: false,
+    };
+    this.notify();
+  }
+
+  stopPomodoro() {
+    this.pomodoro = {
+      ...this.pomodoro,
+      active: false,
+      phase: "idle",
+      paused: false,
+    };
+    this.notify();
+  }
+
+  togglePausePomodoro() {
+    if (!this.pomodoro.active) return;
+    this.pomodoro.paused = !this.pomodoro.paused;
+    this.notify();
+  }
+
+  /** Staging shelf for parked files */
+  shelfFiles: ShelfItem[] = [];
+
+  addShelfFile(file: { name: string; path?: string; size?: number }) {
+    const item: ShelfItem = {
+      id: `shelf-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      name: file.name,
+      path: file.path,
+      size: file.size,
+      timestamp: Date.now(),
+    };
+    this.shelfFiles.unshift(item);
+    if (this.shelfFiles.length > 50) this.shelfFiles.pop();
+    this.notify();
+  }
+
+  removeShelfFile(id: string) {
+    this.shelfFiles = this.shelfFiles.filter((f) => f.id !== id);
+    this.notify();
+  }
+
+  clearShelf() {
+    this.shelfFiles = [];
+    this.notify();
+  }
+
+  /** Connected Bluetooth headphones/earbuds accessories */
+  accessoryDevices: AccessoryDevice[] = [];
+
+  setAccessoryDevices(devices: AccessoryDevice[]) {
+    this.accessoryDevices = devices;
+    this.notify();
+  }
+
+  addOrUpdateAccessory(device: AccessoryDevice) {
+    const idx = this.accessoryDevices.findIndex((d) => d.id === device.id);
+    if (idx >= 0) {
+      this.accessoryDevices[idx] = device;
+    } else {
+      this.accessoryDevices.push(device);
+    }
+    this.notify();
+  }
+
+  /** Active music playback (Spotify / media player) */
+  musicPlayback: MusicPlaybackState | null = null;
+
+  setMusicPlayback(music: MusicPlaybackState | null) {
+    this.musicPlayback = music;
     this.notify();
   }
 

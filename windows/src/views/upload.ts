@@ -120,6 +120,11 @@ export function buildChoose(actions: ViewActions): ViewHost {
     }),
     h("button", {
       class: "btn secondary",
+      text: "Park on Shelf 📥",
+      onclick: () => (actions.parkOnShelf ? actions.parkOnShelf() : actions.setView("shelf")),
+    }),
+    h("button", {
+      class: "btn secondary",
       text: tl("Cancel"),
       onclick: () => actions.cancelDrop(),
     }),

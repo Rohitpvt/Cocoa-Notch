@@ -21,6 +21,7 @@ import { Bridge } from "../core/bridge";
 import { buildRecap } from "./recap";
 import { buildWardrobe } from "./wardrobe";
 import { buildNotificationHistory } from "./notifications";
+import { buildShelf } from "./shelf";
 import type { Outfit, OutfitSelection } from "../mochi/wardrobe";
 import { welfareManager } from "../core/welfare";
 import { language, t, tl, type Msg } from "../i18n/i18n";
@@ -29,6 +30,8 @@ export interface ViewActions {
   setView(v: IslandViewName): void;
   /** "Cancel" on a dropped file: forgets it and goes back home. */
   cancelDrop(): void;
+  /** Stashes a dropped file on the staging shelf. */
+  parkOnShelf?(): void;
   collapse(): void;
   /** Folds a waiting card to the compact island without answering it. */
   foldApproval(): void;
@@ -157,6 +160,8 @@ export function buildHeader(actions: ViewActions): ViewHost {
       tabDrop.classList.toggle("on", v === "upload");
       tabNotifs.classList.toggle("on", v === "notifications");
       tabNotifs.classList.toggle("has-unread", State.notificationHistory.length > 0);
+      tabDrop.classList.toggle("on", v === "upload" || v === "shelf");
+      tabDrop.classList.toggle("has-shelf", State.shelfFiles.length > 0);
       gearBtn.classList.toggle("on", v === "settings");
       clear(gearBtn);
       gearBtn.append(svg(v === "settings" ? ICONS.gearFill : ICONS.gear, 14));
@@ -177,6 +182,58 @@ export function buildHeader(actions: ViewActions): ViewHost {
     }
     const stats = State.systemStats;
     const items: HTMLElement[] = [];
+
+    // Pomodoro sprint chip
+    if (State.pomodoro && State.pomodoro.active) {
+      const mins = Math.floor(State.pomodoro.remainingSec / 60);
+      const secs = State.pomodoro.remainingSec % 60;
+      const timeStr = `${mins}:${secs.toString().padStart(2, "0")}`;
+      const isBreak = State.pomodoro.phase === "break";
+      const icon = isBreak ? "☕" : "🍅";
+      const pClass = State.pomodoro.paused ? "warm" : isBreak ? "" : "hot";
+      items.push(
+        h(
+          "div",
+          {
+            class: `stat-chip pomodoro-chip ${pClass}`.trim(),
+            title: `Focus Sprint (${State.pomodoro.phase}): ${timeStr} (Click to pause/resume)`,
+            onclick: (e: Event) => {
+              e.stopPropagation();
+              actions.blip();
+              State.togglePausePomodoro();
+            },
+          },
+          h("span", { class: "stat-chip-label", text: icon }),
+          h("span", { class: "stat-chip-value", text: timeStr }),
+        ),
+      );
+    }
+
+    // Connected Bluetooth accessory device (headphones / earbuds)
+    if (State.accessoryDevices && State.accessoryDevices.length > 0) {
+      const dev = State.accessoryDevices[0];
+      if (dev && dev.connected) {
+        const isLow = dev.battery <= 20;
+        const bClass = isLow ? "hot" : dev.battery <= 40 ? "warm" : "";
+        const icon = dev.kind === "earbuds" ? "🎧" : "🔋";
+        let label = `${dev.battery}%`;
+        if (dev.leftBud != null && dev.rightBud != null) {
+          label = `L:${dev.leftBud}% R:${dev.rightBud}%`;
+        }
+        items.push(
+          h(
+            "div",
+            {
+              class: `stat-chip accessory-chip ${bClass}`.trim(),
+              title: `${dev.name}: ${dev.battery}% battery${dev.caseBattery != null ? ` (Case: ${dev.caseBattery}%)` : ""}`,
+            },
+            h("span", { class: "stat-chip-label", text: icon }),
+            h("span", { class: "stat-chip-value", text: label }),
+          ),
+        );
+      }
+    }
+
     if (stats) {
       if (State.settings.showCpuUsage) {
         const cpu = Math.round(stats.cpuUsage);
@@ -1001,6 +1058,7 @@ function buildWelfare(actions: ViewActions): ViewHost {
     },
   });
 
+  const pomodoroRow = h("div", { class: "welfare-pomodoro-row" });
   const actionsRow = h("div", { class: "welfare-actions" }, thanksBtn, snoozeBtn);
 
   const cardBody = h(
@@ -1008,6 +1066,7 @@ function buildWelfare(actions: ViewActions): ViewHost {
     { class: "welfare-card", onclick: () => actions.setView(State.defaultView()) },
     header,
     content,
+    pomodoroRow,
     actionsRow,
   );
 
@@ -1017,14 +1076,56 @@ function buildWelfare(actions: ViewActions): ViewHost {
     el,
     sync() {
       const p = State.activeWelfarePrompt;
-      if (!p) return;
-      dotEl.style.background = p.color || "#22c55e";
-      categoryBadge.textContent = p.categoryLabel || t("Wellness");
-      categoryBadge.style.color = p.color || "#22c55e";
-      categoryBadge.style.background = `${p.color || "#22c55e"}24`;
-      categoryBadge.style.borderColor = `${p.color || "#22c55e"}48`;
-      quoteEl.textContent = p.quote || "";
-      tipEl.textContent = p.tip || "";
+      if (p) {
+        dotEl.style.background = p.color || "#22c55e";
+        categoryBadge.textContent = p.categoryLabel || t("Wellness");
+        categoryBadge.style.color = p.color || "#22c55e";
+        categoryBadge.style.background = `${p.color || "#22c55e"}24`;
+        categoryBadge.style.borderColor = `${p.color || "#22c55e"}48`;
+        quoteEl.textContent = p.quote || "";
+        tipEl.textContent = p.tip || "";
+      }
+
+      clear(pomodoroRow);
+      if (State.pomodoro && State.pomodoro.active) {
+        const mins = Math.floor(State.pomodoro.remainingSec / 60);
+        const secs = State.pomodoro.remainingSec % 60;
+        const timeStr = `${mins}:${secs.toString().padStart(2, "0")}`;
+        const phaseLabel = State.pomodoro.phase === "break" ? t("Break Time") : "Focus Sprint";
+        pomodoroRow.append(
+          h("div", { class: "pomodoro-info", text: `🍅 ${phaseLabel}: ${timeStr}` }),
+          h("button", {
+            class: "welfare-btn sm",
+            text: State.pomodoro.paused ? "Resume ▶" : "Pause ⏸",
+            onclick: (e: Event) => {
+              e.stopPropagation();
+              actions.blip();
+              State.togglePausePomodoro();
+            },
+          }),
+          h("button", {
+            class: "welfare-btn sm secondary",
+            text: "Stop ⏹",
+            onclick: (e: Event) => {
+              e.stopPropagation();
+              actions.blip();
+              State.stopPomodoro();
+            },
+          }),
+        );
+      } else {
+        pomodoroRow.append(
+          h("button", {
+            class: "welfare-btn pomodoro-start-btn",
+            text: "Start 25m Focus Sprint 🍅",
+            onclick: (e: Event) => {
+              e.stopPropagation();
+              actions.blip();
+              State.startPomodoro(25);
+            },
+          }),
+        );
+      }
     },
   };
 }
@@ -1059,6 +1160,7 @@ export function buildViews(
   map.set("upload", buildUpload());
   map.set("uploading", buildUploading());
   map.set("choose", buildChoose(actions));
+  map.set("shelf", buildShelf(actions));
   map.set("recap", buildRecap(actions));
   map.set("wardrobe", buildWardrobe(actions));
   map.set("notification", buildNotification(actions));

@@ -81,6 +81,7 @@ export class Island {
   private lastFrame = 0;
   private dirty = true;
   private canvasPx = 0;
+  private ambientGlow!: HTMLElement;
 
   // Rust starts the window at full size so the launch greeting has room.
   private collapsed = false;
@@ -178,6 +179,12 @@ export class Island {
         this.showWelfare(prompt);
       }
     }, 30000);
+    setInterval(() => {
+      const prompt = welfareManager.tickPomodoro(Date.now());
+      if (prompt) {
+        this.showWelfare(prompt);
+      }
+    }, 1000);
   }
 
   private welfareTimer: number | null = null;
@@ -225,6 +232,17 @@ export class Island {
     const actions: ViewActions = {
       setView: (v) => this.setView(v),
       cancelDrop: () => this.discardDrop(),
+      parkOnShelf: () => {
+        if (State.droppedFile) {
+          State.addShelfFile({
+            name: State.droppedFile.name,
+            path: State.droppedFile.path,
+            size: State.droppedFile.size,
+          });
+        }
+        Sound.play("blip");
+        this.setView("shelf");
+      },
       collapse: () => this.collapse(),
       foldApproval: () => this.foldApproval(),
       setFocus: (id) => {
@@ -354,9 +372,11 @@ export class Island {
       this.uploadCanvas.el,
       this.contentEl,
     );
+    this.ambientGlow = h("div", { class: "notch-ambient-glow" });
     this.islandEl = h(
       "div",
       { id: "island" },
+      this.ambientGlow,
       this.clipEl,
       this.botGlow,
       this.botCanvas,
@@ -1215,6 +1235,19 @@ export class Island {
     if (State.wardrobePreview && !(expanded && State.view === "wardrobe")) State.wardrobePreview = null;
 
     this.header.sync();
+    if (this.ambientGlow) {
+      if (State.musicPlayback?.isPlaying && State.musicPlayback?.albumColor) {
+        this.ambientGlow.style.background = State.musicPlayback.albumColor;
+        this.ambientGlow.style.opacity = "0.45";
+      } else {
+        this.ambientGlow.style.opacity = "0";
+      }
+    }
+    if (State.musicPlayback?.isPlaying) {
+      this.engine.setDancing(true, State.musicPlayback.bpm || 112);
+    } else {
+      this.engine.setDancing(false);
+    }
     for (const [name, view] of this.views) {
       const on = name === State.view;
       view.el.classList.toggle("on", on);
