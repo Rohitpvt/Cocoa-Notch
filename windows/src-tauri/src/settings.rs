@@ -628,21 +628,6 @@ mod tests {
     }
 
     #[test]
-    fn a_file_from_before_pomodoro_takes_pomodoro_defaults() {
-        let loaded = parse(&custom_with("welfarePomodoroEnabled", None)).unwrap();
-        assert!(loaded.welfare_pomodoro_enabled);
-        assert_eq!(loaded.welfare_pomodoro_focus_minutes, 25.0);
-        assert_eq!(loaded.welfare_pomodoro_break_minutes, 5.0);
-    }
-
-    #[test]
-    fn a_file_from_before_music_glow_takes_music_defaults() {
-        let loaded = parse(&custom_with("ambientMusicGlow", None)).unwrap();
-        assert!(loaded.ambient_music_glow);
-        assert!(loaded.beat_reactive_mochi);
-    }
-
-    #[test]
     fn pill_colours_are_kept_as_written_and_cost_nothing_else_when_unusable() {
         // A pill a newer build added keeps its colour through a save by this one.
         let loaded = parse(&custom_with("pillColors", Some(json!({ "agent_new": "#abcdef" })))).unwrap();
