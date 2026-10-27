@@ -12,6 +12,7 @@ import { isComingSoon, pillDefinition } from "../core/pills";
 import { refreshHookPills, refreshConfigured } from "../island/integrations";
 import { readActivity, readPulse, readStats } from "../core/github";
 import { githubDetail, githubPulseCard } from "./github";
+import { Sound } from "../core/sound";
 import { N_, language, t } from "../i18n/i18n";
 
 /** Same shape as the Swift `timeAgo` computed properties. */
@@ -57,6 +58,8 @@ const OPEN_URLS: Record<string, string> = {
   integration_notion: "https://notion.so",
   integration_calcom: "https://app.cal.com/bookings",
   integration_gcal: "https://calendar.google.com",
+  integration_spotify: "https://open.spotify.com",
+  integration_music: "https://music.apple.com",
 };
 
 /** IntegrationCardView.statusLabel on macOS. */
@@ -560,12 +563,98 @@ export function hasIntegrationData(id: string): boolean {
       return info.loaded;
     case "integration_gcal":
       return info.loaded;
+    case "integration_spotify":
+    case "integration_music":
+      return State.musicPlayback != null;
     default:
       return false;
   }
 }
 
+function musicCard(task: AgentTask): HTMLElement {
+  const music = State.musicPlayback;
+  const isPlaying = music?.isPlaying ?? false;
+  const title = music?.title || t("No track playing");
+  const artist = music?.artist || (task.id === "integration_music" ? "Apple Music" : "Spotify");
+  const albumColor = music?.albumColor || task.color;
+  const bpm = music?.bpm || 112;
+
+  const artWrap = h("div", {
+    class: "music-art-wrap",
+    style: `box-shadow: 0 4px 16px ${albumColor}40; border: 1px solid ${albumColor}50;`,
+  });
+
+  if (music?.albumArtUrl) {
+    artWrap.append(h("img", { class: "music-art-img", src: music.albumArtUrl, alt: title }));
+  } else {
+    artWrap.append(h("div", { class: "music-art-fallback", text: "🎵" }));
+  }
+
+  const playPauseBtn = h("button", {
+    class: "music-ctrl-btn",
+    text: isPlaying ? "⏸️" : "▶️",
+    title: isPlaying ? t("Pause") : t("Play"),
+    onclick: (e) => {
+      e.stopPropagation();
+      Sound.play("blip");
+      if (State.musicPlayback) {
+        State.setMusicPlayback({
+          ...State.musicPlayback,
+          isPlaying: !State.musicPlayback.isPlaying,
+        });
+      }
+    },
+  });
+
+  const nextBtn = h("button", {
+    class: "music-ctrl-btn",
+    text: "⏭️",
+    title: t("Next track"),
+    onclick: (e) => {
+      e.stopPropagation();
+      Sound.play("blip");
+    },
+  });
+
+  const bpmBadge = h("div", {
+    class: "music-bpm-badge",
+    style: `color: ${albumColor};`,
+    text: isPlaying ? t("🥁 {bpm} BPM · Beat-Synced", { bpm: String(bpm) }) : t("Paused"),
+  });
+
+  const meta = h(
+    "div",
+    { class: "music-meta" },
+    h("div", { class: "music-title", text: title }),
+    h("div", { class: "music-artist", text: artist }),
+    bpmBadge,
+  );
+
+  const controls = h("div", { class: "music-controls" }, playPauseBtn, nextBtn);
+
+  const body = h(
+    "div",
+    {
+      class: "music-card",
+      style: `background: linear-gradient(135deg, ${albumColor}1a 0%, rgba(255,255,255,0.03) 100%); border-color: ${albumColor}33;`,
+    },
+    artWrap,
+    meta,
+    controls,
+  );
+
+  return h(
+    "div",
+    { class: "int-card" },
+    header(albumColor, task.name, t("Now Playing")),
+    body,
+  );
+}
+
 export function renderIntegrationCard(task: AgentTask, hooks: IntegrationCardHooks): HTMLElement {
+  if ((task.id === "integration_spotify" || task.id === "integration_music") && State.musicPlayback != null) {
+    return musicCard(task);
+  }
   if (task.id === "integration_n8n") {
     const hasActivity = task.steps.length > 0 && (task.state === "finished" || task.state === "error");
     return hooks.detailOpen && hasActivity

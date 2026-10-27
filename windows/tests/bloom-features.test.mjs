@@ -212,3 +212,64 @@ test("Music playback state updates album color and song info", () => {
   assert.equal(State.musicPlayback.isPlaying, true);
   assert.equal(State.musicPlayback.bpm, 105);
 });
+
+test("Beat-Reactive Mochi tempo adapts to musicPlayback BPM and settings toggle", () => {
+  const engine = new BotEngine();
+  State.settings.beatReactiveMochi = true;
+
+  State.setMusicPlayback({
+    title: "Around the World",
+    artist: "Daft Punk",
+    albumColor: "#E11D48",
+    isPlaying: true,
+    bpm: 128,
+  });
+
+  // Verify engine sets tempo from playback state
+  const shouldDance = State.musicPlayback.isPlaying && State.settings.beatReactiveMochi !== false;
+  engine.setDancing(shouldDance, State.musicPlayback.bpm);
+
+  assert.equal(engine.isDancing, true);
+  assert.equal(engine.dancingBpm, 128);
+
+  // When disabled in settings, dancing is suppressed
+  State.settings.beatReactiveMochi = false;
+  const shouldDanceDisabled = State.musicPlayback.isPlaying && State.settings.beatReactiveMochi !== false;
+  engine.setDancing(shouldDanceDisabled);
+  assert.equal(engine.isDancing, false);
+
+  // Restore setting
+  State.settings.beatReactiveMochi = true;
+});
+
+test("Ambient Artwork Glow resolves color, follows playback, and respects settings", () => {
+  assert.equal(State.settings.ambientMusicGlow, true, "ambientMusicGlow should default to true");
+
+  State.setMusicPlayback({
+    title: "Starboy",
+    artist: "The Weeknd",
+    albumColor: "#F59E0B",
+    isPlaying: true,
+    bpm: 186,
+  });
+
+  // Glow color resolution
+  const glowColor1 = State.musicPlayback?.albumColor || "#1DB954";
+  assert.equal(glowColor1, "#F59E0B");
+
+  // Fallback when albumColor is omitted
+  State.setMusicPlayback({
+    title: "Blinding Lights",
+    isPlaying: true,
+  });
+  const glowColor2 = State.musicPlayback?.albumColor || "#1DB954";
+  assert.equal(glowColor2, "#1DB954");
+
+  // Setting toggle disables glow
+  State.settings.ambientMusicGlow = false;
+  const shouldGlow = (State.musicPlayback?.isPlaying ?? false) && State.settings.ambientMusicGlow !== false;
+  assert.equal(shouldGlow, false);
+
+  // Restore setting
+  State.settings.ambientMusicGlow = true;
+});

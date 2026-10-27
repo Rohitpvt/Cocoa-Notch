@@ -64,6 +64,16 @@ pub struct Settings {
     pub welfare_night_owl_alerts: bool,
     /// Include posture & eye relaxation prompts.
     pub welfare_posture_reminders: bool,
+    /// Enable Pomodoro Focus Sprints integrated with Developer Welfare.
+    pub welfare_pomodoro_enabled: bool,
+    /// Focus sprint duration in minutes.
+    pub welfare_pomodoro_focus_minutes: f64,
+    /// Short break duration in minutes.
+    pub welfare_pomodoro_break_minutes: f64,
+    /// Project dynamic ambient backlight glow from album artwork behind the island.
+    pub ambient_music_glow: bool,
+    /// Animate Mochi with beat-reactive dancing during music playback.
+    pub beat_reactive_mochi: bool,
     /// Render prominent hero card when only 1 active pill is selected.
     pub enable_hero_pill_card: bool,
     /// Enable Live Code Diff Inspector on agent file modifications.
@@ -166,6 +176,11 @@ impl Default for Settings {
             welfare_hydration_reminders: true,
             welfare_night_owl_alerts: true,
             welfare_posture_reminders: true,
+            welfare_pomodoro_enabled: true,
+            welfare_pomodoro_focus_minutes: 25.0,
+            welfare_pomodoro_break_minutes: 5.0,
+            ambient_music_glow: true,
+            beat_reactive_mochi: true,
             enable_hero_pill_card: true,
             enable_live_diffs: true,
             auto_expand_on_agent_task: true,
@@ -888,6 +903,9 @@ mod tests {
                 "welfareHydrationReminders",
                 "welfareNightOwlAlerts",
                 "welfarePostureReminders",
+                "welfarePomodoroEnabled",
+                "welfarePomodoroFocusMinutes",
+                "welfarePomodoroBreakMinutes",
                 "enableHeroPillCard",
                 "enableLiveDiffs",
                 "autoExpandOnAgentTask",

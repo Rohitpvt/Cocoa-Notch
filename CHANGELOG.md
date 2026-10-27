@@ -1,5 +1,12 @@
 # Changelog
 
+## Windows 0.2.4 — October 27, 2026
+
+- **Pomodoro Focus Sprints Integrated with Developer Welfare**: Start customizable deep focus sprints (e.g. 25m work / 5m break) with Mochi directly in the island; during sprints, random welfare reminders are suppressed to guard deep work, with celebratory chimes and 1-click break transitions on sprint completion.
+- **Beat-Reactive Mochi**: Mochi reacts and dances dynamically to music rhythm and BPM during Spotify / Apple Music playback with physics-based squash-and-stretch hopping. Automatically suspends at idle for 0.0% CPU overhead.
+- **Ambient Artwork Glow**: Dynamic liquid glass diffuse backlight aura projected behind the notch reflecting album artwork colors.
+- **Staging Shelf (Dual-Mode File Drop)**: Dedicated file tray to stash and manage parked files with direct 1-click "Ask AI" context handoff.
+
 ## Windows 0.2.2 — October 15, 2026
 
 - **Notification History (4th tab)**: A dedicated 4th tab (bell icon) in the expanded notch island to review past system notifications and toast alerts from Windows apps, with relative timestamps, app badges, individual dismiss (X), and "Clear all" action.

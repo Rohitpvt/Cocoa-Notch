@@ -54,6 +54,7 @@ export class Island {
   private viewsEl!: HTMLElement;
   private botCanvas!: HTMLCanvasElement;
   private botGlow!: HTMLElement;
+  private ambientGlow!: HTMLElement;
   private greetingCanvas!: HTMLCanvasElement;
   private miniGrid!: HTMLElement;
   private notchStats!: HTMLElement;
@@ -81,7 +82,6 @@ export class Island {
   private lastFrame = 0;
   private dirty = true;
   private canvasPx = 0;
-  private ambientGlow!: HTMLElement;
 
   // Rust starts the window at full size so the launch greeting has room.
   private collapsed = false;
@@ -173,18 +173,21 @@ export class Island {
       const prompt = welfareManager.createPrompt(data?.category as WelfareCategory | undefined);
       this.showWelfare(prompt);
     });
+    Bridge.onMusicPlayback?.((music) => {
+      State.setMusicPlayback(music);
+    });
+    welfareManager.onSprintComplete((prompt) => {
+      this.showWelfare(prompt);
+    });
+    welfareManager.onSprintChange(() => {
+      State.notify();
+    });
     setInterval(() => {
       const prompt = welfareManager.check(Date.now());
       if (prompt) {
         this.showWelfare(prompt);
       }
     }, 30000);
-    setInterval(() => {
-      const prompt = welfareManager.tickPomodoro(Date.now());
-      if (prompt) {
-        this.showWelfare(prompt);
-      }
-    }, 1000);
   }
 
   private welfareTimer: number | null = null;
@@ -192,7 +195,11 @@ export class Island {
   showWelfare(prompt: WelfarePrompt) {
     State.setWelfarePrompt(prompt);
     if (State.settings.soundEnabled) {
-      Sound.play("blip");
+      if (prompt.category === "focus" || prompt.category === "celebrate") {
+        Sound.play("finish");
+      } else {
+        Sound.play("blip");
+      }
     }
     this.engine.triggerEmote(prompt.emote);
     this.alert("welfare");
@@ -232,17 +239,6 @@ export class Island {
     const actions: ViewActions = {
       setView: (v) => this.setView(v),
       cancelDrop: () => this.discardDrop(),
-      parkOnShelf: () => {
-        if (State.droppedFile) {
-          State.addShelfFile({
-            name: State.droppedFile.name,
-            path: State.droppedFile.path,
-            size: State.droppedFile.size,
-          });
-        }
-        Sound.play("blip");
-        this.setView("shelf");
-      },
       collapse: () => this.collapse(),
       foldApproval: () => this.foldApproval(),
       setFocus: (id) => {
@@ -340,6 +336,7 @@ export class Island {
     };
 
     this.wakeStrip = h("div", { id: "wake-strip" });
+    this.ambientGlow = h("div", { class: "notch-ambient-glow" });
     this.botGlow = h("div", { id: "bot-glow" });
     this.botCanvas = h("canvas", { id: "bot-canvas" });
     this.greetingCanvas = h("canvas", { id: "greeting-canvas" });
@@ -372,7 +369,6 @@ export class Island {
       this.uploadCanvas.el,
       this.contentEl,
     );
-    this.ambientGlow = h("div", { class: "notch-ambient-glow" });
     this.islandEl = h(
       "div",
       { id: "island" },
@@ -1235,19 +1231,6 @@ export class Island {
     if (State.wardrobePreview && !(expanded && State.view === "wardrobe")) State.wardrobePreview = null;
 
     this.header.sync();
-    if (this.ambientGlow) {
-      if (State.musicPlayback?.isPlaying && State.musicPlayback?.albumColor) {
-        this.ambientGlow.style.background = State.musicPlayback.albumColor;
-        this.ambientGlow.style.opacity = "0.45";
-      } else {
-        this.ambientGlow.style.opacity = "0";
-      }
-    }
-    if (State.musicPlayback?.isPlaying) {
-      this.engine.setDancing(true, State.musicPlayback.bpm || 112);
-    } else {
-      this.engine.setDancing(false);
-    }
     for (const [name, view] of this.views) {
       const on = name === State.view;
       view.el.classList.toggle("on", on);
@@ -1285,6 +1268,8 @@ export class Island {
 
     syncMiniBotStates(State.tasks);
     this.syncNotchStats();
+    this.syncMusicDancing();
+    this.syncAmbientGlow();
     this.engine.setState(State.effectiveState);
   }
 
@@ -1325,6 +1310,40 @@ export class Island {
       }
     }
     this.notchStats.replaceChildren(...items);
+  }
+
+  private syncMusicDancing() {
+    const music = State.musicPlayback;
+    const isPlaying = music?.isPlaying === true;
+    const beatEnabled = State.settings.beatReactiveMochi !== false;
+    const shouldDance = isPlaying && beatEnabled && State.mode !== "hidden";
+    const bpm = music?.bpm || 112;
+
+    if (this.engine.isDancing !== shouldDance) {
+      this.engine.setDancing(shouldDance, bpm);
+      if (shouldDance) {
+        this.ensureRunning();
+      }
+    } else if (shouldDance && bpm > 0 && this.engine.dancingBpm !== bpm) {
+      this.engine.setDancing(true, bpm);
+    }
+  }
+
+  private syncAmbientGlow() {
+    if (!this.ambientGlow) return;
+    const music = State.musicPlayback;
+    const isPlaying = music?.isPlaying === true;
+    const glowEnabled = State.settings.ambientMusicGlow !== false;
+    const shouldGlow = isPlaying && glowEnabled && State.mode !== "hidden";
+
+    if (shouldGlow) {
+      const color =
+        music?.albumColor || (State.focusTask?.id === "integration_music" ? "#FA2D48" : "#1DB954");
+      this.ambientGlow.style.background = `radial-gradient(ellipse at 50% 40%, ${color}e6 0%, ${color}66 50%, transparent 75%)`;
+      this.ambientGlow.style.opacity = State.mode === "expanded" ? "0.65" : "0.45";
+    } else {
+      this.ambientGlow.style.opacity = "0";
+    }
   }
 
   /** Applies settings coming from Rust at boot. */

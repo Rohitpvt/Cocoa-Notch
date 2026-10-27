@@ -5,7 +5,25 @@ import { State } from "./state";
 import { N_, t } from "../i18n/i18n";
 import type { BotEmoteName } from "./layout";
 
-export type WelfareCategory = "break" | "hydrate" | "posture" | "night" | "morning" | "celebrate";
+export type WelfareCategory = "break" | "hydrate" | "posture" | "night" | "morning" | "celebrate" | "focus";
+
+export type PomodoroPhase = "idle" | "focus" | "break";
+
+export interface PomodoroStatus {
+  phase: PomodoroPhase;
+  remainingMs: number;
+  remainingFormatted: string;
+  progress: number;
+  isPaused: boolean;
+  completedCycles: number;
+}
+
+export function formatSprintDuration(ms: number): string {
+  const totalSecs = Math.max(0, Math.ceil(ms / 1000));
+  const mins = Math.floor(totalSecs / 60);
+  const secs = totalSecs % 60;
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
 
 export interface WelfareItem {
   category: WelfareCategory;
@@ -129,6 +147,24 @@ export const WELFARE_QUOTES: readonly WelfareItem[] = [
     emote: "proud",
     color: "#ec4899",
   },
+
+  // ── Focus & Pomodoro Sprints ──
+  {
+    category: "focus",
+    categoryLabel: N_("Focus Sprint"),
+    quote: N_("Deep work session active!"),
+    tip: N_("Locked in and building. Mochi will guard your focus until the sprint ends."),
+    emote: "proud",
+    color: "#6366f1",
+  },
+  {
+    category: "focus",
+    categoryLabel: N_("Focus Sprint Complete"),
+    quote: N_("Focus sprint completed! 🎯"),
+    tip: N_("Awesome work! You completed your focus sprint. Time for a breather to stretch and hydrate."),
+    emote: "happy",
+    color: "#6366f1",
+  },
 ];
 
 export class WelfareManager {
@@ -139,6 +175,16 @@ export class WelfareManager {
   private lastQuoteIndex = -1;
   private lastCategory: WelfareCategory | null = null;
   private morningGreetedDate: string | null = null;
+
+  // ── Pomodoro Focus Sprint State ──
+  private pomodoroPhase: PomodoroPhase = "idle";
+  private pomodoroStartTime = 0;
+  private pomodoroDurationMs = 25 * 60 * 1000;
+  private pomodoroPausedRemainingMs: number | null = null;
+  private pomodoroCompletedCycles = 0;
+  private sprintTimer: ReturnType<typeof setInterval> | null = null;
+  private onSprintChangeCallbacks: Set<() => void> = new Set();
+  private onSprintCompleteCallbacks: Set<(prompt: WelfarePrompt) => void> = new Set();
 
   snooze(minutes = 15, now = Date.now()) {
     this.snoozeUntil = now + minutes * 60 * 1000;
@@ -186,10 +232,221 @@ export class WelfareManager {
     return chosen;
   }
 
+  getPomodoroStatus(now = Date.now()): PomodoroStatus {
+    if (this.pomodoroPhase === "idle") {
+      return {
+        phase: "idle",
+        remainingMs: 0,
+        remainingFormatted: "0:00",
+        progress: 0,
+        isPaused: false,
+        completedCycles: this.pomodoroCompletedCycles,
+      };
+    }
+
+    let remainingMs: number;
+    const isPaused = this.pomodoroPausedRemainingMs != null;
+    if (this.pomodoroPausedRemainingMs != null) {
+      remainingMs = this.pomodoroPausedRemainingMs;
+    } else {
+      const elapsed = now - this.pomodoroStartTime;
+      remainingMs = Math.max(0, this.pomodoroDurationMs - elapsed);
+    }
+
+    const progress = this.pomodoroDurationMs > 0
+      ? Math.min(1, Math.max(0, 1 - remainingMs / this.pomodoroDurationMs))
+      : 0;
+
+    return {
+      phase: this.pomodoroPhase,
+      remainingMs,
+      remainingFormatted: formatSprintDuration(remainingMs),
+      progress,
+      isPaused,
+      completedCycles: this.pomodoroCompletedCycles,
+    };
+  }
+
+  startFocus(durationMinutes?: number, now = Date.now()): WelfarePrompt {
+    const mins = durationMinutes || State.settings.welfarePomodoroFocusMinutes || 25;
+    this.pomodoroPhase = "focus";
+    this.pomodoroStartTime = now;
+    this.pomodoroDurationMs = mins * 60 * 1000;
+    this.pomodoroPausedRemainingMs = null;
+    this.startSprintTimer();
+    this.notifySprintChange();
+
+    const prompt: WelfarePrompt = {
+      id: `welfare-focus-${now}`,
+      category: "focus",
+      categoryLabel: t("Focus Sprint"),
+      quote: t("Deep work session active! 🎯"),
+      tip: t("Focus sprint running. Mochi will protect your deep work and alert you when time is up."),
+      emote: "proud",
+      color: "#6366f1",
+      timestamp: now,
+    };
+    State.setWelfarePrompt(prompt);
+    return prompt;
+  }
+
+  startBreak(durationMinutes?: number, now = Date.now()): WelfarePrompt {
+    const mins = durationMinutes || State.settings.welfarePomodoroBreakMinutes || 5;
+    this.pomodoroPhase = "break";
+    this.pomodoroStartTime = now;
+    this.pomodoroDurationMs = mins * 60 * 1000;
+    this.pomodoroPausedRemainingMs = null;
+    this.startSprintTimer();
+    this.notifySprintChange();
+
+    const prompt: WelfarePrompt = {
+      id: `welfare-break-${now}`,
+      category: "break",
+      categoryLabel: t("Break Time"),
+      quote: t("Time for a breather! ☕"),
+      tip: t("Step away from the screen, stretch, and relax your eyes."),
+      emote: "happy",
+      color: "#22c55e",
+      timestamp: now,
+    };
+    State.setWelfarePrompt(prompt);
+    return prompt;
+  }
+
+  pauseSprint(now = Date.now()) {
+    if (this.pomodoroPhase === "idle" || this.pomodoroPausedRemainingMs != null) return;
+    const elapsed = now - this.pomodoroStartTime;
+    this.pomodoroPausedRemainingMs = Math.max(0, this.pomodoroDurationMs - elapsed);
+    this.stopSprintTimer();
+    this.notifySprintChange();
+  }
+
+  resumeSprint(now = Date.now()) {
+    if (this.pomodoroPhase === "idle" || this.pomodoroPausedRemainingMs == null) return;
+    this.pomodoroStartTime = now - (this.pomodoroDurationMs - this.pomodoroPausedRemainingMs);
+    this.pomodoroPausedRemainingMs = null;
+    this.startSprintTimer();
+    this.notifySprintChange();
+  }
+
+  stopSprint() {
+    this.pomodoroPhase = "idle";
+    this.pomodoroPausedRemainingMs = null;
+    this.stopSprintTimer();
+    this.notifySprintChange();
+  }
+
+  onSprintChange(cb: () => void): () => void {
+    this.onSprintChangeCallbacks.add(cb);
+    return () => this.onSprintChangeCallbacks.delete(cb);
+  }
+
+  onSprintComplete(cb: (prompt: WelfarePrompt) => void): () => void {
+    this.onSprintCompleteCallbacks.add(cb);
+    return () => this.onSprintCompleteCallbacks.delete(cb);
+  }
+
+  private notifySprintChange() {
+    for (const cb of this.onSprintChangeCallbacks) {
+      try {
+        cb();
+      } catch {}
+    }
+  }
+
+  private notifySprintComplete(prompt: WelfarePrompt) {
+    for (const cb of this.onSprintCompleteCallbacks) {
+      try {
+        cb(prompt);
+      } catch {}
+    }
+  }
+
+  private startSprintTimer() {
+    this.stopSprintTimer();
+    if (typeof setInterval === "function") {
+      this.sprintTimer = setInterval(() => {
+        this.notifySprintChange();
+        const prompt = this.check(Date.now());
+        if (prompt) {
+          this.notifySprintComplete(prompt);
+        }
+      }, 1000);
+    }
+  }
+
+  private stopSprintTimer() {
+    if (this.sprintTimer != null && typeof clearInterval === "function") {
+      clearInterval(this.sprintTimer);
+      this.sprintTimer = null;
+    }
+  }
+
   check(now = Date.now()): WelfarePrompt | null {
     if (!State.settings.welfareReminders) return null;
     if (now < this.snoozeUntil) return null;
     if (State.pendingApproval || State.view === "prompt") return null;
+
+    // ── Check Pomodoro Focus Sprint Lifecycle ──
+    if (this.pomodoroPhase === "focus") {
+      if (this.pomodoroPausedRemainingMs == null) {
+        const elapsed = now - this.pomodoroStartTime;
+        if (elapsed >= this.pomodoroDurationMs) {
+          // Focus sprint completed!
+          this.pomodoroCompletedCycles++;
+          this.pomodoroPhase = "idle";
+          this.stopSprintTimer();
+          this.notifySprintChange();
+
+          this.lastPromptTime = now;
+          const prompt: WelfarePrompt = {
+            id: `welfare-sprint-done-${now}`,
+            category: "focus",
+            categoryLabel: t("Sprint Complete"),
+            quote: t("Focus sprint completed! 🎯"),
+            tip: t("Awesome focus! Take a 5-minute breather to stretch and hydrate before the next sprint."),
+            emote: "proud",
+            color: "#6366f1",
+            timestamp: now,
+          };
+          return prompt;
+        }
+      }
+      // Suppress regular random welfare prompts while focusing
+      const currentHour = new Date(now).getHours();
+      if (State.settings.welfareNightOwlAlerts && (currentHour >= 23 || currentHour < 5)) {
+        if (this.lastCategory !== "night") {
+          return this.createPrompt("night", now);
+        }
+      }
+      return null;
+    }
+
+    if (this.pomodoroPhase === "break") {
+      if (this.pomodoroPausedRemainingMs == null) {
+        const elapsed = now - this.pomodoroStartTime;
+        if (elapsed >= this.pomodoroDurationMs) {
+          // Break completed!
+          this.pomodoroPhase = "idle";
+          this.stopSprintTimer();
+          this.notifySprintChange();
+
+          this.lastPromptTime = now;
+          const prompt: WelfarePrompt = {
+            id: `welfare-break-done-${now}`,
+            category: "break",
+            categoryLabel: t("Break Finished"),
+            quote: t("Break time is up! Ready to roll? ✨"),
+            tip: t("Your break is complete. Ready to dive back in or start another focus sprint?"),
+            emote: "happy",
+            color: "#22c55e",
+            timestamp: now,
+          };
+          return prompt;
+        }
+      }
+      return null;
+    }
 
     this.recordActivity(now);
 

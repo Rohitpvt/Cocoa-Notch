@@ -157,11 +157,10 @@ export function buildHeader(actions: ViewActions): ViewHost {
       const v = State.view;
       tabHome.classList.toggle("on", v === "overview" || v === "empty");
       tabChat.classList.toggle("on", v === "prompt");
-      tabDrop.classList.toggle("on", v === "upload");
-      tabNotifs.classList.toggle("on", v === "notifications");
-      tabNotifs.classList.toggle("has-unread", State.notificationHistory.length > 0);
       tabDrop.classList.toggle("on", v === "upload" || v === "shelf");
       tabDrop.classList.toggle("has-shelf", State.shelfFiles.length > 0);
+      tabNotifs.classList.toggle("on", v === "notifications");
+      tabNotifs.classList.toggle("has-unread", State.notificationHistory.length > 0);
       gearBtn.classList.toggle("on", v === "settings");
       clear(gearBtn);
       gearBtn.append(svg(v === "settings" ? ICONS.gearFill : ICONS.gear, 14));
@@ -232,6 +231,33 @@ export function buildHeader(actions: ViewActions): ViewHost {
           ),
         );
       }
+    }
+
+    // Active music playback chip (Spotify / Apple Music)
+    if (State.musicPlayback && State.musicPlayback.isPlaying) {
+      const title = State.musicPlayback.title || "Music";
+      const artist = State.musicPlayback.artist ? ` · ${State.musicPlayback.artist}` : "";
+      const albumColor = State.musicPlayback.albumColor || "#1DB954";
+      items.push(
+        h(
+          "div",
+          {
+            class: "stat-chip music-chip",
+            style: `border-color: ${albumColor}55; background: ${albumColor}20; color: ${albumColor};`,
+            title: `${title}${artist}`,
+            onclick: (e: Event) => {
+              e.stopPropagation();
+              actions.blip();
+              State.setMusicPlayback({
+                ...State.musicPlayback!,
+                isPlaying: !State.musicPlayback!.isPlaying,
+              });
+            },
+          },
+          h("span", { class: "stat-chip-label", text: "🎵" }),
+          h("span", { class: "stat-chip-value", text: title }),
+        ),
+      );
     }
 
     if (stats) {
@@ -1035,6 +1061,52 @@ function buildWelfare(actions: ViewActions): ViewHost {
   const tipEl = h("div", { class: "welfare-tip" });
   const content = h("div", { class: "notif-content" }, quoteEl, tipEl);
 
+  // Pomodoro sprint status & controls
+  const sprintBadge = h("span", { class: "welfare-sprint-badge" });
+  const sprintBar = h("div", { class: "welfare-sprint-bar" }, h("div", { class: "welfare-sprint-fill" }));
+  const sprintFill = sprintBar.firstElementChild as HTMLElement;
+
+  const startSprintBtn = h("button", {
+    class: "welfare-btn sprint",
+    text: t("Start 25m Focus 🎯"),
+    onclick: (e) => {
+      e.stopPropagation();
+      actions.blip();
+      const p = welfareManager.startFocus();
+      State.setWelfarePrompt(p);
+      syncSprintUI();
+    },
+  });
+
+  const pauseResumeBtn = h("button", {
+    class: "welfare-btn",
+    text: t("Pause ⏸️"),
+    onclick: (e) => {
+      e.stopPropagation();
+      actions.blip();
+      const st = welfareManager.getPomodoroStatus();
+      if (st.isPaused) {
+        welfareManager.resumeSprint();
+      } else {
+        welfareManager.pauseSprint();
+      }
+      syncSprintUI();
+    },
+  });
+
+  const stopSprintBtn = h("button", {
+    class: "welfare-btn",
+    text: t("Stop ⏹️"),
+    onclick: (e) => {
+      e.stopPropagation();
+      actions.blip();
+      welfareManager.stopSprint();
+      syncSprintUI();
+    },
+  });
+
+  const sprintRow = h("div", { class: "welfare-sprint-row" }, sprintBadge, sprintBar, startSprintBtn, pauseResumeBtn, stopSprintBtn);
+
   const thanksBtn = h("button", {
     class: "welfare-btn primary",
     text: t("Thanks Mochi! ✨"),
@@ -1052,13 +1124,17 @@ function buildWelfare(actions: ViewActions): ViewHost {
     onclick: (e) => {
       e.stopPropagation();
       actions.blip();
-      welfareManager.snooze(15);
+      const p = State.activeWelfarePrompt;
+      if (p?.category === "focus") {
+        welfareManager.startBreak();
+      } else {
+        welfareManager.snooze(15);
+      }
       State.setWelfarePrompt(null);
       actions.setView(State.defaultView());
     },
   });
 
-  const pomodoroRow = h("div", { class: "welfare-pomodoro-row" });
   const actionsRow = h("div", { class: "welfare-actions" }, thanksBtn, snoozeBtn);
 
   const cardBody = h(
@@ -1066,66 +1142,67 @@ function buildWelfare(actions: ViewActions): ViewHost {
     { class: "welfare-card", onclick: () => actions.setView(State.defaultView()) },
     header,
     content,
-    pomodoroRow,
+    sprintRow,
     actionsRow,
   );
 
   const el = h("div", { class: "view welfare-view" }, card(null, cardBody));
 
+  function syncSprintUI() {
+    const st = welfareManager.getPomodoroStatus();
+    if (st.phase === "idle") {
+      sprintBadge.style.display = "none";
+      sprintBar.style.display = "none";
+      pauseResumeBtn.style.display = "none";
+      stopSprintBtn.style.display = "none";
+      startSprintBtn.style.display = State.settings.welfarePomodoroEnabled !== false ? "inline-flex" : "none";
+      startSprintBtn.textContent = t("Start {mins}m Focus 🎯", { mins: String(State.settings.welfarePomodoroFocusMinutes || 25) });
+    } else if (st.phase === "focus") {
+      sprintBadge.style.display = "inline-flex";
+      sprintBar.style.display = "block";
+      pauseResumeBtn.style.display = "inline-flex";
+      stopSprintBtn.style.display = "inline-flex";
+      startSprintBtn.style.display = "none";
+      sprintBadge.textContent = `🎯 ${st.remainingFormatted}`;
+      sprintBadge.style.color = "#818cf8";
+      pauseResumeBtn.textContent = st.isPaused ? t("Resume ▶️") : t("Pause ⏸️");
+      sprintFill.style.width = `${Math.round(st.progress * 100)}%`;
+      sprintFill.style.background = "#6366f1";
+    } else if (st.phase === "break") {
+      sprintBadge.style.display = "inline-flex";
+      sprintBar.style.display = "block";
+      pauseResumeBtn.style.display = "none";
+      stopSprintBtn.style.display = "inline-flex";
+      stopSprintBtn.textContent = t("End Break ⏹️");
+      startSprintBtn.style.display = "none";
+      sprintBadge.textContent = `☕ ${st.remainingFormatted}`;
+      sprintBadge.style.color = "#4ade80";
+      sprintFill.style.width = `${Math.round(st.progress * 100)}%`;
+      sprintFill.style.background = "#22c55e";
+    }
+  }
+
+  welfareManager.onSprintChange(() => syncSprintUI());
+
   return {
     el,
     sync() {
       const p = State.activeWelfarePrompt;
-      if (p) {
-        dotEl.style.background = p.color || "#22c55e";
-        categoryBadge.textContent = p.categoryLabel || t("Wellness");
-        categoryBadge.style.color = p.color || "#22c55e";
-        categoryBadge.style.background = `${p.color || "#22c55e"}24`;
-        categoryBadge.style.borderColor = `${p.color || "#22c55e"}48`;
-        quoteEl.textContent = p.quote || "";
-        tipEl.textContent = p.tip || "";
-      }
+      if (!p) return;
+      dotEl.style.background = p.color || "#22c55e";
+      categoryBadge.textContent = p.categoryLabel || t("Wellness");
+      categoryBadge.style.color = p.color || "#22c55e";
+      categoryBadge.style.background = `${p.color || "#22c55e"}24`;
+      categoryBadge.style.borderColor = `${p.color || "#22c55e"}48`;
+      quoteEl.textContent = p.quote || "";
+      tipEl.textContent = p.tip || "";
 
-      clear(pomodoroRow);
-      if (State.pomodoro && State.pomodoro.active) {
-        const mins = Math.floor(State.pomodoro.remainingSec / 60);
-        const secs = State.pomodoro.remainingSec % 60;
-        const timeStr = `${mins}:${secs.toString().padStart(2, "0")}`;
-        const phaseLabel = State.pomodoro.phase === "break" ? t("Break Time") : "Focus Sprint";
-        pomodoroRow.append(
-          h("div", { class: "pomodoro-info", text: `🍅 ${phaseLabel}: ${timeStr}` }),
-          h("button", {
-            class: "welfare-btn sm",
-            text: State.pomodoro.paused ? "Resume ▶" : "Pause ⏸",
-            onclick: (e: Event) => {
-              e.stopPropagation();
-              actions.blip();
-              State.togglePausePomodoro();
-            },
-          }),
-          h("button", {
-            class: "welfare-btn sm secondary",
-            text: "Stop ⏹",
-            onclick: (e: Event) => {
-              e.stopPropagation();
-              actions.blip();
-              State.stopPomodoro();
-            },
-          }),
-        );
+      if (p.category === "focus") {
+        snoozeBtn.textContent = t("Take 5m Break ☕");
       } else {
-        pomodoroRow.append(
-          h("button", {
-            class: "welfare-btn pomodoro-start-btn",
-            text: "Start 25m Focus Sprint 🍅",
-            onclick: (e: Event) => {
-              e.stopPropagation();
-              actions.blip();
-              State.startPomodoro(25);
-            },
-          }),
-        );
+        snoozeBtn.textContent = t("Snooze 15m ⏱️");
       }
+      syncSprintUI();
     },
   };
 }

@@ -143,6 +143,16 @@ export interface Settings {
   welfareNightOwlAlerts: boolean;
   /** Include posture & eye relaxation prompts */
   welfarePostureReminders: boolean;
+  /** Enable Pomodoro Focus Sprints integrated with Developer Welfare */
+  welfarePomodoroEnabled: boolean;
+  /** Focus sprint duration in minutes (default 25) */
+  welfarePomodoroFocusMinutes: number;
+  /** Short break duration in minutes (default 5) */
+  welfarePomodoroBreakMinutes: number;
+  /** Enable dynamic ambient backlight glow from album artwork behind the island. */
+  ambientMusicGlow: boolean;
+  /** Animate Mochi with beat-reactive dancing during music playback. */
+  beatReactiveMochi: boolean;
   /** Render prominent hero card when only 1 active pill is selected. */
   enableHeroPillCard: boolean;
   /** Enable Live Code Diff Inspector on agent file modifications. */
@@ -277,6 +287,11 @@ export const DEFAULT_SETTINGS: Settings = {
   welfareHydrationReminders: true,
   welfareNightOwlAlerts: true,
   welfarePostureReminders: true,
+  welfarePomodoroEnabled: true,
+  welfarePomodoroFocusMinutes: 25,
+  welfarePomodoroBreakMinutes: 5,
+  ambientMusicGlow: true,
+  beatReactiveMochi: true,
   enableHeroPillCard: true,
   enableLiveDiffs: true,
   autoExpandOnAgentTask: true,

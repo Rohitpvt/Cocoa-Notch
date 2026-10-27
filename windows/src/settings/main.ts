@@ -1028,6 +1028,40 @@ function welfareSection(): HTMLElement {
     },
   }) as HTMLButtonElement;
 
+  const pomodoroFocusSelect = h("select", {}) as HTMLSelectElement;
+  const focusIntervals = [
+    { value: "15", text: t("15 minutes") },
+    { value: "20", text: t("20 minutes") },
+    { value: "25", text: t("25 minutes (standard)") },
+    { value: "30", text: t("30 minutes") },
+    { value: "45", text: t("45 minutes") },
+    { value: "50", text: t("50 minutes") },
+  ];
+  for (const opt of focusIntervals) {
+    pomodoroFocusSelect.append(h("option", { value: opt.value, text: opt.text }));
+  }
+  pomodoroFocusSelect.value = String(settings.welfarePomodoroFocusMinutes || 25);
+  pomodoroFocusSelect.addEventListener("change", () => {
+    settings.welfarePomodoroFocusMinutes = Number(pomodoroFocusSelect.value) || 25;
+    void save();
+  });
+
+  const pomodoroBreakSelect = h("select", {}) as HTMLSelectElement;
+  const breakIntervals = [
+    { value: "3", text: t("3 minutes") },
+    { value: "5", text: t("5 minutes (standard)") },
+    { value: "10", text: t("10 minutes") },
+    { value: "15", text: t("15 minutes") },
+  ];
+  for (const opt of breakIntervals) {
+    pomodoroBreakSelect.append(h("option", { value: opt.value, text: opt.text }));
+  }
+  pomodoroBreakSelect.value = String(settings.welfarePomodoroBreakMinutes || 5);
+  pomodoroBreakSelect.addEventListener("change", () => {
+    settings.welfarePomodoroBreakMinutes = Number(pomodoroBreakSelect.value) || 5;
+    void save();
+  });
+
   return h(
     "section",
     {},
@@ -1044,6 +1078,19 @@ function welfareSection(): HTMLElement {
     h("div", { class: "row" },
       h("label", { text: t("Reminder interval") }),
       intervalSelect,
+    ),
+    h("div", { class: "row" },
+      h("label", { text: t("Pomodoro focus sprints") }),
+      toggle(settings.welfarePomodoroEnabled !== false, (v) => { settings.welfarePomodoroEnabled = v; void save(); }),
+      h("span", { class: "hint", text: t("Timed deep-work intervals with break reminders") }),
+    ),
+    h("div", { class: "row" },
+      h("label", { text: t("Focus sprint duration") }),
+      pomodoroFocusSelect,
+    ),
+    h("div", { class: "row" },
+      h("label", { text: t("Short break duration") }),
+      pomodoroBreakSelect,
     ),
     h("div", { class: "row" },
       h("label", { text: t("Break & stretch prompts") }),
@@ -1193,6 +1240,16 @@ function generalSection(): HTMLElement {
     h("div", { class: "row" },
       h("label", { text: t("Notification chime") }),
       toggle(settings.notificationSound !== false, (v) => { settings.notificationSound = v; void save(); }),
+    ),
+    h("div", { class: "row" },
+      h("label", { text: t("Ambient music glow") }),
+      toggle(settings.ambientMusicGlow !== false, (v) => { settings.ambientMusicGlow = v; void save(); }),
+      h("span", { class: "hint", text: t("Dynamic artwork aura behind island during music playback") }),
+    ),
+    h("div", { class: "row" },
+      h("label", { text: t("Beat-reactive Mochi") }),
+      toggle(settings.beatReactiveMochi !== false, (v) => { settings.beatReactiveMochi = v; void save(); }),
+      h("span", { class: "hint", text: t("Mochi dances to music tempo and rhythm") }),
     ),
     ...recapRows(),
     languageRow(),

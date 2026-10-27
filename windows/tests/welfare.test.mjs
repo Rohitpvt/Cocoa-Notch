@@ -136,4 +136,123 @@ test("singleton welfareManager instance is exported and functional", () => {
   assert.ok(welfareManager instanceof WelfareManager);
   assert.ok(typeof welfareManager.snooze === "function");
   assert.ok(typeof welfareManager.check === "function");
+  assert.ok(typeof welfareManager.startFocus === "function");
+  assert.ok(typeof welfareManager.startBreak === "function");
+  assert.ok(typeof welfareManager.pauseSprint === "function");
+  assert.ok(typeof welfareManager.resumeSprint === "function");
+  assert.ok(typeof welfareManager.stopSprint === "function");
+  assert.ok(typeof welfareManager.getPomodoroStatus === "function");
+});
+
+test("Pomodoro: startFocus initializes focus sprint and tracks status", () => {
+  const manager = new WelfareManager();
+  const startTime = new Date(2026, 9, 10, 10, 0, 0).getTime();
+
+  const prompt = manager.startFocus(25, startTime);
+  assert.ok(prompt.id.startsWith("welfare-focus-"));
+  assert.equal(prompt.category, "focus");
+
+  const status = manager.getPomodoroStatus(startTime);
+  assert.equal(status.phase, "focus");
+  assert.equal(status.remainingFormatted, "25:00");
+  assert.equal(status.isPaused, false);
+  assert.equal(status.progress, 0);
+
+  // 10 minutes elapsed
+  const tenMinsLater = startTime + 10 * 60 * 1000;
+  const midStatus = manager.getPomodoroStatus(tenMinsLater);
+  assert.equal(midStatus.phase, "focus");
+  assert.equal(midStatus.remainingFormatted, "15:00");
+  assert.equal(midStatus.progress, 0.4);
+  manager.stopSprint();
+});
+
+test("Pomodoro: pauseSprint and resumeSprint maintain remaining time", () => {
+  const manager = new WelfareManager();
+  const startTime = new Date(2026, 9, 10, 10, 0, 0).getTime();
+
+  manager.startFocus(25, startTime);
+
+  // 5 minutes in, pause sprint
+  const pauseTime = startTime + 5 * 60 * 1000;
+  manager.pauseSprint(pauseTime);
+
+  const pausedStatus = manager.getPomodoroStatus(pauseTime + 20 * 60 * 1000);
+  assert.equal(pausedStatus.isPaused, true);
+  assert.equal(pausedStatus.remainingFormatted, "20:00");
+
+  // Resume 20 minutes later (wall-clock)
+  const resumeTime = pauseTime + 20 * 60 * 1000;
+  manager.resumeSprint(resumeTime);
+
+  const resumedStatus = manager.getPomodoroStatus(resumeTime);
+  assert.equal(resumedStatus.isPaused, false);
+  assert.equal(resumedStatus.remainingFormatted, "20:00");
+  manager.stopSprint();
+});
+
+test("Pomodoro: check suppresses random welfare prompts during active focus", () => {
+  const manager = new WelfareManager();
+  State.settings = {
+    ...DEFAULT_SETTINGS,
+    welfareReminders: true,
+    welfareIntervalMinutes: 15,
+    welfareBreakReminders: true,
+    welfareHydrationReminders: true,
+  };
+
+  const startTime = new Date(2026, 9, 10, 14, 0, 0).getTime();
+  manager.startFocus(25, startTime);
+  manager["lastPromptTime"] = startTime - 30 * 60 * 1000;
+
+  // 10 minutes in, normal welfare would trigger, but focus sprint should suppress it
+  const prompt = manager.check(startTime + 10 * 60 * 1000);
+  assert.equal(prompt, null, "Should suppress random welfare checks during active focus");
+  manager.stopSprint();
+});
+
+test("Pomodoro: check detects sprint completion, emits celebration prompt, and increments cycles", () => {
+  const manager = new WelfareManager();
+  State.settings = {
+    ...DEFAULT_SETTINGS,
+    welfareReminders: true,
+  };
+
+  const startTime = new Date(2026, 9, 10, 14, 0, 0).getTime();
+  manager.startFocus(25, startTime);
+
+  // 25 minutes + 1 second later: sprint finishes
+  const doneTime = startTime + 25 * 60 * 1000 + 1000;
+  const prompt = manager.check(doneTime);
+  assert.ok(prompt !== null, "Should emit completion prompt when sprint finishes");
+  assert.equal(prompt.category, "focus");
+  assert.ok(prompt.quote.includes("Focus sprint completed"));
+
+  const status = manager.getPomodoroStatus(doneTime);
+  assert.equal(status.phase, "idle");
+  assert.equal(status.completedCycles, 1);
+});
+
+test("Pomodoro: startBreak and check handle break completion", () => {
+  const manager = new WelfareManager();
+  State.settings = {
+    ...DEFAULT_SETTINGS,
+    welfareReminders: true,
+  };
+
+  const startTime = new Date(2026, 9, 10, 15, 0, 0).getTime();
+  manager.startBreak(5, startTime);
+
+  const status = manager.getPomodoroStatus(startTime);
+  assert.equal(status.phase, "break");
+  assert.equal(status.remainingFormatted, "5:00");
+
+  // 5 minutes later
+  const doneTime = startTime + 5 * 60 * 1000 + 1000;
+  const prompt = manager.check(doneTime);
+  assert.ok(prompt !== null, "Should emit break finished prompt");
+  assert.equal(prompt.category, "break");
+
+  const endStatus = manager.getPomodoroStatus(doneTime);
+  assert.equal(endStatus.phase, "idle");
 });

@@ -5,7 +5,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { emitTo, listen } from "@tauri-apps/api/event";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
-import type { Settings, SystemNotification, SystemStats } from "./state";
+import type { MusicPlaybackState, Settings, SystemNotification, SystemStats } from "./state";
 import type { RecapHistory, RecapPrefs } from "../recap/summary";
 
 export const IS_TAURI =
@@ -40,6 +40,9 @@ export const Bridge = {
   triggerWelfarePreview: (category?: string) => emitTo("main", "welfare-preview", { category }),
   onWelfarePreview: (cb: (data: { category?: string }) => void) =>
     onEvent<{ category?: string }>("welfare-preview", cb),
+  triggerMusicPlayback: (music: MusicPlaybackState | null) => emitTo("main", "music-playback", music),
+  onMusicPlayback: (cb: (m: MusicPlaybackState | null) => void) =>
+    onEvent<MusicPlaybackState | null>("music-playback", cb),
   /** The system's languages as the webview sees them, for Rust's own texts (i18n.rs). */
   setSystemLanguages: (languages: string[]) => call<void>("set_system_languages", { languages }),
 
