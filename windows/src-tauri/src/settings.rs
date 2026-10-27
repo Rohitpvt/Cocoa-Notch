@@ -479,6 +479,11 @@ mod tests {
   "welfareHydrationReminders": false,
   "welfareNightOwlAlerts": false,
   "welfarePostureReminders": false,
+  "welfarePomodoroEnabled": false,
+  "welfarePomodoroFocusMinutes": 50.0,
+  "welfarePomodoroBreakMinutes": 10.0,
+  "ambientMusicGlow": false,
+  "beatReactiveMochi": false,
   "enableHeroPillCard": false,
   "enableLiveDiffs": false,
   "autoExpandOnAgentTask": false,
@@ -620,6 +625,21 @@ mod tests {
         let loaded = parse(&custom_with("pillColors", None)).unwrap();
         assert!(loaded.pill_colors.is_empty());
         assert_eq!(loaded.mochi_outfit, "witchHat");
+    }
+
+    #[test]
+    fn a_file_from_before_pomodoro_takes_pomodoro_defaults() {
+        let loaded = parse(&custom_with("welfarePomodoroEnabled", None)).unwrap();
+        assert!(loaded.welfare_pomodoro_enabled);
+        assert_eq!(loaded.welfare_pomodoro_focus_minutes, 25.0);
+        assert_eq!(loaded.welfare_pomodoro_break_minutes, 5.0);
+    }
+
+    #[test]
+    fn a_file_from_before_music_glow_takes_music_defaults() {
+        let loaded = parse(&custom_with("ambientMusicGlow", None)).unwrap();
+        assert!(loaded.ambient_music_glow);
+        assert!(loaded.beat_reactive_mochi);
     }
 
     #[test]
@@ -906,6 +926,8 @@ mod tests {
                 "welfarePomodoroEnabled",
                 "welfarePomodoroFocusMinutes",
                 "welfarePomodoroBreakMinutes",
+                "ambientMusicGlow",
+                "beatReactiveMochi",
                 "enableHeroPillCard",
                 "enableLiveDiffs",
                 "autoExpandOnAgentTask",
