@@ -21,6 +21,19 @@ pub struct SystemStats {
     pub gpu_name: Option<String>,
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct AccessoryDevice {
+    pub id: String,
+    pub name: String,
+    pub kind: String,
+    pub battery: u8,
+    pub left_bud: Option<u8>,
+    pub right_bud: Option<u8>,
+    pub case_battery: Option<u8>,
+    pub connected: bool,
+}
+
 #[cfg(windows)]
 mod win {
     use std::ffi::c_void;
@@ -193,10 +206,41 @@ mod win {
             (gpu_util, gpu_temp, gpu_name)
         }
     }
+
+    pub fn get_bluetooth_devices() -> Vec<super::AccessoryDevice> {
+        let script = r#"
+$ErrorActionPreference = 'SilentlyContinue'
+$devs = Get-PnpDevice -InstanceId "BTHENUM\{0000111e*" | Where-Object { $_.Status -eq "OK" }
+$list = @()
+foreach ($d in $devs) {
+  $p = (Get-PnpDeviceProperty -InstanceId $d.InstanceId -KeyName "{104EA319-6EE2-4701-BD47-8DDBF425BBE5} 2").Data
+  if ($p -ne $null) {
+    $cleanName = $d.FriendlyName -replace '\s+Hands-Free.*$', ''
+    $isEarbuds = $cleanName -match '(?i)buds|airpods|earbuds|in-ear'
+    $kind = if ($isEarbuds) { 'earbuds' } else { 'headphones' }
+    $list += [PSCustomObject]@{ id = $d.InstanceId; name = $cleanName; battery = [int]$p; kind = $kind; connected = $true }
+  }
+}
+ConvertTo-Json -Compress @($list)
+"#;
+        let mut cmd = std::process::Command::new("powershell.exe");
+        use std::os::windows::process::CommandExt;
+        cmd.creation_flags(0x08000000);
+        cmd.args(["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", script]);
+        if let Ok(output) = cmd.output() {
+            if output.status.success() {
+                if let Ok(devices) = serde_json::from_slice::<Vec<super::AccessoryDevice>>(&output.stdout) {
+                    return devices;
+                }
+            }
+        }
+        Vec::new()
+    }
 }
 
 pub struct HardwareMonitor {
     latest: Mutex<SystemStats>,
+    bluetooth: Mutex<Vec<AccessoryDevice>>,
 }
 
 impl HardwareMonitor {
@@ -215,16 +259,22 @@ impl HardwareMonitor {
             };
             Self {
                 latest: Mutex::new(initial),
+                bluetooth: Mutex::new(Vec::new()),
             }
         }
         #[cfg(not(windows))]
         Self {
             latest: Mutex::new(SystemStats::default()),
+            bluetooth: Mutex::new(Vec::new()),
         }
     }
 
     pub fn get_latest(&self) -> SystemStats {
         self.latest.lock().unwrap().clone()
+    }
+
+    pub fn get_bluetooth(&self) -> Vec<AccessoryDevice> {
+        self.bluetooth.lock().unwrap().clone()
     }
 }
 
@@ -233,12 +283,19 @@ pub fn get_system_stats(monitor: tauri::State<HardwareMonitor>) -> SystemStats {
     monitor.get_latest()
 }
 
+#[tauri::command]
+pub fn get_bluetooth_devices(monitor: tauri::State<HardwareMonitor>) -> Vec<AccessoryDevice> {
+    monitor.get_bluetooth()
+}
+
 pub fn start(app: AppHandle, gate: Arc<PollGate>, monitor: Arc<HardwareMonitor>) {
     std::thread::spawn(move || {
         #[cfg(windows)]
         let mut cpu = win::CpuTracker::new();
         #[cfg(windows)]
         let nvml = win::Nvml::init();
+        #[cfg(windows)]
+        let mut tick: u32 = 0;
 
         loop {
             gate.wait_until_active();
@@ -263,6 +320,14 @@ pub fn start(app: AppHandle, gate: Arc<PollGate>, monitor: Arc<HardwareMonitor>)
                     *monitor.latest.lock().unwrap() = stats.clone();
                     let _ = app.emit_to(WINDOW_LABEL, "system-stats", stats.clone());
                     let _ = app.emit("system-stats", stats);
+
+                    if tick % 15 == 0 {
+                        let bt = win::get_bluetooth_devices();
+                        *monitor.bluetooth.lock().unwrap() = bt.clone();
+                        let _ = app.emit_to(WINDOW_LABEL, "bluetooth-devices", bt.clone());
+                        let _ = app.emit("bluetooth-devices", bt);
+                    }
+                    tick = tick.wrapping_add(1);
                 }
 
                 #[cfg(not(windows))]

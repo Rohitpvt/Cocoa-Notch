@@ -1286,6 +1286,11 @@ function performanceSection(): HTMLElement {
       toggle(settings.showGpuTemp, (v) => { settings.showGpuTemp = v; void save(); }),
       h("span", { class: "hint", text: t("Expanded mode") }),
     ),
+    h("div", { class: "row" },
+      h("label", { text: t("Bluetooth battery pill") }),
+      toggle(settings.showBluetoothBattery !== false, (v) => { settings.showBluetoothBattery = v; void save(); }),
+      h("span", { class: "hint", text: t("Show battery level for connected headphones and earbuds") }),
+    ),
   );
 }
 

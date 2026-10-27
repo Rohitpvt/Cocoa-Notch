@@ -5,6 +5,7 @@
 - **Pomodoro Focus Sprints Integrated with Developer Welfare**: Start customizable deep focus sprints (e.g. 25m work / 5m break) with Mochi directly in the island; during sprints, random welfare reminders are suppressed to guard deep work, with celebratory chimes and 1-click break transitions on sprint completion.
 - **Beat-Reactive Mochi**: Mochi reacts and dances dynamically to music rhythm and BPM during Spotify / Apple Music playback with physics-based squash-and-stretch hopping. Automatically suspends at idle for 0.0% CPU overhead.
 - **Ambient Artwork Glow**: Dynamic liquid glass diffuse backlight aura projected behind the notch reflecting album artwork colors.
+- **Connected Bluetooth Headphone / Earbud Battery Pill**: Live battery tracking for Bluetooth headphones, AirPods, and wireless earbuds in both the compact notch and expanded island header, with low-battery warning indicators, multi-earbud (L / R / Case) status inspection, and 1-click Windows sound settings shortcuts.
 - **Staging Shelf (Dual-Mode File Drop)**: Dedicated file tray to stash and manage parked files with direct 1-click "Ask AI" context handoff.
 
 ## Windows 0.2.2 — October 15, 2026

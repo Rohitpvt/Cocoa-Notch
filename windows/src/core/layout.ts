@@ -27,7 +27,8 @@ export type IslandViewName =
   | "notification"
   | "notifications"
   | "welfare"
-  | "shelf";
+  | "shelf"
+  | "accessory";
 
 export type BotStateName =
   | "idle"
@@ -101,6 +102,7 @@ export const VIEW_LAYOUTS: Record<IslandViewName, ViewLayout> = {
   notifications: { height: 200, botX: 68, botY: null, botDiameter: 58, agentMode: "column" },
   welfare: { height: 160, botX: 68, botY: null, botDiameter: 58, agentMode: "column" },
   shelf: { height: 180, botX: 68, botY: null, botDiameter: 58, agentMode: "column" },
+  accessory: { height: 170, botX: 68, botY: null, botDiameter: 58, agentMode: "column" },
 };
 
 // The upload views above are only the fallback geometry. Once a file is actually

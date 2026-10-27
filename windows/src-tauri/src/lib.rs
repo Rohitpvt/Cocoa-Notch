@@ -734,6 +734,7 @@ pub fn run() {
             desktop::desktop_mochi_fly_home,
             desktop::desktop_mochi_set_asleep,
             hardware::get_system_stats,
+            hardware::get_bluetooth_devices,
         ])
         .setup(move |app| {
             let handle = app.handle().clone();

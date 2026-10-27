@@ -176,6 +176,15 @@ export class Island {
     Bridge.onMusicPlayback?.((music) => {
       State.setMusicPlayback(music);
     });
+    void Bridge.getBluetoothDevices?.().then((devices) => {
+      if (devices && devices.length > 0) State.setAccessoryDevices(devices);
+    });
+    Bridge.onAccessoryDevices?.((devices) => {
+      State.setAccessoryDevices(devices);
+    });
+    Bridge.onAccessoryUpdate?.((device) => {
+      State.addOrUpdateAccessory(device);
+    });
     welfareManager.onSprintComplete((prompt) => {
       this.showWelfare(prompt);
     });
@@ -1274,7 +1283,8 @@ export class Island {
   }
 
   private syncNotchStats() {
-    const show = State.mode === "compact" && State.settings.showSystemStats;
+    const hasAccessory = State.settings.showBluetoothBattery !== false && State.activeAccessory != null;
+    const show = State.mode === "compact" && (State.settings.showSystemStats || hasAccessory);
     this.notchStats.style.opacity = show ? "1" : "0";
     if (!show) {
       if (this.notchStats.hasChildNodes()) this.notchStats.replaceChildren();
@@ -1283,7 +1293,7 @@ export class Island {
 
     const stats = State.systemStats;
     const items: HTMLElement[] = [];
-    if (stats) {
+    if (State.settings.showSystemStats && stats) {
       if (State.settings.showCpuUsage) {
         const cpuVal = Math.round(stats.cpuUsage);
         const cpuClass = cpuVal > 85 ? "hot" : cpuVal > 60 ? "warm" : "";
@@ -1309,6 +1319,30 @@ export class Island {
         );
       }
     }
+
+    // Connected Bluetooth accessory battery pill (headphones / earbuds)
+    if (hasAccessory && State.activeAccessory) {
+      const dev = State.activeAccessory;
+      const isLow = dev.battery <= 20;
+      const bClass = isLow ? "hot" : dev.battery <= 40 ? "warm" : "";
+      const icon = dev.kind === "earbuds" ? "🎧" : "🔋";
+      let valText = `${dev.battery}%`;
+      if (dev.leftBud != null && dev.rightBud != null) {
+        valText = `L${dev.leftBud}% R${dev.rightBud}%`;
+      }
+      items.push(
+        h(
+          "div",
+          {
+            class: `stat-pill accessory-pill ${bClass}`.trim(),
+            title: `${dev.name}: ${dev.battery}% battery${dev.caseBattery != null ? ` (Case: ${dev.caseBattery}%)` : ""}`,
+          },
+          h("span", { class: "stat-label", text: icon }),
+          h("span", { class: "stat-value", text: valText }),
+        ),
+      );
+    }
+
     this.notchStats.replaceChildren(...items);
   }
 

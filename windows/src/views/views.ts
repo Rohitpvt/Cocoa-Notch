@@ -22,6 +22,7 @@ import { buildRecap } from "./recap";
 import { buildWardrobe } from "./wardrobe";
 import { buildNotificationHistory } from "./notifications";
 import { buildShelf } from "./shelf";
+import { buildAccessory } from "./accessory";
 import type { Outfit, OutfitSelection } from "../mochi/wardrobe";
 import { welfareManager } from "../core/welfare";
 import { language, t, tl, type Msg } from "../i18n/i18n";
@@ -173,7 +174,8 @@ export function buildHeader(actions: ViewActions): ViewHost {
   };
 
   function syncHeaderStats() {
-    const show = State.settings.showSystemStats;
+    const hasAccessory = State.settings.showBluetoothBattery !== false && State.accessoryDevices.some(d => d.connected);
+    const show = State.settings.showSystemStats || hasAccessory;
     headerStats.style.display = show ? "flex" : "none";
     if (!show) {
       if (headerStats.hasChildNodes()) headerStats.replaceChildren();
@@ -209,8 +211,8 @@ export function buildHeader(actions: ViewActions): ViewHost {
     }
 
     // Connected Bluetooth accessory device (headphones / earbuds)
-    if (State.accessoryDevices && State.accessoryDevices.length > 0) {
-      const dev = State.accessoryDevices[0];
+    if (State.settings.showBluetoothBattery !== false && State.accessoryDevices && State.accessoryDevices.length > 0) {
+      const dev = State.activeAccessory || State.accessoryDevices[0];
       if (dev && dev.connected) {
         const isLow = dev.battery <= 20;
         const bClass = isLow ? "hot" : dev.battery <= 40 ? "warm" : "";
@@ -219,17 +221,25 @@ export function buildHeader(actions: ViewActions): ViewHost {
         if (dev.leftBud != null && dev.rightBud != null) {
           label = `L:${dev.leftBud}% R:${dev.rightBud}%`;
         }
-        items.push(
-          h(
-            "div",
-            {
-              class: `stat-chip accessory-chip ${bClass}`.trim(),
-              title: `${dev.name}: ${dev.battery}% battery${dev.caseBattery != null ? ` (Case: ${dev.caseBattery}%)` : ""}`,
+        const chip = h(
+          "div",
+          {
+            class: `stat-chip accessory-chip ${bClass}${State.view === "accessory" ? " active" : ""}`.trim(),
+            title: `${dev.name}: ${dev.battery}% battery${dev.caseBattery != null ? ` (Case: ${dev.caseBattery}%)` : ""}`,
+            onclick: (e: Event) => {
+              e.stopPropagation();
+              actions.blip();
+              if (State.view === "accessory") {
+                actions.setView("overview");
+              } else {
+                actions.setView("accessory");
+              }
             },
-            h("span", { class: "stat-chip-label", text: icon }),
-            h("span", { class: "stat-chip-value", text: label }),
-          ),
+          },
+          h("span", { class: "stat-chip-label", text: icon }),
+          h("span", { class: "stat-chip-value", text: label }),
         );
+        items.push(chip);
       }
     }
 
@@ -1238,6 +1248,7 @@ export function buildViews(
   map.set("uploading", buildUploading());
   map.set("choose", buildChoose(actions));
   map.set("shelf", buildShelf(actions));
+  map.set("accessory", buildAccessory(actions));
   map.set("recap", buildRecap(actions));
   map.set("wardrobe", buildWardrobe(actions));
   map.set("notification", buildNotification(actions));

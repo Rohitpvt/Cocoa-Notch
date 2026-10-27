@@ -8,6 +8,7 @@ import { State } from "../src/core/state.ts";
 import { WelfareManager } from "../src/core/welfare.ts";
 import { BotEngine } from "../src/mochi/engine.ts";
 import { buildShelf } from "../src/views/shelf.ts";
+import { buildAccessory } from "../src/views/accessory.ts";
 
 installFakeDom();
 
@@ -137,30 +138,86 @@ test("Shelf view renders DOM correctly with FakeDOM", () => {
 test("Accessory device state tracks battery level, connection, and updates", () => {
   State.setAccessoryDevices([]);
   assert.equal(State.accessoryDevices.length, 0);
+  assert.equal(State.activeAccessory, null);
 
   // Add Bluetooth headphone
   State.addOrUpdateAccessory({
     id: "sony-wh1000",
     name: "WH-1000XM5",
-    batteryLevel: 80,
-    type: "headphones",
-    isConnected: true,
+    battery: 80,
+    kind: "headphones",
+    connected: true,
   });
   assert.equal(State.accessoryDevices.length, 1);
-  assert.equal(State.accessoryDevices[0].batteryLevel, 80);
+  assert.equal(State.accessoryDevices[0].battery, 80);
+  assert.equal(State.activeAccessory?.name, "WH-1000XM5");
 
   // Update battery level to 15% (low battery)
   State.addOrUpdateAccessory({
     id: "sony-wh1000",
     name: "WH-1000XM5",
-    batteryLevel: 15,
-    type: "headphones",
-    isConnected: true,
+    battery: 15,
+    kind: "headphones",
+    connected: true,
   });
   assert.equal(State.accessoryDevices.length, 1);
-  assert.equal(State.accessoryDevices[0].batteryLevel, 15);
-  assert.equal(State.accessoryDevices[0].type, "headphones");
-  assert.equal(State.accessoryDevices[0].isConnected, true);
+  assert.equal(State.accessoryDevices[0].battery, 15);
+  assert.equal(State.accessoryDevices[0].kind, "headphones");
+  assert.equal(State.accessoryDevices[0].connected, true);
+
+  // Add Earbuds with multi-battery
+  State.addOrUpdateAccessory({
+    id: "airpods-pro",
+    name: "AirPods Pro",
+    battery: 85,
+    leftBud: 85,
+    rightBud: 90,
+    caseBattery: 100,
+    kind: "earbuds",
+    connected: true,
+  });
+  assert.equal(State.accessoryDevices.length, 2);
+
+  // Remove accessory
+  State.removeAccessory("sony-wh1000");
+  assert.equal(State.accessoryDevices.length, 1);
+  assert.equal(State.accessoryDevices[0].id, "airpods-pro");
+});
+
+test("Accessory view renders connected earbuds and handles empty state", () => {
+  let switchedView = "";
+  const actions = {
+    setView: (v) => { switchedView = v; },
+    blip: () => {},
+  };
+
+  const accessoryHost = buildAccessory(actions);
+  assert.ok(accessoryHost.el.classList.contains("accessory-view"));
+
+  // Connected state
+  State.setAccessoryDevices([{
+    id: "galaxy-buds",
+    name: "Galaxy Buds Pro",
+    battery: 75,
+    leftBud: 70,
+    rightBud: 80,
+    caseBattery: 95,
+    kind: "earbuds",
+    connected: true,
+  }]);
+
+  accessoryHost.sync();
+  const nameEl = accessoryHost.el.querySelector(".accessory-dev-name");
+  assert.equal(nameEl?.textContent, "Galaxy Buds Pro");
+
+  const budCards = accessoryHost.el.find(".bud-battery-card");
+  assert.equal(budCards.length, 3, "Should render Left, Right, and Case battery cards");
+
+  // Disconnected state
+  State.setAccessoryDevices([]);
+  accessoryHost.sync();
+  const emptyTitle = accessoryHost.el.querySelector(".accessory-empty-title");
+  assert.ok(emptyTitle !== null, "Should render empty state when no accessories connected");
 });
 
 // ── 4. Beat-Reactive Mochi & Music Playback State ─────────────────────────────

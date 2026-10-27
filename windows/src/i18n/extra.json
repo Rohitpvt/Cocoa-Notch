@@ -5010,6 +5010,182 @@
    "pt-BR": "Pausado",
    "ru": "На паузе",
    "id": "Dijeda"
+  },
+  "Bluetooth Audio": {
+   "zh-Hans": "蓝牙音频",
+   "hi": "ब्लूटूथ ऑडियो",
+   "es": "Audio Bluetooth",
+   "ar": "صوت البلوتوث",
+   "fr": "Audio Bluetooth",
+   "bn": "ব্লুটুথ অডিও",
+   "pt-BR": "Áudio Bluetooth",
+   "ru": "Bluetooth-аудио",
+   "id": "Audio Bluetooth"
+  },
+  "Disconnected": {
+   "zh-Hans": "已断开",
+   "hi": "डिस्कनेक्टेड",
+   "es": "Desconectado",
+   "ar": "غير متصل",
+   "fr": "Déconnecté",
+   "bn": "বিচ্ছিন্ন",
+   "pt-BR": "Desconectado",
+   "ru": "Отключено",
+   "id": "Terputus"
+  },
+  "Wireless Earbuds": {
+   "zh-Hans": "无线耳机",
+   "hi": "वायरलेस ईयरबड्स",
+   "es": "Auriculares inalámbricos",
+   "ar": "سماعات أذن لاسلكية",
+   "fr": "Écouteurs sans fil",
+   "bn": "ওয়্যারলেস ইয়ারবাড",
+   "pt-BR": "Fones de ouvido sem fio",
+   "ru": "Беспроводные наушники",
+   "id": "Earbud Nirkabel"
+  },
+  "Bluetooth Headphones": {
+   "zh-Hans": "蓝牙头戴式耳机",
+   "hi": "ब्लूटूथ हेडफ़ोन",
+   "es": "Auriculares Bluetooth",
+   "ar": "سماعات رأس بلوتوث",
+   "fr": "Casque Bluetooth",
+   "bn": "ব্লুটুথ হেডফোন",
+   "pt-BR": "Fones de ouvido Bluetooth",
+   "ru": "Bluetooth-наушники",
+   "id": "Headphone Bluetooth"
+  },
+  "Case": {
+   "zh-Hans": "充电盒",
+   "hi": "केस",
+   "es": "Estuche",
+   "ar": "العلبة",
+   "fr": "Boîtier",
+   "bn": "কেস",
+   "pt-BR": "Estojo",
+   "ru": "Футляр",
+   "id": "Casing"
+  },
+  "Low battery · Charge soon": {
+   "zh-Hans": "电量不足 · 请尽快充电",
+   "hi": "बैटरी कम है · जल्द चार्ज करें",
+   "es": "Batería baja · Cargar pronto",
+   "ar": "البطارية منخفضة · يرجى الشحن قريباً",
+   "fr": "Batterie faible · Recharger bientôt",
+   "bn": "কম ব্যাটারি · শীঘ্রই চার্জ দিন",
+   "pt-BR": "Bateria fraca · Carregue em breve",
+   "ru": "Низкий заряд · Скоро зарядите",
+   "id": "Baterai lemah · Segera isi daya"
+  },
+  "Battery level healthy": {
+   "zh-Hans": "电量充足",
+   "hi": "बैटरी स्तर सामान्य है",
+   "es": "Nivel de batería saludable",
+   "ar": "مستوى البطارية جيد",
+   "fr": "Niveau de batterie optimal",
+   "bn": "ব্যাটারির মাত্রা স্বাভাবিক",
+   "pt-BR": "Nível de bateria saudável",
+   "ru": "Нормальный уровень заряда",
+   "id": "Tingkat baterai baik"
+  },
+  "Bluetooth Settings": {
+   "zh-Hans": "蓝牙设置",
+   "hi": "ब्लूटूथ सेटिंग्स",
+   "es": "Configuración de Bluetooth",
+   "ar": "إعدادات البلوتوث",
+   "fr": "Paramètres Bluetooth",
+   "bn": "ব্লুটুথ সেটিংস",
+   "pt-BR": "Configurações de Bluetooth",
+   "ru": "Настройки Bluetooth",
+   "id": "Pengaturan Bluetooth"
+  },
+  "Sound Settings": {
+   "zh-Hans": "声音设置",
+   "hi": "ध्वनि सेटिंग्स",
+   "es": "Configuración de sonido",
+   "ar": "إعدادات الصوت",
+   "fr": "Paramètres audio",
+   "bn": "শব্দ সেটিংস",
+   "pt-BR": "Configurações de som",
+   "ru": "Настройки звука",
+   "id": "Pengaturan Suara"
+  },
+  "No Bluetooth audio connected": {
+   "zh-Hans": "未连接蓝牙音频设备",
+   "hi": "कोई ब्लूटूथ ऑडियो कनेक्ट नहीं है",
+   "es": "No hay audio Bluetooth conectado",
+   "ar": "لا يوجد صوت بلوتوث متصل",
+   "fr": "Aucun appareil audio Bluetooth connecté",
+   "bn": "কোনও ব্লুটুথ অডিও সংযুক্ত নেই",
+   "pt-BR": "Nenhum áudio Bluetooth conectado",
+   "ru": "Нет подключённых Bluetooth-аудиоустройств",
+   "id": "Tidak ada audio Bluetooth terhubung"
+  },
+  "Connect your Bluetooth headphones or earbuds in Windows Settings": {
+   "zh-Hans": "在 Windows 设置中连接您的蓝牙耳机",
+   "hi": "Windows सेटिंग्स में अपने ब्लूटूथ हेडफ़ोन या ईयरबड्स कनेक्ट करें",
+   "es": "Conecta tus auriculares Bluetooth en la configuración de Windows",
+   "ar": "قم بتوصيل سماعات الرأس أو سماعات الأذن التي تعمل بالبلوتوث من إعدادات Windows",
+   "fr": "Connectez vos écouteurs ou casque Bluetooth dans les paramètres Windows",
+   "bn": "Windows সেটিংসে আপনার ব্লুটুথ হেডফোন বা ইয়ারবাড সংযুক্ত করুন",
+   "pt-BR": "Conecte seus fones de ouvido Bluetooth nas configurações do Windows",
+   "ru": "Подключите наушники Bluetooth в параметрах Windows",
+   "id": "Hubungkan headphone atau earbud Bluetooth Anda di Pengaturan Windows"
+  },
+  "Open Bluetooth Settings": {
+   "zh-Hans": "打开蓝牙设置",
+   "hi": "ब्लूटूथ सेटिंग्स खोलें",
+   "es": "Abrir configuración de Bluetooth",
+   "ar": "فتح إعدادات البلوتوث",
+   "fr": "Ouvrir les paramètres Bluetooth",
+   "bn": "ব্লুটুথ সেটিংস খুলুন",
+   "pt-BR": "Abrir configurações de Bluetooth",
+   "ru": "Открыть настройки Bluetooth",
+   "id": "Buka Pengaturan Bluetooth"
+  },
+  "Open Windows Bluetooth Settings": {
+   "zh-Hans": "打开 Windows 蓝牙设置",
+   "hi": "Windows ब्लूटूथ सेटिंग्स खोलें",
+   "es": "Abrir configuración de Bluetooth de Windows",
+   "ar": "فتح إعدادات البلوتوث في Windows",
+   "fr": "Ouvrir les paramètres Bluetooth Windows",
+   "bn": "Windows ব্লুটুথ সেটিংস খুলুন",
+   "pt-BR": "Abrir configurações de Bluetooth do Windows",
+   "ru": "Открыть параметры Bluetooth Windows",
+   "id": "Buka Pengaturan Bluetooth Windows"
+  },
+  "Open Windows Sound Settings": {
+   "zh-Hans": "打开 Windows 声音设置",
+   "hi": "Windows ध्वनि सेटिंग्स खोलें",
+   "es": "Abrir configuración de sonido de Windows",
+   "ar": "فتح إعدادات الصوت في Windows",
+   "fr": "Ouvrir les paramètres audio Windows",
+   "bn": "Windows শব্দ সেটিংস খুলুন",
+   "pt-BR": "Abrir configurações de som do Windows",
+   "ru": "Открыть параметры звука Windows",
+   "id": "Buka Pengaturan Suara Windows"
+  },
+  "Bluetooth battery pill": {
+   "zh-Hans": "蓝牙电量胶囊",
+   "hi": "ब्लूटूथ बैटरी पिल",
+   "es": "Píldora de batería Bluetooth",
+   "ar": "كبسولة بطارية البلوتوث",
+   "fr": "Pilule de batterie Bluetooth",
+   "bn": "ব্লুটুথ ব্যাটারি পিল",
+   "pt-BR": "Pílula de bateria Bluetooth",
+   "ru": "Индикатор батареи Bluetooth",
+   "id": "Pil Baterai Bluetooth"
+  },
+  "Show battery level for connected headphones and earbuds": {
+   "zh-Hans": "显示已连接头戴式耳机和耳塞的电池电量",
+   "hi": "कनेक्टेड हेडफ़ोन और ईयरबड्स का बैटरी स्तर दिखाएं",
+   "es": "Mostrar nivel de batería para auriculares conectados",
+   "ar": "إظهار مستوى البطارية لسماعات الرأس وسماعات الأذن المتصلة",
+   "fr": "Afficher le niveau de batterie des écouteurs et casques connectés",
+   "bn": "সংযুক্ত হেডফোন এবং ইয়ারবাডের ব্যাটারির মাত্রা দেখান",
+   "pt-BR": "Mostrar nível de bateria para fones de ouvido conectados",
+   "ru": "Показывать уровень заряда подключённых наушников",
+   "id": "Tampilkan tingkat baterai untuk headphone dan earbud yang terhubung"
   }
  }
 }

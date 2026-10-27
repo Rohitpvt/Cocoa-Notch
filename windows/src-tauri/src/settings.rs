@@ -42,6 +42,8 @@ pub struct Settings {
     pub show_gpu_usage: bool,
     pub show_ram_usage: bool,
     pub show_gpu_temp: bool,
+    /// Show connected Bluetooth headphones / earbuds battery pill.
+    pub show_bluetooth_battery: bool,
     /// Expand notch when Windows system toast notifications arrive from apps.
     pub show_system_notifications: bool,
     /// Duration in seconds for system notifications to stay visible.
@@ -165,6 +167,7 @@ impl Default for Settings {
             show_gpu_usage: true,
             show_ram_usage: true,
             show_gpu_temp: true,
+            show_bluetooth_battery: true,
             show_system_notifications: true,
             notification_duration: 5.0,
             notification_sound: true,
@@ -468,6 +471,7 @@ mod tests {
   "showGpuUsage": false,
   "showRamUsage": false,
   "showGpuTemp": false,
+  "showBluetoothBattery": false,
   "showSystemNotifications": false,
   "notificationDuration": 10.0,
   "notificationSound": false,
@@ -897,6 +901,7 @@ mod tests {
                 "showGpuUsage",
                 "showRamUsage",
                 "showGpuTemp",
+                "showBluetoothBattery",
                 "showSystemNotifications",
                 "notificationDuration",
                 "notificationSound",

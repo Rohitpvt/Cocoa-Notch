@@ -5,7 +5,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { emitTo, listen } from "@tauri-apps/api/event";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
-import type { MusicPlaybackState, Settings, SystemNotification, SystemStats } from "./state";
+import type { AccessoryDevice, MusicPlaybackState, Settings, SystemNotification, SystemStats } from "./state";
 import type { RecapHistory, RecapPrefs } from "../recap/summary";
 
 export const IS_TAURI =
@@ -43,6 +43,13 @@ export const Bridge = {
   triggerMusicPlayback: (music: MusicPlaybackState | null) => emitTo("main", "music-playback", music),
   onMusicPlayback: (cb: (m: MusicPlaybackState | null) => void) =>
     onEvent<MusicPlaybackState | null>("music-playback", cb),
+  getBluetoothDevices: () => call<AccessoryDevice[]>("get_bluetooth_devices"),
+  onAccessoryDevices: (cb: (d: AccessoryDevice[]) => void) =>
+    onEvent<AccessoryDevice[]>("bluetooth-devices", cb),
+  triggerAccessoryUpdate: (device: AccessoryDevice) =>
+    emitTo("main", "bluetooth-devices-update", device),
+  onAccessoryUpdate: (cb: (device: AccessoryDevice) => void) =>
+    onEvent<AccessoryDevice>("bluetooth-devices-update", cb),
   /** The system's languages as the webview sees them, for Rust's own texts (i18n.rs). */
   setSystemLanguages: (languages: string[]) => call<void>("set_system_languages", { languages }),
 

@@ -125,6 +125,8 @@ export interface Settings {
   showGpuUsage: boolean;
   showRamUsage: boolean;
   showGpuTemp: boolean;
+  /** Show connected Bluetooth headphones / earbuds battery pill */
+  showBluetoothBattery: boolean;
   /** Expand notch when Windows system toast notifications arrive from apps. */
   showSystemNotifications: boolean;
   /** Duration in seconds for system notifications to stay visible in notch. */
@@ -243,6 +245,7 @@ export interface AccessoryDevice {
   rightBud?: number | null;
   caseBattery?: number | null;
   connected: boolean;
+  charging?: boolean;
 }
 
 export interface MusicPlaybackState {
@@ -276,6 +279,7 @@ export const DEFAULT_SETTINGS: Settings = {
   showGpuUsage: true,
   showRamUsage: true,
   showGpuTemp: true,
+  showBluetoothBattery: true,
   showSystemNotifications: true,
   notificationDuration: 5,
   notificationSound: true,
@@ -563,6 +567,18 @@ class AppState {
       this.accessoryDevices.push(device);
     }
     this.notify();
+  }
+
+  removeAccessory(id: string) {
+    const prevLen = this.accessoryDevices.length;
+    this.accessoryDevices = this.accessoryDevices.filter((d) => d.id !== id);
+    if (this.accessoryDevices.length !== prevLen) {
+      this.notify();
+    }
+  }
+
+  get activeAccessory(): AccessoryDevice | null {
+    return this.accessoryDevices.find((d) => d.connected) ?? null;
   }
 
   /** Active music playback (Spotify / media player) */
