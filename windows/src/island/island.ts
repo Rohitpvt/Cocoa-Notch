@@ -177,7 +177,7 @@ export class Island {
       State.setMusicPlayback(music);
     });
     void Bridge.getBluetoothDevices?.().then((devices) => {
-      if (devices && devices.length > 0) State.setAccessoryDevices(devices);
+      State.setAccessoryDevices(devices || []);
     });
     Bridge.onAccessoryDevices?.((devices) => {
       State.setAccessoryDevices(devices);

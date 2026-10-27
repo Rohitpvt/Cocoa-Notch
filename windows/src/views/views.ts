@@ -211,9 +211,9 @@ export function buildHeader(actions: ViewActions): ViewHost {
     }
 
     // Connected Bluetooth accessory device (headphones / earbuds)
-    if (State.settings.showBluetoothBattery !== false && State.accessoryDevices && State.accessoryDevices.length > 0) {
-      const dev = State.activeAccessory || State.accessoryDevices[0];
-      if (dev && dev.connected) {
+    if (State.settings.showBluetoothBattery !== false && State.activeAccessory) {
+      const dev = State.activeAccessory;
+      if (dev.connected) {
         const isLow = dev.battery <= 20;
         const bClass = isLow ? "hot" : dev.battery <= 40 ? "warm" : "";
         const icon = dev.kind === "earbuds" ? "🎧" : "🔋";

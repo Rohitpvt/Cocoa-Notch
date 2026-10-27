@@ -210,15 +210,48 @@ mod win {
     pub fn get_bluetooth_devices() -> Vec<super::AccessoryDevice> {
         let script = r#"
 $ErrorActionPreference = 'SilentlyContinue'
+$activeAudio = @(Get-PnpDevice -Class 'AudioEndpoint' | Where-Object { $_.Present -eq $true } | ForEach-Object { $_.FriendlyName })
+$connectedBt = @()
+try {
+  Add-Type -AssemblyName System.Runtime.WindowsRuntime
+  $asTaskGen = ([System.WindowsRuntimeSystemExtensions].GetMethods() | Where-Object { $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1' })[0]
+  $asTaskDevs = $asTaskGen.MakeGenericMethod([Windows.Devices.Enumeration.DeviceInformationCollection])
+  $selector = [Windows.Devices.Bluetooth.BluetoothDevice]::GetDeviceSelector()
+  $op = [Windows.Devices.Enumeration.DeviceInformation]::FindAllAsync($selector)
+  $devices = ($asTaskDevs.Invoke($null, @($op))).GetAwaiter().GetResult()
+  $asTaskDev = $asTaskGen.MakeGenericMethod([Windows.Devices.Bluetooth.BluetoothDevice])
+  foreach ($d in $devices) {
+    $devOp = [Windows.Devices.Bluetooth.BluetoothDevice]::FromIdAsync($d.Id)
+    $bt = ($asTaskDev.Invoke($null, @($devOp))).GetAwaiter().GetResult()
+    if ($bt -and $bt.ConnectionStatus -eq 1) {
+      $connectedBt += $bt.Name.ToLower()
+    }
+  }
+} catch {}
+
 $devs = Get-PnpDevice -InstanceId "BTHENUM\{0000111e*" | Where-Object { $_.Status -eq "OK" }
 $list = @()
 foreach ($d in $devs) {
-  $p = (Get-PnpDeviceProperty -InstanceId $d.InstanceId -KeyName "{104EA319-6EE2-4701-BD47-8DDBF425BBE5} 2").Data
-  if ($p -ne $null) {
-    $cleanName = $d.FriendlyName -replace '\s+Hands-Free.*$', ''
-    $isEarbuds = $cleanName -match '(?i)buds|airpods|earbuds|in-ear'
-    $kind = if ($isEarbuds) { 'earbuds' } else { 'headphones' }
-    $list += [PSCustomObject]@{ id = $d.InstanceId; name = $cleanName; battery = [int]$p; kind = $kind; connected = $true }
+  $cleanName = ($d.FriendlyName -replace '\s+Hands-Free.*$', '').Trim()
+  $cleanLower = $cleanName.ToLower()
+  $isConnected = $false
+  if ($connectedBt -contains $cleanLower) {
+    $isConnected = $true
+  } else {
+    foreach ($a in $activeAudio) {
+      if ($a.ToLower().Contains($cleanLower) -or $cleanLower.Contains($a.ToLower())) {
+        $isConnected = $true
+        break
+      }
+    }
+  }
+  if ($isConnected) {
+    $p = (Get-PnpDeviceProperty -InstanceId $d.InstanceId -KeyName "{104EA319-6EE2-4701-BD47-8DDBF425BBE5} 2").Data
+    if ($p -ne $null) {
+      $isEarbuds = $cleanName -match '(?i)buds|airpods|earbuds|in-ear'
+      $kind = if ($isEarbuds) { 'earbuds' } else { 'headphones' }
+      $list += [PSCustomObject]@{ id = $d.InstanceId; name = $cleanName; battery = [int]$p; kind = $kind; connected = $true }
+    }
   }
 }
 ConvertTo-Json -Compress @($list)
