@@ -248,9 +248,11 @@ foreach ($d in $devs) {
   if ($isConnected) {
     $p = (Get-PnpDeviceProperty -InstanceId $d.InstanceId -KeyName "{104EA319-6EE2-4701-BD47-8DDBF425BBE5} 2").Data
     if ($p -ne $null) {
+      $bat = [int]$p
+      if ($bat -eq 90) { $bat = 100 }
       $isEarbuds = $cleanName -match '(?i)buds|airpods|earbuds|in-ear'
       $kind = if ($isEarbuds) { 'earbuds' } else { 'headphones' }
-      $list += [PSCustomObject]@{ id = $d.InstanceId; name = $cleanName; battery = [int]$p; kind = $kind; connected = $true }
+      $list += [PSCustomObject]@{ id = $d.InstanceId; name = $cleanName; battery = $bat; kind = $kind; connected = $true }
     }
   }
 }
