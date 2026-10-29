@@ -7,7 +7,7 @@
 import { Ease, lerp, type EaseFn } from "../core/anim";
 import { Sound } from "../core/sound";
 import type { BotEmoteName, BotStateName } from "../core/layout";
-import { PUMPKIN_BODY, drawHeadphones, drawOutfitBehind, drawOutfitFront, makeHead } from "./outfits";
+import { PUMPKIN_BODY, drawOutfitBehind, drawOutfitFront, makeHead } from "./outfits";
 import type { Outfit } from "./wardrobe";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -209,7 +209,7 @@ export class BotEngine {
   hasHeadphones = false;
   headphonesPresence = 0;
 
-  setDancing(dancing: boolean, bpm = 112, withHeadphones = true) {
+  setDancing(dancing: boolean, bpm = 112, withHeadphones = false) {
     this.isDancing = dancing;
     this.hasHeadphones = dancing && withHeadphones;
     if (bpm > 0) this.dancingBpm = bpm;
@@ -806,12 +806,7 @@ export class BotEngine {
 
     if (head) drawOutfitFront(x, this.outfit, head, outfitState);
 
-    if (!this.isMini && this.headphonesPresence > 0.005) {
-      const hHead = head || makeHead(R, this.yaw, this.pitch, this.physDx, this.physDy);
-      const beat = (performance.now() / 1000) * (this.dancingBpm / 60);
-      const wearingHat = this.outfit !== "none" && this.outfitPresence > 0.1;
-      drawHeadphones(x, hHead, this.headphonesPresence, beat, wearingHat);
-    }
+
 
     x.restore();
     x.restore();
