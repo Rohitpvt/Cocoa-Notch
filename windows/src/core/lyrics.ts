@@ -84,6 +84,7 @@ export function getActiveLyricIndex(lines: LrcLine[], currentTimeSecs: number): 
 export function cleanTitle(title: string): string {
   if (!title) return "";
   const cleaned = title
+    .replace(/\s*[|]\s*.*$/i, "")
     .replace(/\s*\([^)]*(?:slowed|sped|remix|reverb|edit|version|feat|ft\.|prod|official|audio|video|tribute|cover|instrumental|deluxe|remastered|mono|stereo)[^)]*\)/gi, "")
     .replace(/\s*\[[^\]]*\]/gi, "")
     .replace(/\s*-\s*[^-(]*(?:slowed|sped|remix|reverb|edit|version|instrumental|deluxe|remastered|bonus).*$/gi, "")
