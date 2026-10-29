@@ -141,8 +141,9 @@ export function buildMusic(actions: ViewActions): ViewHost {
   );
 
   // Lyrics Elements
+  const lyricsAvatarSlot = h("div", { class: "music-player-avatar-slot" });
   const lyricsList = h("div", { class: "music-lyrics-list" });
-  const lyricsPanel = h("div", { class: "music-lyrics-panel" }, lyricsList);
+  const lyricsPanel = h("div", { class: "music-lyrics-panel" }, lyricsAvatarSlot, lyricsList);
 
   // Scrubber click / drag seeking
   progressBar.addEventListener("click", (e) => {
@@ -173,6 +174,9 @@ export function buildMusic(actions: ViewActions): ViewHost {
     } else {
       contentContainer.append(lyricsPanel);
       renderLyrics();
+      if (!currentLyrics && !lyricsLoading && State.musicPlayback) {
+        checkLyricsFetch(State.musicPlayback, true);
+      }
     }
   }
 
@@ -205,35 +209,44 @@ export function buildMusic(actions: ViewActions): ViewHost {
       return;
     }
 
-    if (!currentLyrics || currentLyrics.isInstrumental || currentLyrics.lines.length === 0) {
-      const fallbackText = currentLyrics?.plainLyrics
-        ? currentLyrics.plainLyrics
-        : t("♪ Lyrics not available for this track ♪");
-      lyricsList.append(h("div", { class: "music-lyrics-empty", text: fallbackText }));
+    if (!currentLyrics || currentLyrics.isInstrumental || (currentLyrics.lines.length === 0 && !currentLyrics.plainLyrics)) {
+      lyricsList.append(h("div", { class: "music-lyrics-empty", text: t("♪ Lyrics not available for this track ♪") }));
       return;
     }
 
     const color = music.albumColor || "#1DB954";
     lyricsList.style.setProperty("--music-accent", color);
 
-    for (let i = 0; i < currentLyrics.lines.length; i++) {
-      const line = currentLyrics.lines[i];
-      const lineEl = h("div", {
-        class: `music-lyric-line${i === activeLyricIdx ? " active" : ""}`,
-        text: line.text || "♪",
-        onclick: (e) => {
-          e.stopPropagation();
-          actions.blip();
-          basePositionSecs = line.timeSecs;
-          lastSyncTimeMs = performance.now();
-          void Bridge.mediaSeek?.(line.timeSecs);
-        },
-      });
-      lyricsList.append(lineEl);
+    if (currentLyrics.lines.length > 0) {
+      for (let i = 0; i < currentLyrics.lines.length; i++) {
+        const line = currentLyrics.lines[i];
+        const lineEl = h("div", {
+          class: `music-lyric-line${i === activeLyricIdx ? " active" : ""}`,
+          text: line.text || "♪",
+          onclick: (e) => {
+            e.stopPropagation();
+            actions.blip();
+            basePositionSecs = line.timeSecs;
+            lastSyncTimeMs = performance.now();
+            void Bridge.mediaSeek?.(line.timeSecs);
+          },
+        });
+        lyricsList.append(lineEl);
+      }
+    } else if (currentLyrics.plainLyrics) {
+      const rawLines = currentLyrics.plainLyrics.split(/\r?\n/);
+      for (const rawLine of rawLines) {
+        const text = rawLine.trim();
+        if (!text) {
+          lyricsList.append(h("div", { class: "music-lyric-spacer" }));
+        } else {
+          lyricsList.append(h("div", { class: "music-lyric-line plain", text }));
+        }
+      }
     }
   }
 
-  function checkLyricsFetch(music: MusicPlaybackState | null) {
+  function checkLyricsFetch(music: MusicPlaybackState | null, force = false) {
     if (!music || !music.title) {
       currentLyrics = null;
       lastFetchedKey = "";
@@ -241,7 +254,7 @@ export function buildMusic(actions: ViewActions): ViewHost {
     }
 
     const key = `${music.artist || ""}:::${music.title}`;
-    if (key === lastFetchedKey) return;
+    if (!force && key === lastFetchedKey) return;
 
     lastFetchedKey = key;
     lyricsLoading = true;

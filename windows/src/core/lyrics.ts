@@ -1,5 +1,5 @@
 // Synchronized LRC Lyrics Client & Parser for Cocoa Notch
-// Powered by the open-source LRCLIB API (https://lrclib.net)
+// Multi-strategy lyrics engine powered by LRCLIB (synced LRC) and open lyric providers.
 
 export interface LrcLine {
   timeSecs: number;
@@ -72,7 +72,6 @@ export function getActiveLyricIndex(lines: LrcLine[], currentTimeSecs: number): 
 
   let active = -1;
   for (let i = 0; i < lines.length; i++) {
-    // If line time is less than or equal to current position, it's active
     if (lines[i].timeSecs <= currentTimeSecs + 0.1) {
       active = i;
     } else {
@@ -82,17 +81,27 @@ export function getActiveLyricIndex(lines: LrcLine[], currentTimeSecs: number): 
   return active;
 }
 
-function cleanTitle(title: string): string {
-  return title
-    .replace(/\s*-\s*(Remastered|Deluxe|Live|Original|Edit|Single|Radio|Acoustic).*$/i, "")
-    .replace(/\s*\(feat\..*?\)/i, "")
-    .replace(/\s*\(with.*?\)/i, "")
-    .replace(/\s*\[.*?\]/i, "")
+export function cleanTitle(title: string): string {
+  if (!title) return "";
+  const cleaned = title
+    .replace(/\s*\([^)]*(?:slowed|sped|remix|reverb|edit|version|feat|ft\.|prod|official|audio|video|tribute|cover|instrumental|deluxe|remastered|mono|stereo)[^)]*\)/gi, "")
+    .replace(/\s*\[[^\]]*\]/gi, "")
+    .replace(/\s*-\s*[^-(]*(?:slowed|sped|remix|reverb|edit|version|instrumental|deluxe|remastered|bonus).*$/gi, "")
     .trim();
+  return cleaned || title.trim();
+}
+
+export function getArtistVariants(artist: string): string[] {
+  if (!artist) return [];
+  const raw = artist.split("·")[0].trim();
+  const variants = [raw];
+  const primary = raw.split(/[,;&\/]|\s+(?:feat\.|ft\.|with)\s+/i)[0].trim();
+  if (primary && primary !== raw) variants.push(primary);
+  return variants;
 }
 
 /**
- * Fetches synced lyrics from LRCLIB with in-memory caching.
+ * Fetches synced lyrics with multi-strategy matching and plain lyrics fallback.
  */
 export async function fetchLyrics(
   title: string,
@@ -106,7 +115,8 @@ export async function fetchLyrics(
 
   const cacheKey = `${cleanA.toLowerCase()}:::${cleanT.toLowerCase()}`;
   if (lyricsCache.has(cacheKey)) {
-    return lyricsCache.get(cacheKey) || null;
+    const cached = lyricsCache.get(cacheKey);
+    if (cached) return cached;
   }
 
   if (pendingRequests.has(cacheKey)) {
@@ -114,59 +124,133 @@ export async function fetchLyrics(
   }
 
   const promise = (async () => {
+    let networkError = false;
     try {
-      const params = new URLSearchParams({
-        track_name: cleanT,
-        artist_name: cleanA,
-      });
-      if (durationSecs && durationSecs > 0) {
-        params.set("duration", Math.round(durationSecs).toString());
-      }
-
-      // Try exact get first
-      const getUrl = `https://lrclib.net/api/get?${params.toString()}`;
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 6000);
-
-      let resp = await fetch(getUrl, {
-        signal: controller.signal,
-        headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
-      }).catch(() => null);
-
-      clearTimeout(timeoutId);
-
+      const artists = getArtistVariants(cleanA);
       let data: any = null;
-      if (resp && resp.ok) {
-        data = await resp.json().catch(() => null);
+
+      // Strategy 1: Exact GET without strict duration (avoids 404 on slowed/sped tracks)
+      for (const art of artists) {
+        if (data) break;
+        try {
+          const params = new URLSearchParams({ track_name: cleanT, artist_name: art });
+          const res = await fetch(`https://lrclib.net/api/get?${params.toString()}`, {
+            headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
+          });
+          if (res.ok) {
+            const d = await res.json().catch(() => null);
+            if (d && (d.syncedLyrics || d.plainLyrics)) data = d;
+          }
+        } catch {
+          networkError = true;
+        }
       }
 
-      // If not found, try search endpoint
-      if (!data || (!data.syncedLyrics && !data.plainLyrics)) {
-        const searchParams = new URLSearchParams({
-          q: `${cleanA} ${cleanT}`.trim(),
-        });
-        const searchUrl = `https://lrclib.net/api/search?${searchParams.toString()}`;
-        const searchController = new AbortController();
-        const searchTimeout = setTimeout(() => searchController.abort(), 6000);
-
-        const searchResp = await fetch(searchUrl, {
-          signal: searchController.signal,
-          headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
-        }).catch(() => null);
-
-        clearTimeout(searchTimeout);
-
-        if (searchResp && searchResp.ok) {
-          const list = await searchResp.json().catch(() => null);
-          if (Array.isArray(list) && list.length > 0) {
-            // Find item with syncedLyrics if possible
-            data = list.find((it: any) => it.syncedLyrics) || list[0];
+      // Strategy 2: Exact GET with duration if provided
+      if (!data && durationSecs && durationSecs > 0) {
+        for (const art of artists) {
+          if (data) break;
+          try {
+            const params = new URLSearchParams({
+              track_name: cleanT,
+              artist_name: art,
+              duration: Math.round(durationSecs).toString(),
+            });
+            const res = await fetch(`https://lrclib.net/api/get?${params.toString()}`, {
+              headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
+            });
+            if (res.ok) {
+              const d = await res.json().catch(() => null);
+              if (d && (d.syncedLyrics || d.plainLyrics)) data = d;
+            }
+          } catch {
+            networkError = true;
           }
         }
       }
 
+      // Strategy 3: Structured search on LRCLIB
       if (!data) {
-        lyricsCache.set(cacheKey, null);
+        for (const art of artists) {
+          if (data) break;
+          try {
+            const params = new URLSearchParams({ track_name: cleanT, artist_name: art });
+            const res = await fetch(`https://lrclib.net/api/search?${params.toString()}`, {
+              headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
+            });
+            if (res.ok) {
+              const list = await res.json().catch(() => null);
+              if (Array.isArray(list) && list.length > 0) {
+                data = list.find((it: any) => it.syncedLyrics) || list.find((it: any) => it.plainLyrics);
+              }
+            }
+          } catch {
+            networkError = true;
+          }
+        }
+      }
+
+      // Strategy 4: Full query on LRCLIB
+      if (!data) {
+        try {
+          const q = `${artists[0] || ""} ${cleanT}`.trim();
+          const params = new URLSearchParams({ q });
+          const res = await fetch(`https://lrclib.net/api/search?${params.toString()}`, {
+            headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
+          });
+          if (res.ok) {
+            const list = await res.json().catch(() => null);
+            if (Array.isArray(list) && list.length > 0) {
+              data = list.find((it: any) => it.syncedLyrics) || list.find((it: any) => it.plainLyrics);
+            }
+          }
+        } catch {
+          networkError = true;
+        }
+      }
+
+      // Strategy 5: Clean title-only query on LRCLIB
+      if (!data) {
+        try {
+          const params = new URLSearchParams({ q: cleanT });
+          const res = await fetch(`https://lrclib.net/api/search?${params.toString()}`, {
+            headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
+          });
+          if (res.ok) {
+            const list = await res.json().catch(() => null);
+            if (Array.isArray(list) && list.length > 0) {
+              data = list.find((it: any) => it.syncedLyrics) || list.find((it: any) => it.plainLyrics);
+            }
+          }
+        } catch {
+          networkError = true;
+        }
+      }
+
+      // Strategy 6: Fallback to Lyrics.ovh for plain text lyrics
+      if (!data) {
+        for (const art of artists) {
+          if (data) break;
+          try {
+            const res = await fetch(`https://api.lyrics.ovh/v1/${encodeURIComponent(art)}/${encodeURIComponent(cleanT)}`);
+            if (res.ok) {
+              const d = await res.json().catch(() => null);
+              if (d && d.lyrics) {
+                data = {
+                  trackName: cleanT,
+                  artistName: art,
+                  plainLyrics: d.lyrics,
+                };
+              }
+            }
+          } catch {}
+        }
+      }
+
+      if (!data) {
+        if (!networkError) {
+          lyricsCache.set(cacheKey, null);
+        }
         return null;
       }
 
@@ -190,7 +274,6 @@ export async function fetchLyrics(
       lyricsCache.set(cacheKey, result);
       return result;
     } catch {
-      lyricsCache.set(cacheKey, null);
       return null;
     } finally {
       pendingRequests.delete(cacheKey);

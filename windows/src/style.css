@@ -4078,9 +4078,11 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 /* Lyrics Panel */
 .music-lyrics-panel {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: stretch;
   height: 100%;
   min-height: 0;
+  gap: 16px;
 }
 
 .music-lyrics-list {
@@ -4095,6 +4097,10 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 }
 
+.music-lyric-spacer {
+  height: 8px;
+}
+
 .music-lyric-line {
   font: 500 13px var(--font);
   color: rgba(255, 255, 255, 0.42);
@@ -4103,6 +4109,12 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   cursor: pointer;
   border-radius: 6px;
   padding: 2px 6px;
+}
+
+.music-lyric-line.plain {
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 500;
+  cursor: default;
 }
 
 .music-lyric-line:hover {
