@@ -104,7 +104,7 @@ export const VIEW_LAYOUTS: Record<IslandViewName, ViewLayout> = {
   welfare: { height: 216, botX: 68, botY: null, botDiameter: 58, agentMode: "column" },
   shelf: { height: 180, botX: 68, botY: null, botDiameter: 58, agentMode: "column" },
   accessory: { height: 184, botX: 68, botY: null, botDiameter: 58, agentMode: "column" },
-  music: { height: 216, botX: 68, botY: null, botDiameter: 58, agentMode: "none" },
+  music: { height: 216, botX: 68, botY: 144, botDiameter: 58, agentMode: "none" },
 };
 
 // The upload views above are only the fallback geometry. Once a file is actually
