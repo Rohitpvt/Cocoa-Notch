@@ -5186,6 +5186,72 @@
    "pt-BR": "Mostrar nível de bateria para fones de ouvido conectados",
    "ru": "Показывать уровень заряда подключённых наушников",
    "id": "Tampilkan tingkat baterai untuk headphone dan earbud yang terhubung"
+  },
+  "Previous track": {
+   "zh-Hans": "上一首",
+   "hi": "पिछला ट्रैक",
+   "es": "Pista anterior",
+   "ar": "المسار السابق",
+   "fr": "Morceau précédent",
+   "bn": "পূর্ববর্তী ট্র্যাক",
+   "pt-BR": "Faixa anterior",
+   "ru": "Предыдущий трек",
+   "id": "Trek sebelumnya"
+  },
+  "Player": {
+   "zh-Hans": "播放器",
+   "hi": "प्लेयर",
+   "es": "Reproductor",
+   "ar": "المشغل",
+   "fr": "Lecteur",
+   "bn": "প্লেয়ার",
+   "pt-BR": "Reprodutor",
+   "ru": "Плеер",
+   "id": "Pemutar"
+  },
+  "Lyrics": {
+   "zh-Hans": "歌词",
+   "hi": "गीत के बोल",
+   "es": "Letra",
+   "ar": "الكلمات",
+   "fr": "Paroles",
+   "bn": "গানের কথা",
+   "pt-BR": "Letras",
+   "ru": "Текст песни",
+   "id": "Lirik"
+  },
+  "Loading synchronized lyrics...": {
+   "zh-Hans": "正在加载同步歌词…",
+   "hi": "सिंक किए गए बोल लोड हो रहे हैं…",
+   "es": "Cargando letras sincronizadas…",
+   "ar": "جارٍ تحميل الكلمات المتزامنة…",
+   "fr": "Chargement des paroles synchronisées…",
+   "bn": "সিঙ্ক করা গানের কথা লোড হচ্ছে…",
+   "pt-BR": "Carregando letras sincronizadas…",
+   "ru": "Загрузка синхронизированного текста…",
+   "id": "Memuat lirik tersinkronisasi…"
+  },
+  "♪ Lyrics not available for this track ♪": {
+   "zh-Hans": "♪ 暂无此曲目的歌词 ♪",
+   "hi": "♪ इस ट्रैक के लिए बोल उपलब्ध नहीं हैं ♪",
+   "es": "♪ Letras no disponibles para esta pista ♪",
+   "ar": "♪ الكلمات غير متوفرة لهذا المسار ♪",
+   "fr": "♪ Paroles indisponibles pour ce morceau ♪",
+   "bn": "♪ এই ট্র্যাকের জন্য গানের কথা নেই ♪",
+   "pt-BR": "♪ Letras não disponíveis para esta faixa ♪",
+   "ru": "♪ Текст для этого трека недоступен ♪",
+   "id": "♪ Lirik tidak tersedia untuk trek ini ♪"
+  },
+  "Play music in Spotify or any app": {
+   "zh-Hans": "在 Spotify 或任何音乐应用中播放音乐",
+   "hi": "Spotify या किसी ऐप में संगीत चलाएं",
+   "es": "Reproduce música en Spotify o cualquier app",
+   "ar": "شغّل الموسيقى في Spotify أو أي تطبيق",
+   "fr": "Lisez de la musique dans Spotify ou n'importe quelle application",
+   "bn": "Spotify বা যেকোনো অ্যাপে সঙ্গীত চালান",
+   "pt-BR": "Toque música no Spotify ou em qualquer app",
+   "ru": "Включите музыку в Spotify или любом приложении",
+   "id": "Putar musik di Spotify atau aplikasi apa pun"
   }
  }
 }

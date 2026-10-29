@@ -23,6 +23,7 @@ import { buildWardrobe } from "./wardrobe";
 import { buildNotificationHistory } from "./notifications";
 import { buildShelf } from "./shelf";
 import { buildAccessory } from "./accessory";
+import { buildMusic } from "./music";
 import type { Outfit, OutfitSelection } from "../mochi/wardrobe";
 import { welfareManager } from "../core/welfare";
 import { language, t, tl, type Msg } from "../i18n/i18n";
@@ -243,28 +244,30 @@ export function buildHeader(actions: ViewActions): ViewHost {
       }
     }
 
-    // Active music playback chip (Spotify / Apple Music)
+    // Active music playback chip (Spotify / Apple Music / Universal)
     if (State.musicPlayback && State.musicPlayback.isPlaying) {
       const title = State.musicPlayback.title || "Music";
       const artist = State.musicPlayback.artist ? ` · ${State.musicPlayback.artist}` : "";
       const albumColor = State.musicPlayback.albumColor || "#1DB954";
+      const activeClass = State.view === "music" ? " active" : "";
       items.push(
         h(
           "div",
           {
-            class: "stat-chip music-chip",
-            style: `border-color: ${albumColor}55; background: ${albumColor}20; color: ${albumColor};`,
+            class: `stat-chip music-chip${activeClass}`,
+            style: `border-color: ${albumColor}55; background: ${albumColor}20; color: ${albumColor}; cursor: pointer;`,
             title: `${title}${artist}`,
             onclick: (e: Event) => {
               e.stopPropagation();
               actions.blip();
-              State.setMusicPlayback({
-                ...State.musicPlayback!,
-                isPlaying: !State.musicPlayback!.isPlaying,
-              });
+              if (State.view === "music") {
+                actions.setView("overview");
+              } else {
+                actions.setView("music");
+              }
             },
           },
-          h("span", { class: "stat-chip-label", text: "🎵" }),
+          h("span", { class: "stat-chip-label", text: "🎧" }),
           h("span", { class: "stat-chip-value", text: title }),
         ),
       );
@@ -1249,6 +1252,7 @@ export function buildViews(
   map.set("choose", buildChoose(actions));
   map.set("shelf", buildShelf(actions));
   map.set("accessory", buildAccessory(actions));
+  map.set("music", buildMusic(actions));
   map.set("recap", buildRecap(actions));
   map.set("wardrobe", buildWardrobe(actions));
   map.set("notification", buildNotification(actions));

@@ -43,6 +43,11 @@ export const Bridge = {
   triggerMusicPlayback: (music: MusicPlaybackState | null) => emitTo("main", "music-playback", music),
   onMusicPlayback: (cb: (m: MusicPlaybackState | null) => void) =>
     onEvent<MusicPlaybackState | null>("music-playback", cb),
+  mediaPlayPause: () => call<void>("media_play_pause"),
+  mediaNext: () => call<void>("media_next"),
+  mediaPrev: () => call<void>("media_prev"),
+  mediaSeek: (positionSecs: number) => call<void>("media_seek", { positionSecs }),
+  getMediaPlayback: () => call<MusicPlaybackState | null>("get_media_playback"),
   getBluetoothDevices: () => call<AccessoryDevice[]>("get_bluetooth_devices"),
   onAccessoryDevices: (cb: (d: AccessoryDevice[]) => void) =>
     onEvent<AccessoryDevice[]>("bluetooth-devices", cb),

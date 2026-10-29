@@ -1156,3 +1156,105 @@ export function drawWardrobeIcon(ctx: Ctx, size: number, selection: OutfitSelect
   ctx.fillText(autoLabel, 0, 0.2);
   ctx.restore();
 }
+
+/**
+ * Over-ear DJ headphones dynamically worn during music playback.
+ * Responsive to head yaw, pitch, and beat tempo.
+ */
+export function drawHeadphones(ctx: Ctx, H: Head, presence: number, beat = 0) {
+  if (presence <= 0.005) return;
+  const R = H.R;
+  const posP = Ease.back(presence);
+  const alpha = Math.min(1, presence * 1.5);
+
+  ctx.save();
+  ctx.globalAlpha *= alpha;
+
+  const dropY = -(1 - posP) * H.ry * 0.8;
+  ctx.translate(0, dropY);
+
+  const hop = Math.abs(Math.sin(Math.PI * beat));
+  const pulse = 1 + 0.03 * hop * Math.min(1, presence);
+
+  const headbandPts: Pt[] = [];
+  const steps = 24;
+  for (let i = 0; i <= steps; i++) {
+    const angle = (i / steps) * Math.PI;
+    const hx = -Math.cos(angle) * 1.02;
+    const hy = 0.15 + Math.sin(angle) * 0.98;
+    const p = proj(H, [hx, hy, 0]);
+    headbandPts.push(p);
+  }
+
+  if (headbandPts.length > 2) {
+    ctx.beginPath();
+    ctx.moveTo(headbandPts[0].x, headbandPts[0].y);
+    for (let i = 1; i < headbandPts.length; i++) {
+      ctx.lineTo(headbandPts[i].x, headbandPts[i].y);
+    }
+    ctx.strokeStyle = "#1A1B22";
+    ctx.lineWidth = Math.max(2, R * 0.22);
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.stroke();
+
+    ctx.strokeStyle = "#2E323D";
+    ctx.lineWidth = Math.max(1.2, R * 0.14);
+    ctx.stroke();
+
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.18)";
+    ctx.lineWidth = Math.max(0.6, R * 0.04);
+    ctx.stroke();
+  }
+
+  for (const sd of [-1, 1]) {
+    const cupPos = proj(H, [sd * 0.96, -0.02, 0]);
+    const cupW = R * 0.36 * pulse;
+    const cupH = R * 0.58 * pulse;
+
+    ctx.save();
+    ctx.translate(cupPos.x, cupPos.y);
+    ctx.rotate(sd * 0.15 + H.yaw * 0.2);
+
+    ctx.beginPath();
+    ctx.ellipse(0, 0, cupW * 0.55, cupH * 0.55, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#121318";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.ellipse(0, 0, cupW * 0.5, cupH * 0.5, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#222530";
+    ctx.fill();
+    ctx.strokeStyle = "#14151B";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.ellipse(sd * 1.5, 0, cupW * 0.38, cupH * 0.38, 0, 0, Math.PI * 2);
+    const grad = ctx.createLinearGradient(-cupW * 0.4, -cupH * 0.4, cupW * 0.4, cupH * 0.4);
+    grad.addColorStop(0, "#363A48");
+    grad.addColorStop(0.5, "#252832");
+    grad.addColorStop(1, "#181A22");
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+
+    if (sd * H.yaw <= 0.1) {
+      ctx.beginPath();
+      ctx.arc(sd * 1.5, 0, cupW * 0.18, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(29, 185, 84, ${0.4 + 0.5 * hop})`;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(sd * 1.5, 0, cupW * 0.08, 0, Math.PI * 2);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
+  ctx.restore();
+}

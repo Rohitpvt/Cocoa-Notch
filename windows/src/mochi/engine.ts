@@ -7,7 +7,7 @@
 import { Ease, lerp, type EaseFn } from "../core/anim";
 import { Sound } from "../core/sound";
 import type { BotEmoteName, BotStateName } from "../core/layout";
-import { PUMPKIN_BODY, drawOutfitBehind, drawOutfitFront, makeHead } from "./outfits";
+import { PUMPKIN_BODY, drawHeadphones, drawOutfitBehind, drawOutfitFront, makeHead } from "./outfits";
 import type { Outfit } from "./wardrobe";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -206,9 +206,12 @@ export class BotEngine {
   isDancing = false;
   dancingLevel = 0;
   dancingBpm = 112;
+  hasHeadphones = false;
+  headphonesPresence = 0;
 
-  setDancing(dancing: boolean, bpm = 112) {
+  setDancing(dancing: boolean, bpm = 112, withHeadphones = true) {
     this.isDancing = dancing;
+    this.hasHeadphones = dancing && withHeadphones;
     if (bpm > 0) this.dancingBpm = bpm;
   }
 
@@ -523,6 +526,7 @@ export class BotEngine {
       this.particles.length > 0 ||
       this.cfg.bounces || this.cfg.scans || this.cfg.breathes || this.cfg.zz || this.cfg.sweat ||
       this.dancingLevel > 0.001 ||
+      this.headphonesPresence > 0.001 ||
       this.isMini ||
       Math.abs(this.tgYaw - this.yaw) > 0.002 ||
       Math.abs(this.tgPitch - this.pitch) > 0.002 ||
@@ -555,6 +559,13 @@ export class BotEngine {
       this.dancingLevel = Math.min(dancingTarget, this.dancingLevel + dt / 0.3);
     } else if (this.dancingLevel > dancingTarget) {
       this.dancingLevel = Math.max(dancingTarget, this.dancingLevel - dt / 0.5);
+    }
+
+    const hpTarget = this.hasHeadphones ? 1 : 0;
+    if (this.headphonesPresence < hpTarget) {
+      this.headphonesPresence = Math.min(hpTarget, this.headphonesPresence + dt / 0.25);
+    } else if (this.headphonesPresence > hpTarget) {
+      this.headphonesPresence = Math.max(hpTarget, this.headphonesPresence - dt / 0.35);
     }
 
     const n = now();
@@ -794,6 +805,12 @@ export class BotEngine {
     if (this.morph > 0.05) this.drawMouth(x, body, R);
 
     if (head) drawOutfitFront(x, this.outfit, head, outfitState);
+
+    if (!this.isMini && this.headphonesPresence > 0.005) {
+      const hHead = head || makeHead(R, this.yaw, this.pitch, this.physDx, this.physDy);
+      const beat = (performance.now() / 1000) * (this.dancingBpm / 60);
+      drawHeadphones(x, hHead, this.headphonesPresence, beat);
+    }
 
     x.restore();
     x.restore();

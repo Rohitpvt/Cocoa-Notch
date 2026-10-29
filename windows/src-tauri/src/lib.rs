@@ -17,6 +17,7 @@ mod integrations;
 mod island;
 mod local_chat;
 mod log;
+mod media;
 mod net;
 mod notifications;
 mod openai_compat;
@@ -656,6 +657,7 @@ pub fn run() {
     }
 
     let hardware_monitor = Arc::new(hardware::HardwareMonitor::new());
+    let media_state = Arc::new(media::MediaState::new());
 
     builder
         .manage(Shared {
@@ -663,6 +665,7 @@ pub fn run() {
             gate: gate.clone(),
         })
         .manage(hardware_monitor.clone())
+        .manage(media_state.clone())
         .manage(Pending::default())
         .manage(Chat::default())
         .manage(shortcuts::Registry::default())
@@ -735,6 +738,11 @@ pub fn run() {
             desktop::desktop_mochi_set_asleep,
             hardware::get_system_stats,
             hardware::get_bluetooth_devices,
+            media::get_media_playback,
+            media::media_play_pause,
+            media::media_next,
+            media::media_prev,
+            media::media_seek,
         ])
         .setup(move |app| {
             let handle = app.handle().clone();
@@ -778,6 +786,7 @@ pub fn run() {
             pipe::start(handle.clone());
             integrations::start(handle.clone());
             hardware::start(handle.clone(), gate.clone(), hardware_monitor.clone());
+            media::start(handle.clone(), media_state.clone());
             notifications::start(handle.clone());
             shortcuts::apply(&handle, &loaded.shortcuts);
             Ok(())

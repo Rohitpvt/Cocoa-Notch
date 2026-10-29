@@ -252,9 +252,13 @@ export interface MusicPlaybackState {
   isPlaying: boolean;
   title?: string;
   artist?: string;
+  albumTitle?: string;
   albumArtUrl?: string;
   albumColor?: string;
   bpm?: number;
+  positionSecs?: number;
+  durationSecs?: number;
+  appName?: string;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
