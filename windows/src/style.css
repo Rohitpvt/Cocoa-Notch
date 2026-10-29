@@ -3996,6 +3996,8 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   position: relative;
   cursor: pointer;
   overflow: visible;
+  user-select: none;
+  touch-action: none;
 }
 
 .music-progress-fill {
@@ -4022,7 +4024,8 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
-.music-progress-bar:hover .music-progress-thumb {
+.music-progress-bar:hover .music-progress-thumb,
+.music-progress-bar.dragging .music-progress-thumb {
   opacity: 1;
 }
 

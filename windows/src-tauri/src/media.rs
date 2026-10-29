@@ -90,6 +90,26 @@ mod win {
         }
     }
 
+    fn current_windows_ticks() -> i64 {
+        use windows::Win32::System::SystemInformation::GetSystemTimePreciseAsFileTime;
+        let mut ft = windows::Win32::Foundation::FILETIME::default();
+        unsafe {
+            GetSystemTimePreciseAsFileTime(&mut ft);
+        }
+        let ticks = (((ft.dwHighDateTime as u64) << 32) | (ft.dwLowDateTime as u64)) as i64;
+        if ticks > 0 {
+            ticks
+        } else {
+            const WINDOWS_TO_UNIX_TICKS: i64 = 116_444_736_000_000_000;
+            match std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
+                Ok(d) => WINDOWS_TO_UNIX_TICKS
+                    .saturating_add((d.as_secs() as i64).saturating_mul(10_000_000))
+                    .saturating_add(d.subsec_nanos() as i64 / 100),
+                Err(_) => 0,
+            }
+        }
+    }
+
     pub fn query_playback() -> Option<MusicPlaybackState> {
         let session = get_current_session()?;
         let info = session.GetPlaybackInfo().ok()?;
@@ -110,14 +130,42 @@ mod win {
         let mut duration_secs = None;
 
         if let Ok(timeline) = session.GetTimelineProperties() {
-            if let Ok(pos) = timeline.Position() {
-                position_secs = Some(pos.Duration as f64 / 10_000_000.0);
-            }
+            let mut dur_val = None;
             if let Ok(end) = timeline.EndTime() {
                 let dur = end.Duration as f64 / 10_000_000.0;
                 if dur > 0.0 {
+                    dur_val = Some(dur);
                     duration_secs = Some(dur);
                 }
+            }
+
+            if let Ok(pos) = timeline.Position() {
+                let mut current_pos = pos.Duration as f64 / 10_000_000.0;
+
+                // WinRT TimelineProperties.Position is a snapshot taken at LastUpdatedTime.
+                // Media players (Spotify, browsers, etc.) only update this snapshot periodically
+                // or on state changes. When actively playing, calculate live playback position
+                // by adding elapsed time since LastUpdatedTime.
+                if is_playing {
+                    if let Ok(last_updated) = timeline.LastUpdatedTime() {
+                        let now_ticks = current_windows_ticks();
+                        if last_updated.UniversalTime > 0 && now_ticks > last_updated.UniversalTime {
+                            let elapsed_ticks = now_ticks - last_updated.UniversalTime;
+                            let elapsed_secs = elapsed_ticks as f64 / 10_000_000.0;
+                            if elapsed_secs >= 0.0 && elapsed_secs < 86_400.0 {
+                                current_pos += elapsed_secs;
+                            }
+                        }
+                    }
+                }
+
+                if let Some(dur) = dur_val {
+                    current_pos = current_pos.clamp(0.0, dur);
+                } else if current_pos < 0.0 {
+                    current_pos = 0.0;
+                }
+
+                position_secs = Some(current_pos);
             }
         }
 
@@ -242,7 +290,7 @@ pub fn start(app: AppHandle, state: std::sync::Arc<MediaState>) {
                 }
 
                 let sleep_ms = match &current {
-                    Some(c) if c.is_playing => 1000,
+                    Some(c) if c.is_playing => 800,
                     _ => 1500,
                 };
                 std::thread::sleep(Duration::from_millis(sleep_ms));

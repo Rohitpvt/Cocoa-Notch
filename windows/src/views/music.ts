@@ -15,6 +15,10 @@ export function buildMusic(actions: ViewActions): ViewHost {
   let currentLyrics: LyricsData | null = null;
   let lyricsLoading = false;
   let lastFetchedKey = "";
+  let lastTrackKey = "";
+  let lastReportedPlaying = false;
+  let userSeekingUntilMs = 0;
+  let isDraggingScrubber = false;
   let lastSyncTimeMs = performance.now();
   let basePositionSecs = 0;
   let activeLyricIdx = -1;
@@ -92,6 +96,10 @@ export function buildMusic(actions: ViewActions): ViewHost {
       onclick: (e) => {
         e.stopPropagation();
         actions.blip();
+        userSeekingUntilMs = performance.now() + 1200;
+        basePositionSecs = 0;
+        lastSyncTimeMs = performance.now();
+        updateProgressUi(0, State.musicPlayback?.durationSecs || 0);
         void Bridge.mediaPrev?.();
       },
     },
@@ -109,7 +117,15 @@ export function buildMusic(actions: ViewActions): ViewHost {
         actions.blip();
         const music = State.musicPlayback;
         if (music) {
-          State.setMusicPlayback({ ...music, isPlaying: !music.isPlaying });
+          const nextPlaying = !music.isPlaying;
+          const now = performance.now();
+          if (!nextPlaying) {
+            basePositionSecs = Math.min(music.durationSecs || 0, basePositionSecs + (now - lastSyncTimeMs) / 1000);
+            lastSyncTimeMs = now;
+          } else {
+            lastSyncTimeMs = now;
+          }
+          State.setMusicPlayback({ ...music, isPlaying: nextPlaying });
         }
         void Bridge.mediaPlayPause?.();
       },
@@ -125,6 +141,10 @@ export function buildMusic(actions: ViewActions): ViewHost {
       onclick: (e) => {
         e.stopPropagation();
         actions.blip();
+        userSeekingUntilMs = performance.now() + 1200;
+        basePositionSecs = 0;
+        lastSyncTimeMs = performance.now();
+        updateProgressUi(0, State.musicPlayback?.durationSecs || 0);
         void Bridge.mediaNext?.();
       },
     },
@@ -146,23 +166,59 @@ export function buildMusic(actions: ViewActions): ViewHost {
   const lyricsPanel = h("div", { class: "music-lyrics-panel" }, lyricsAvatarSlot, lyricsList);
 
   // Scrubber click / drag seeking
-  progressBar.addEventListener("click", (e) => {
-    e.stopPropagation();
-    actions.blip();
+  function seekFromEvent(e: MouseEvent | PointerEvent) {
     const music = State.musicPlayback;
     const duration = music?.durationSecs || 0;
-    if (duration <= 0) return;
+    if (duration <= 0) return 0;
 
     const rect = progressBar.getBoundingClientRect();
+    if (rect.width <= 0) return 0;
     const clickX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
     const ratio = clickX / rect.width;
-    const targetSecs = ratio * duration;
+    const targetSecs = Math.max(0, Math.min(duration, ratio * duration));
 
     basePositionSecs = targetSecs;
     lastSyncTimeMs = performance.now();
     updateProgressUi(targetSecs, duration);
-    void Bridge.mediaSeek?.(targetSecs);
+    return targetSecs;
+  }
+
+  progressBar.addEventListener("pointerdown", (e) => {
+    e.stopPropagation();
+    isDraggingScrubber = true;
+    progressBar.classList.add("dragging");
+    try {
+      progressBar.setPointerCapture?.(e.pointerId);
+    } catch {}
+    userSeekingUntilMs = performance.now() + 2000;
+    seekFromEvent(e);
   });
+
+  progressBar.addEventListener("pointermove", (e) => {
+    if (!isDraggingScrubber) return;
+    e.stopPropagation();
+    userSeekingUntilMs = performance.now() + 2000;
+    seekFromEvent(e);
+  });
+
+  const finishDrag = (e: PointerEvent) => {
+    if (!isDraggingScrubber) return;
+    isDraggingScrubber = false;
+    progressBar.classList.remove("dragging");
+    e.stopPropagation();
+    try {
+      progressBar.releasePointerCapture?.(e.pointerId);
+    } catch {}
+    userSeekingUntilMs = performance.now() + 2000;
+    const targetSecs = seekFromEvent(e);
+    if (targetSecs != null) {
+      actions.blip();
+      void Bridge.mediaSeek?.(targetSecs);
+    }
+  };
+
+  progressBar.addEventListener("pointerup", finishDrag);
+  progressBar.addEventListener("pointercancel", finishDrag);
 
   function setTab(tab: "player" | "lyrics") {
     activeTab = tab;
@@ -226,8 +282,10 @@ export function buildMusic(actions: ViewActions): ViewHost {
           onclick: (e) => {
             e.stopPropagation();
             actions.blip();
+            userSeekingUntilMs = performance.now() + 1500;
             basePositionSecs = line.timeSecs;
             lastSyncTimeMs = performance.now();
+            updateProgressUi(line.timeSecs, State.musicPlayback?.durationSecs || 0);
             void Bridge.mediaSeek?.(line.timeSecs);
           },
         });
@@ -303,12 +361,35 @@ export function buildMusic(actions: ViewActions): ViewHost {
           ? `${music.artist}${music.albumTitle ? ` · ${music.albumTitle}` : ""}`
           : "";
 
-        basePositionSecs = music.positionSecs || 0;
-        lastSyncTimeMs = performance.now();
-        updateProgressUi(basePositionSecs, music.durationSecs || 0);
+        const trackKey = `${music.artist || ""}:::${music.title}`;
+        const trackChanged = trackKey !== lastTrackKey;
+        const playStateChanged = music.isPlaying !== lastReportedPlaying;
+        lastTrackKey = trackKey;
+        lastReportedPlaying = music.isPlaying === true;
+
+        const incomingPos = music.positionSecs || 0;
+        const duration = music.durationSecs || 0;
+        const now = performance.now();
+
+        if (isDraggingScrubber) {
+          // Keep dragging position untouched
+        } else if (now > userSeekingUntilMs) {
+          const currentInterpolated = basePositionSecs + (isPlaying ? (now - lastSyncTimeMs) / 1000 : 0);
+          const drift = Math.abs(currentInterpolated - incomingPos);
+
+          // Snap if track changed, playback toggled, or drift is significant (> 1.5s)
+          if (trackChanged || playStateChanged || drift > 1.5 || basePositionSecs === 0) {
+            basePositionSecs = incomingPos;
+            lastSyncTimeMs = now;
+            updateProgressUi(basePositionSecs, duration);
+          }
+        }
 
         checkLyricsFetch(music);
       } else {
+        lastTrackKey = "";
+        lastReportedPlaying = false;
+        basePositionSecs = 0;
         titleEl.textContent = t("No track playing");
         artistEl.textContent = t("Play music in Spotify or any app");
         updateProgressUi(0, 0);
@@ -320,7 +401,7 @@ export function buildMusic(actions: ViewActions): ViewHost {
     },
     tick(nowMs: number) {
       const music = State.musicPlayback;
-      if (!music || !music.isPlaying) return;
+      if (!music || !music.isPlaying || isDraggingScrubber) return;
 
       const duration = music.durationSecs || 0;
       if (duration <= 0) return;

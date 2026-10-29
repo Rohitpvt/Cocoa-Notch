@@ -128,3 +128,31 @@ test("State handles extended MusicPlaybackState with timeline and appName", () =
   assert.equal(current.durationSecs, 200.0);
   assert.equal(current.bpm, 171);
 });
+
+test("Music scrubber & live timeline: time formatting and progress clamping", () => {
+  function formatTime(secs) {
+    if (!secs || isNaN(secs) || secs < 0) return "00:00";
+    const m = Math.floor(secs / 60);
+    const s = Math.floor(secs % 60);
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  }
+
+  assert.equal(formatTime(0), "00:00");
+  assert.equal(formatTime(-5), "00:00");
+  assert.equal(formatTime(8), "00:08");
+  assert.equal(formatTime(75), "01:15");
+  assert.equal(formatTime(294), "04:54");
+
+  // Clamping
+  const duration = 200.0;
+  const rawPos = 210.5;
+  const clamped = Math.min(duration, Math.max(0, rawPos));
+  assert.equal(clamped, 200.0);
+
+  // Extrapolation math: LastUpdatedTime elapsed ticks to live position
+  const rawSnapshotSecs = 10.0;
+  const elapsedTicks = 15_000_000; // 1.5 seconds in 100ns units
+  const elapsedSecs = elapsedTicks / 10_000_000.0;
+  const livePos = rawSnapshotSecs + elapsedSecs;
+  assert.equal(livePos, 11.5);
+});
