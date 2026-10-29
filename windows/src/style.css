@@ -3937,29 +3937,12 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   height: 100%;
 }
 
-.music-player-art-wrap {
+.music-player-avatar-slot {
   width: 76px;
   height: 76px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #181920;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.12);
   flex-shrink: 0;
-  transition: all 0.3s ease;
-}
-
-.music-player-art-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.music-player-art-fallback {
-  font-size: 32px;
-  opacity: 0.7;
+  pointer-events: none;
+  background: transparent;
 }
 
 .music-player-info-col {

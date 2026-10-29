@@ -71,9 +71,7 @@ export function buildMusic(actions: ViewActions): ViewHost {
   const el = h("div", { class: "view music-view" }, card(null, cardBody));
 
   // Player Elements
-  const artImg = h("img", { class: "music-player-art-img", alt: "Album Art" });
-  const artFallback = h("div", { class: "music-player-art-fallback", text: "🎵" });
-  const artWrap = h("div", { class: "music-player-art-wrap" }, artFallback);
+  const avatarSlot = h("div", { class: "music-player-avatar-slot" });
 
   const titleEl = h("div", { class: "music-player-title", text: t("No track playing") });
   const artistEl = h("div", { class: "music-player-artist", text: "" });
@@ -138,7 +136,7 @@ export function buildMusic(actions: ViewActions): ViewHost {
   const playerPanel = h(
     "div",
     { class: "music-player-panel" },
-    artWrap,
+    avatarSlot,
     h("div", { class: "music-player-info-col" }, titleEl, artistEl, progressRow, controlsRow),
   );
 
@@ -292,17 +290,6 @@ export function buildMusic(actions: ViewActions): ViewHost {
           ? `${music.artist}${music.albumTitle ? ` · ${music.albumTitle}` : ""}`
           : "";
 
-        // Album Art
-        clear(artWrap);
-        if (music.albumArtUrl) {
-          artImg.src = music.albumArtUrl;
-          artWrap.append(artImg);
-        } else {
-          artWrap.append(artFallback);
-        }
-        artWrap.style.boxShadow = `0 4px 20px ${color}40`;
-        artWrap.style.borderColor = `${color}55`;
-
         basePositionSecs = music.positionSecs || 0;
         lastSyncTimeMs = performance.now();
         updateProgressUi(basePositionSecs, music.durationSecs || 0);
@@ -312,10 +299,6 @@ export function buildMusic(actions: ViewActions): ViewHost {
         titleEl.textContent = t("No track playing");
         artistEl.textContent = t("Play music in Spotify or any app");
         updateProgressUi(0, 0);
-        clear(artWrap);
-        artWrap.append(artFallback);
-        artWrap.style.boxShadow = "none";
-        artWrap.style.borderColor = "rgba(255,255,255,0.08)";
       }
 
       if (!contentContainer.hasChildNodes()) {
