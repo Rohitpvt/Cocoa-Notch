@@ -838,6 +838,7 @@ class AppState {
    */
   defaultView(): IslandViewName {
     if (this.pendingApproval) return this.pendingApproval.questions ? "question" : "approval";
+    if (this.musicPlayback && this.musicPlayback.isPlaying) return "music";
     return this.tasks.length === 0 ? "empty" : "overview";
   }
 }

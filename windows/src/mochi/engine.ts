@@ -809,7 +809,8 @@ export class BotEngine {
     if (!this.isMini && this.headphonesPresence > 0.005) {
       const hHead = head || makeHead(R, this.yaw, this.pitch, this.physDx, this.physDy);
       const beat = (performance.now() / 1000) * (this.dancingBpm / 60);
-      drawHeadphones(x, hHead, this.headphonesPresence, beat);
+      const wearingHat = this.outfit !== "none" && this.outfitPresence > 0.1;
+      drawHeadphones(x, hHead, this.headphonesPresence, beat, wearingHat);
     }
 
     x.restore();

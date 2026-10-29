@@ -282,10 +282,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 5px;
   pointer-events: none;
   z-index: 2;
   transition: opacity 0.2s ease-in-out;
+  max-width: calc(100% - 150px);
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .stat-chip {
@@ -297,9 +300,14 @@ body {
   border-radius: 6px;
   padding: 2px 7px;
   height: 20px;
+  box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   line-height: 1;
   backdrop-filter: blur(4px);
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 140px;
+  overflow: hidden;
 }
 
 .stat-chip-label {
@@ -308,6 +316,8 @@ body {
   letter-spacing: 0.5px;
   color: rgba(255, 255, 255, 0.45);
   text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .stat-chip-value {
@@ -315,6 +325,12 @@ body {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .stat-chip.warm .stat-chip-value {
@@ -3176,17 +3192,20 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 
 /* ── Pomodoro & Accessory Header Chips ───────────────────────────────────────── */
 .stat-chip.pomodoro-chip {
+  pointer-events: auto;
   cursor: pointer;
   border-color: rgba(239, 68, 68, 0.35);
   background: rgba(239, 68, 68, 0.12);
   color: #fca5a5;
+  transition: all 0.15s ease;
 }
 
 .stat-chip.pomodoro-chip:hover {
-  background: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.22);
 }
 
 .stat-chip.accessory-chip {
+  pointer-events: auto;
   border-color: rgba(56, 189, 248, 0.3);
   background: rgba(56, 189, 248, 0.1);
   color: #7dd3fc;
@@ -3196,19 +3215,36 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 
 .stat-chip.accessory-chip:hover,
 .stat-chip.accessory-chip.active {
-  background: rgba(56, 189, 248, 0.22);
-  border-color: rgba(56, 189, 248, 0.45);
+  background: rgba(56, 189, 248, 0.25);
+  border-color: rgba(56, 189, 248, 0.55);
 }
 
 .stat-chip.music-chip {
+  pointer-events: auto;
   cursor: pointer;
   border-color: rgba(34, 197, 94, 0.35);
   background: rgba(34, 197, 94, 0.12);
   color: #86efac;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.15s ease;
 }
 
-.stat-chip.music-chip:hover {
-  background: rgba(34, 197, 94, 0.22);
+.stat-chip.music-chip:hover,
+.stat-chip.music-chip.active {
+  background: rgba(34, 197, 94, 0.25);
+  border-color: rgba(34, 197, 94, 0.55);
+}
+
+.stat-chip.music-chip .stat-chip-value {
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /* ── Music Playback Card & Ambient Artwork ────────────────────────────────────── */

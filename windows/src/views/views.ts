@@ -245,7 +245,8 @@ export function buildHeader(actions: ViewActions): ViewHost {
     }
 
     // Active music playback chip (Spotify / Apple Music / Universal)
-    if (State.musicPlayback && State.musicPlayback.isPlaying) {
+    const isMusicPlaying = State.musicPlayback?.isPlaying === true;
+    if (State.musicPlayback && isMusicPlaying) {
       const title = State.musicPlayback.title || "Music";
       const artist = State.musicPlayback.artist ? ` · ${State.musicPlayback.artist}` : "";
       const albumColor = State.musicPlayback.albumColor || "#1DB954";
@@ -255,7 +256,7 @@ export function buildHeader(actions: ViewActions): ViewHost {
           "div",
           {
             class: `stat-chip music-chip${activeClass}`,
-            style: `border-color: ${albumColor}55; background: ${albumColor}20; color: ${albumColor}; cursor: pointer;`,
+            style: `border-color: ${albumColor}55; background: ${albumColor}20; color: ${albumColor}; cursor: pointer; pointer-events: auto;`,
             title: `${title}${artist}`,
             onclick: (e: Event) => {
               e.stopPropagation();
@@ -267,7 +268,7 @@ export function buildHeader(actions: ViewActions): ViewHost {
               }
             },
           },
-          h("span", { class: "stat-chip-label", text: "🎧" }),
+          h("span", { class: "stat-chip-label", text: "🎵" }),
           h("span", { class: "stat-chip-value", text: title }),
         ),
       );
@@ -298,7 +299,8 @@ export function buildHeader(actions: ViewActions): ViewHost {
           ),
         );
       }
-      if (State.settings.showGpuTemp && stats.gpuTemp != null) {
+      // Keep header uncluttered when music is playing alongside accessory and CPU/GPU
+      if (!isMusicPlaying && State.settings.showGpuTemp && stats.gpuTemp != null) {
         const temp = Math.round(stats.gpuTemp);
         const tClass = temp > 80 ? "hot" : temp > 68 ? "warm" : "";
         items.push(
@@ -310,7 +312,7 @@ export function buildHeader(actions: ViewActions): ViewHost {
           ),
         );
       }
-      if (State.settings.showRamUsage) {
+      if (!isMusicPlaying && State.settings.showRamUsage) {
         const ramGb = stats.ramUsedGb.toFixed(1);
         const ramPct = Math.round(stats.ramUsage);
         const rClass = ramPct > 85 ? "hot" : ramPct > 70 ? "warm" : "";

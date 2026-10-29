@@ -284,7 +284,7 @@ export function buildMusic(actions: ViewActions): ViewHost {
 
       // Play / Pause Icon & Tooltip
       playPauseIcon.textContent = isPlaying ? "⏸" : "▶";
-      playPauseBtn.title = t(isPlaying ? "Pause" : "Play");
+      playPauseBtn.title = isPlaying ? t("Pause") : t("Play");
 
       if (music && music.title) {
         titleEl.textContent = music.title;

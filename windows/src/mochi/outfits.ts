@@ -1161,7 +1161,7 @@ export function drawWardrobeIcon(ctx: Ctx, size: number, selection: OutfitSelect
  * Over-ear DJ headphones dynamically worn during music playback.
  * Responsive to head yaw, pitch, and beat tempo.
  */
-export function drawHeadphones(ctx: Ctx, H: Head, presence: number, beat = 0) {
+export function drawHeadphones(ctx: Ctx, H: Head, presence: number, beat = 0, hasHat = false) {
   if (presence <= 0.005) return;
   const R = H.R;
   const posP = Ease.back(presence);
@@ -1181,8 +1181,9 @@ export function drawHeadphones(ctx: Ctx, H: Head, presence: number, beat = 0) {
   for (let i = 0; i <= steps; i++) {
     const angle = (i / steps) * Math.PI;
     const hx = -Math.cos(angle) * 1.02;
-    const hy = 0.15 + Math.sin(angle) * 0.98;
-    const p = proj(H, [hx, hy, 0]);
+    const hy = hasHat ? -0.16 - Math.sin(angle) * 0.22 : 0.15 + Math.sin(angle) * 0.98;
+    const hz = hasHat ? -0.35 * Math.sin(angle) : 0;
+    const p = proj(H, [hx, hy, hz]);
     headbandPts.push(p);
   }
 
