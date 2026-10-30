@@ -4090,14 +4090,32 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 
 .music-lyrics-list {
   flex: 1;
+  position: relative;
+  min-width: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 12px 6px;
-  scroll-behavior: smooth;
+  gap: 8px;
+  padding: 55px 8px 65px 8px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
+}
+
+.music-lyrics-list::-webkit-scrollbar {
+  width: 4px;
+  height: 0px;
+}
+
+.music-lyrics-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.music-lyrics-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
 }
 
 .music-lyric-spacer {
@@ -4108,10 +4126,14 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   font: 500 13px var(--font);
   color: rgba(255, 255, 255, 0.42);
   line-height: 1.45;
-  transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: color 0.22s ease, font-size 0.22s ease, text-shadow 0.22s ease, background 0.22s ease;
   cursor: pointer;
   border-radius: 6px;
-  padding: 2px 6px;
+  padding: 3px 6px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  box-sizing: border-box;
 }
 
 .music-lyric-line.plain {
@@ -4122,15 +4144,15 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 
 .music-lyric-line:hover {
   color: rgba(255, 255, 255, 0.85);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .music-lyric-line.active {
-  font: 700 15px var(--font);
+  font-weight: 700;
+  font-size: 14.5px;
   color: #FFFFFF;
   text-shadow: 0 0 14px var(--album-accent, rgba(29, 185, 84, 0.7));
-  transform: scale(1.02);
-  transform-origin: left center;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .music-lyrics-empty {

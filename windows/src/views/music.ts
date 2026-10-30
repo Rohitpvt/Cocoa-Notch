@@ -22,6 +22,7 @@ export function buildMusic(actions: ViewActions): ViewHost {
   let lastSyncTimeMs = performance.now();
   let basePositionSecs = 0;
   let activeLyricIdx = -1;
+  let userScrollUntilMs = 0;
 
   // Header Elements
   const appBadgeText = h("span", { class: "music-app-name", text: "Spotify" });
@@ -165,6 +166,50 @@ export function buildMusic(actions: ViewActions): ViewHost {
   const lyricsList = h("div", { class: "music-lyrics-list" });
   const lyricsPanel = h("div", { class: "music-lyrics-panel" }, lyricsAvatarSlot, lyricsList);
 
+  lyricsList.addEventListener("wheel", () => {
+    userScrollUntilMs = performance.now() + 3000;
+  }, { passive: true });
+  lyricsList.addEventListener("touchstart", () => {
+    userScrollUntilMs = performance.now() + 3000;
+  }, { passive: true });
+
+  function scrollToActiveLyric(lineEl: HTMLElement, smooth = true) {
+    if (!lineEl || !lyricsList) return;
+    const listRect = lyricsList.getBoundingClientRect();
+    const lineRect = lineEl.getBoundingClientRect();
+    if (listRect.height <= 0) return;
+
+    const currentRelTop = lineRect.top - listRect.top;
+    const targetRelTop = (listRect.height - lineRect.height) / 2;
+    const delta = currentRelTop - targetRelTop;
+
+    if (Math.abs(delta) < 2) return;
+
+    lyricsList.scrollTo({
+      top: Math.max(0, lyricsList.scrollTop + delta),
+      behavior: smooth ? "smooth" : "auto",
+    });
+  }
+
+  function updateLyricsHighlight(currentPos: number, smooth = true) {
+    if (activeTab !== "lyrics" || !currentLyrics || currentLyrics.lines.length === 0) return;
+    const idx = getActiveLyricIndex(currentLyrics.lines, currentPos);
+    if (idx !== activeLyricIdx) {
+      activeLyricIdx = idx;
+      const lines = lyricsList.querySelectorAll<HTMLElement>(".music-lyric-line");
+      lines.forEach((l, i) => {
+        const isActive = i === idx;
+        l.classList.toggle("active", isActive);
+        if (isActive) {
+          const isUserScrolling = performance.now() < userScrollUntilMs;
+          if (!isUserScrolling) {
+            scrollToActiveLyric(l, smooth);
+          }
+        }
+      });
+    }
+  }
+
   // Scrubber click / drag seeking
   function seekFromEvent(e: MouseEvent | PointerEvent) {
     const music = State.musicPlayback;
@@ -229,10 +274,14 @@ export function buildMusic(actions: ViewActions): ViewHost {
       contentContainer.append(playerPanel);
     } else {
       contentContainer.append(lyricsPanel);
+      activeLyricIdx = -1;
+      userScrollUntilMs = 0;
       renderLyrics();
       if (!currentLyrics && !lyricsLoading && State.musicPlayback) {
         checkLyricsFetch(State.musicPlayback, true);
       }
+      const pos = State.musicPlayback?.positionSecs || basePositionSecs || 0;
+      updateLyricsHighlight(pos, false);
     }
   }
 
@@ -272,6 +321,7 @@ export function buildMusic(actions: ViewActions): ViewHost {
 
     const color = music.albumColor || "#1DB954";
     lyricsList.style.setProperty("--music-accent", color);
+    lyricsList.style.setProperty("--album-accent", color);
 
     if (currentLyrics.lines.length > 0) {
       for (let i = 0; i < currentLyrics.lines.length; i++) {
@@ -283,14 +333,22 @@ export function buildMusic(actions: ViewActions): ViewHost {
             e.stopPropagation();
             actions.blip();
             userSeekingUntilMs = performance.now() + 1500;
+            userScrollUntilMs = 0;
             basePositionSecs = line.timeSecs;
             lastSyncTimeMs = performance.now();
             updateProgressUi(line.timeSecs, State.musicPlayback?.durationSecs || 0);
             void Bridge.mediaSeek?.(line.timeSecs);
+            activeLyricIdx = -1;
+            updateLyricsHighlight(line.timeSecs, true);
           },
         });
         lyricsList.append(lineEl);
       }
+      const pos = State.musicPlayback?.positionSecs || basePositionSecs || 0;
+      activeLyricIdx = -1;
+      requestAnimationFrame(() => {
+        updateLyricsHighlight(pos, false);
+      });
     } else if (currentLyrics.plainLyrics) {
       const rawLines = currentLyrics.plainLyrics.split(/\r?\n/);
       for (const rawLine of rawLines) {
@@ -324,6 +382,7 @@ export function buildMusic(actions: ViewActions): ViewHost {
         if (key === lastFetchedKey) {
           currentLyrics = data;
           lyricsLoading = false;
+          activeLyricIdx = -1;
           if (activeTab === "lyrics") renderLyrics();
         }
       })
@@ -331,6 +390,7 @@ export function buildMusic(actions: ViewActions): ViewHost {
         if (key === lastFetchedKey) {
           currentLyrics = null;
           lyricsLoading = false;
+          activeLyricIdx = -1;
           if (activeTab === "lyrics") renderLyrics();
         }
       });
@@ -386,6 +446,9 @@ export function buildMusic(actions: ViewActions): ViewHost {
         }
 
         checkLyricsFetch(music);
+        if (activeTab === "lyrics") {
+          updateLyricsHighlight(basePositionSecs, false);
+        }
       } else {
         lastTrackKey = "";
         lastReportedPlaying = false;
@@ -413,25 +476,7 @@ export function buildMusic(actions: ViewActions): ViewHost {
       updateProgressUi(currentPos, duration);
 
       // Synced lyrics highlight & scroll
-      if (activeTab === "lyrics" && currentLyrics && currentLyrics.lines.length > 0) {
-        const idx = getActiveLyricIndex(currentLyrics.lines, currentPos);
-        if (idx !== activeLyricIdx) {
-          activeLyricIdx = idx;
-          const lines = lyricsList.querySelectorAll(".music-lyric-line");
-          lines.forEach((l, i) => {
-            const isActive = i === idx;
-            l.classList.toggle("active", isActive);
-            if (isActive) {
-              const elTop = (l as HTMLElement).offsetTop;
-              const containerH = lyricsList.clientHeight;
-              lyricsList.scrollTo({
-                top: Math.max(0, elTop - containerH / 2 + 16),
-                behavior: "smooth",
-              });
-            }
-          });
-        }
-      }
+      updateLyricsHighlight(currentPos, true);
 
       return true; // request next frame while playing
     },

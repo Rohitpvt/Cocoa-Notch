@@ -156,3 +156,31 @@ test("Music scrubber & live timeline: time formatting and progress clamping", ()
   const livePos = rawSnapshotSecs + elapsedSecs;
   assert.equal(livePos, 11.5);
 });
+
+test("Lyrics auto-centering math: vertically centers the active line accurately", () => {
+  function computeTargetScrollTop(containerHeight, currentScrollTop, lineTopRelToContainer, lineHeight) {
+    const targetRelTop = (containerHeight - lineHeight) / 2;
+    const delta = lineTopRelToContainer - targetRelTop;
+    return Math.max(0, currentScrollTop + delta);
+  }
+
+  const containerH = 130;
+  const lineH = 20;
+  // Desired center top inside viewport: (130 - 20) / 2 = 55px
+
+  // Case 1: Line is already centered at 55px
+  let nextScroll = computeTargetScrollTop(containerH, 0, 55, lineH);
+  assert.equal(nextScroll, 0, "No scroll delta needed when already centered");
+
+  // Case 2: Line is lower in the list at 115px (60px below center)
+  nextScroll = computeTargetScrollTop(containerH, 0, 115, lineH);
+  assert.equal(nextScroll, 60, "Must scroll down by 60px so line sits at 55px");
+
+  // Case 3: Line is scrolled too far up at 5px (near ceiling / notch)
+  nextScroll = computeTargetScrollTop(containerH, 100, 5, lineH);
+  assert.equal(nextScroll, 50, "Must scroll up to 50px so line moves down to 55px");
+
+  // Case 4: Line at top with no room to scroll up clamps to 0
+  nextScroll = computeTargetScrollTop(containerH, 0, 10, lineH);
+  assert.equal(nextScroll, 0, "Clamps cleanly to 0");
+});
