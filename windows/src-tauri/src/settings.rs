@@ -949,6 +949,10 @@ mod tests {
                 "pillColors",
                 "language",
                 "desktopMochi",
+                "collapsedWidth",
+                "collapsedHeight",
+                "expandedWidth",
+                "expandedHeightScale",
             ]
         );
         let _ = std::fs::remove_dir_all(&dir);
