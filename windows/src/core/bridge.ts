@@ -47,6 +47,16 @@ export const Bridge = {
   mediaNext: () => call<void>("media_next"),
   mediaPrev: () => call<void>("media_prev"),
   mediaSeek: (positionSecs: number) => call<void>("media_seek", { positionSecs }),
+  fetchLyrics: (title: string, artist?: string, durationSecs?: number) =>
+    call<{
+      trackName?: string;
+      artistName?: string;
+      albumName?: string;
+      duration?: number;
+      plainLyrics?: string;
+      syncedLyrics?: string;
+      instrumental?: boolean;
+    } | null>("fetch_lyrics", { title, artist, durationSecs }),
   getMediaPlayback: () => call<MusicPlaybackState | null>("get_media_playback"),
   getBluetoothDevices: () => call<AccessoryDevice[]>("get_bluetooth_devices"),
   onAccessoryDevices: (cb: (d: AccessoryDevice[]) => void) =>

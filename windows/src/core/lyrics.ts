@@ -1,6 +1,8 @@
 // Synchronized LRC Lyrics Client & Parser for Cocoa Notch
 // Multi-strategy lyrics engine powered by LRCLIB (synced LRC) and open lyric providers.
 
+import { Bridge } from "./bridge";
+
 export interface LrcLine {
   timeSecs: number;
   text: string;
@@ -125,8 +127,31 @@ export async function fetchLyrics(
   }
 
   const promise = (async () => {
-    let networkError = false;
     try {
+      // Primary: Native Rust fetch_lyrics command (bypasses WebView2 CSP, CORS & browser sandboxing)
+      if (Bridge.fetchLyrics) {
+        try {
+          const nativeData = await Bridge.fetchLyrics(cleanT, cleanA, durationSecs);
+          if (nativeData && (nativeData.syncedLyrics || nativeData.plainLyrics)) {
+            const lines = nativeData.syncedLyrics ? parseLrc(nativeData.syncedLyrics) : [];
+            const result: LyricsData = {
+              trackName: nativeData.trackName || cleanT,
+              artistName: nativeData.artistName || cleanA,
+              albumName: nativeData.albumName,
+              duration: nativeData.duration,
+              syncedLyrics: nativeData.syncedLyrics,
+              plainLyrics: nativeData.plainLyrics,
+              lines,
+              isInstrumental: nativeData.instrumental === true || (lines.length === 0 && !nativeData.plainLyrics),
+            };
+            lyricsCache.set(cacheKey, result);
+            return result;
+          }
+        } catch (err) {
+          console.warn("[lyrics] Native fetchLyrics failed, falling back to web fetch:", err);
+        }
+      }
+
       const artists = getArtistVariants(cleanA);
       let data: any = null;
 
@@ -142,9 +167,7 @@ export async function fetchLyrics(
             const d = await res.json().catch(() => null);
             if (d && (d.syncedLyrics || d.plainLyrics)) data = d;
           }
-        } catch {
-          networkError = true;
-        }
+        } catch {}
       }
 
       // Strategy 2: Exact GET with duration if provided
@@ -164,9 +187,7 @@ export async function fetchLyrics(
               const d = await res.json().catch(() => null);
               if (d && (d.syncedLyrics || d.plainLyrics)) data = d;
             }
-          } catch {
-            networkError = true;
-          }
+          } catch {}
         }
       }
 
@@ -185,9 +206,7 @@ export async function fetchLyrics(
                 data = list.find((it: any) => it.syncedLyrics) || list.find((it: any) => it.plainLyrics);
               }
             }
-          } catch {
-            networkError = true;
-          }
+          } catch {}
         }
       }
 
@@ -205,9 +224,7 @@ export async function fetchLyrics(
               data = list.find((it: any) => it.syncedLyrics) || list.find((it: any) => it.plainLyrics);
             }
           }
-        } catch {
-          networkError = true;
-        }
+        } catch {}
       }
 
       // Strategy 5: Clean title-only query on LRCLIB
@@ -223,9 +240,7 @@ export async function fetchLyrics(
               data = list.find((it: any) => it.syncedLyrics) || list.find((it: any) => it.plainLyrics);
             }
           }
-        } catch {
-          networkError = true;
-        }
+        } catch {}
       }
 
       // Strategy 6: Fallback to Lyrics.ovh for plain text lyrics
@@ -249,9 +264,6 @@ export async function fetchLyrics(
       }
 
       if (!data) {
-        if (!networkError) {
-          lyricsCache.set(cacheKey, null);
-        }
         return null;
       }
 

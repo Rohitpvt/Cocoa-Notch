@@ -743,6 +743,7 @@ pub fn run() {
             media::media_next,
             media::media_prev,
             media::media_seek,
+            media::fetch_lyrics,
         ])
         .setup(move |app| {
             let handle = app.handle().clone();
