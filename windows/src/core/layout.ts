@@ -161,30 +161,49 @@ export function botPosition(
   view: IslandViewName,
   islandH: number,
   uploadProgress = 0,
+  settings?: Settings,
 ): BotPlacement {
+  const s = settings ?? (typeof State !== "undefined" ? State.settings : undefined);
   switch (mode) {
     case "hidden":
       return { cx: 46, cy: 16, diameter: 6, opacity: 0 };
-    case "compact":
-      return { cx: 40, cy: Math.round(islandH / 2), diameter: Math.min(22, Math.max(16, islandH - 12)), opacity: 1 };
+    case "compact": {
+      const compactH = s?.collapsedHeight || NOTCH_H;
+      const compactScale = compactH / NOTCH_H;
+      const diameter = Math.round(20 * compactScale);
+      const cx = Math.round(40 * compactScale);
+      const cy = Math.round(islandH / 2);
+      return { cx, cy, diameter, opacity: 1 };
+    }
     case "expanded": {
       const layout = VIEW_LAYOUTS[view];
+      const expW = s?.expandedWidth || EXPANDED_W;
+      const scaleW = expW / EXPANDED_W;
+      const scaleH = s?.expandedHeightScale || 1.0;
+      const expandedScale = scaleW * 0.4 + scaleH * 0.6;
+
       if (view === "uploading") {
         return {
-          cx: 36 + uploadProgress * 526,
-          cy: layout.botY ?? 103,
-          diameter: layout.botDiameter,
+          cx: Math.round((36 + uploadProgress * 526) * scaleW),
+          cy: Math.round((layout.botY ?? 103) * scaleH),
+          diameter: Math.round(layout.botDiameter * expandedScale),
           opacity: 1,
         };
       }
+      const diameter = Math.round(layout.botDiameter * expandedScale);
+      const cx = Math.round(layout.botX * expandedScale);
       if (layout.botY != null) {
-        return { cx: layout.botX, cy: layout.botY, diameter: layout.botDiameter, opacity: 1 };
+        const baseH = layout.height;
+        const cy = baseH > 0 && islandH > 0
+          ? Math.round(layout.botY * (islandH / baseH))
+          : Math.round(layout.botY * scaleH);
+        return { cx, cy, diameter, opacity: 1 };
       }
       // Centre of the fixed 84 pt card (8 pt top inset + 34 pt header → content at y = 42)
-      const headerBottom = 42;
-      const cardH = 84;
-      const cy = headerBottom + (islandH - headerBottom - cardH) / 2 + cardH / 2;
-      return { cx: layout.botX, cy, diameter: layout.botDiameter, opacity: 1 };
+      const headerBottom = Math.round(42 * expandedScale);
+      const cardH = Math.round(84 * expandedScale);
+      const cy = Math.round(headerBottom + (islandH - headerBottom - cardH) / 2 + cardH / 2);
+      return { cx, cy, diameter, opacity: 1 };
     }
   }
 }

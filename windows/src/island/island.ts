@@ -750,8 +750,25 @@ export class Island {
     this.islandEl.style.height = `${hh}px`;
     this.islandEl.style.borderRadius = `0 0 ${r}px ${r}px`;
     this.islandEl.style.transform = `translateX(-50%) translateY(${ty}px)`;
+
+    const compactH = State.settings.collapsedHeight || NOTCH_H;
+    const compactW = State.settings.collapsedWidth || COMPACT_W;
+    const compactScale = compactH / NOTCH_H;
+    const compactWScale = compactW / COMPACT_W;
+
+    const expW = State.settings.expandedWidth || EXPANDED_W;
+    const expHScale = State.settings.expandedHeightScale || 1.0;
+    const scaleW = expW / EXPANDED_W;
+    const scaleH = expHScale;
+    const expandedScale = scaleW * 0.4 + scaleH * 0.6;
+
+    this.islandEl.style.setProperty("--compact-scale", String(compactScale));
+    this.islandEl.style.setProperty("--compact-w-scale", String(compactWScale));
+    this.islandEl.style.setProperty("--expanded-scale", String(expandedScale));
+    this.islandEl.style.setProperty("--expanded-w-scale", String(scaleW));
+    this.islandEl.style.setProperty("--expanded-h-scale", String(scaleH));
+
     if (State.mode === "hidden") {
-      const compactH = State.settings.collapsedHeight || NOTCH_H;
       const progress = Math.min(1, Math.max(0, -ty / compactH));
       this.islandEl.style.opacity = `${Math.max(0, 1 - progress)}`;
     } else {
@@ -759,9 +776,11 @@ export class Island {
     }
     // These follow the island as it resizes, so they belong here rather than in
     // the state-driven DOM sync.
-    this.miniGrid.style.left = `${w - 40 - 14.5}px`;
-    this.miniGrid.style.top = `${hh / 2 - 14.5}px`;
-    const expW = State.settings.expandedWidth || EXPANDED_W;
+    this.miniGrid.style.left = `${w - Math.round(40 * compactScale) - 14.5 * compactScale}px`;
+    this.miniGrid.style.top = `${hh / 2 - 14.5 * compactScale}px`;
+    this.miniGrid.style.transform = `scale(${compactScale})`;
+    this.miniGrid.style.transformOrigin = "center center";
+
     this.greetingCanvas.style.left = `${(w - expW) / 2}px`;
     this.uploadCanvas.el.style.left = `${(w - expW) / 2}px`;
 
@@ -1391,6 +1410,7 @@ export class Island {
     Sound.setEnabled(State.settings.soundEnabled);
     Sound.setVolume(State.settings.soundVolume);
     this.fsm.homeToPetitDelay = State.settings.autoCloseInterval;
+    this.animateGeometry(false);
     State.notify();
   }
 

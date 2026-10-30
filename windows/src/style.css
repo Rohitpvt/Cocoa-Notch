@@ -179,10 +179,11 @@ body {
 /* Dynamic Hardware Stats in the center of the compact notch */
 #notch-stats {
   position: absolute;
-  left: 62px;
-  right: 62px;
-  top: 0;
-  bottom: 0;
+  left: calc(56px * var(--compact-scale, 1));
+  right: calc(56px * var(--compact-scale, 1));
+  top: 50%;
+  transform: translateY(-50%) scale(var(--compact-scale, 1));
+  transform-origin: center center;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -259,7 +260,7 @@ body {
 #content {
   position: absolute;
   inset: 0;
-  padding: 8px 10px 10px;
+  padding: calc(8px * var(--expanded-scale, 1)) calc(10px * var(--expanded-scale, 1)) calc(10px * var(--expanded-scale, 1));
   display: flex;
   flex-direction: column;
   transition: opacity 0.2s ease-in-out;
@@ -267,8 +268,8 @@ body {
 
 #header {
   position: relative;
-  height: 34px;
-  flex: 0 0 34px;
+  height: calc(34px * var(--expanded-scale, 1));
+  flex: 0 0 calc(34px * var(--expanded-scale, 1));
   display: flex;
   align-items: center;
   margin: 0 -10px;
@@ -294,24 +295,24 @@ body {
 .stat-chip {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: calc(4px * var(--expanded-scale, 1));
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
-  padding: 2px 7px;
-  height: 20px;
+  border-radius: calc(6px * var(--expanded-scale, 1));
+  padding: calc(2px * var(--expanded-scale, 1)) calc(7px * var(--expanded-scale, 1));
+  height: calc(20px * var(--expanded-scale, 1));
   box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   line-height: 1;
   backdrop-filter: blur(4px);
   white-space: nowrap;
   flex-shrink: 0;
-  max-width: 140px;
+  max-width: calc(140px * var(--expanded-scale, 1));
   overflow: hidden;
 }
 
 .stat-chip-label {
-  font-size: 9px;
+  font-size: calc(9px * var(--expanded-scale, 1));
   font-weight: 700;
   letter-spacing: 0.5px;
   color: rgba(255, 255, 255, 0.45);
@@ -321,14 +322,14 @@ body {
 }
 
 .stat-chip-value {
-  font-size: 10.5px;
+  font-size: calc(10.5px * var(--expanded-scale, 1));
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: #e2e8f0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100px;
+  max-width: calc(100px * var(--expanded-scale, 1));
   display: inline-block;
   vertical-align: middle;
 }
@@ -343,18 +344,18 @@ body {
 
 .tabs {
   display: flex;
-  gap: 5px;
-  padding-left: 14px;
+  gap: calc(5px * var(--expanded-scale, 1));
+  padding-left: calc(14px * var(--expanded-scale, 1));
 }
 
 .tab {
-  width: 30px;
-  height: 22px;
+  width: calc(30px * var(--expanded-scale, 1));
+  height: calc(22px * var(--expanded-scale, 1));
   display: grid;
   place-items: center;
   border: 0;
   background: transparent;
-  border-radius: 11px;
+  border-radius: calc(11px * var(--expanded-scale, 1));
   color: var(--dim-2);
   cursor: default;
   position: relative;
@@ -391,8 +392,8 @@ body {
 }
 
 .header-actions button {
-  width: 24px;
-  height: 24px;
+  width: calc(24px * var(--expanded-scale, 1));
+  height: calc(24px * var(--expanded-scale, 1));
   border-radius: 50%;
   border: 0;
   background: transparent;
@@ -1794,9 +1795,9 @@ input[type="range"]::-webkit-slider-thumb {
 
 .bubble {
   background: rgba(255, 255, 255, 0.13);
-  border-radius: 12px;
-  padding: 6px 10px;
-  font: 400 12.5px var(--font);
+  border-radius: calc(12px * var(--expanded-scale, 1));
+  padding: calc(6px * var(--expanded-scale, 1)) calc(10px * var(--expanded-scale, 1));
+  font: 400 calc(12.5px * var(--expanded-scale, 1)) var(--font);
   color: var(--ink-2);
   white-space: pre-wrap;
   user-select: text;
@@ -2144,7 +2145,7 @@ input[type="range"]::-webkit-slider-thumb {
   border: 0;
   background: transparent;
   color: var(--ink);
-  font: 400 13px var(--font);
+  font: 400 calc(13px * var(--expanded-scale, 1)) var(--font);
   outline: none;
   cursor: text;
 }
@@ -2322,7 +2323,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .int-card {
-  padding: 10px 12px 0 108px;
+  padding: calc(10px * var(--expanded-scale, 1)) calc(12px * var(--expanded-scale, 1)) 0 calc(108px * var(--expanded-scale, 1));
   display: flex;
   flex-direction: column;
 }
@@ -2731,8 +2732,8 @@ input[type="range"]::-webkit-slider-thumb {
 .plan-head {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 0 36px 0 108px;
+  gap: calc(6px * var(--expanded-scale, 1));
+  padding: 0 calc(36px * var(--expanded-scale, 1)) 0 calc(108px * var(--expanded-scale, 1));
   white-space: nowrap;
 }
 
@@ -3933,13 +3934,13 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 .music-player-panel {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: calc(16px * var(--expanded-scale, 1));
   height: 100%;
 }
 
 .music-player-avatar-slot {
-  width: 76px;
-  height: 76px;
+  width: calc(76px * var(--expanded-scale, 1));
+  height: calc(76px * var(--expanded-scale, 1));
   flex-shrink: 0;
   pointer-events: none;
   background: transparent;
@@ -3951,11 +3952,11 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   flex-direction: column;
   justify-content: center;
   min-width: 0;
-  gap: 4px;
+  gap: calc(4px * var(--expanded-scale, 1));
 }
 
 .music-player-title {
-  font: 600 13.5px var(--font);
+  font: 600 calc(13.5px * var(--expanded-scale, 1)) var(--font);
   color: var(--ink);
   white-space: nowrap;
   overflow: hidden;
@@ -3963,25 +3964,25 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 }
 
 .music-player-artist {
-  font: 400 11px var(--font);
+  font: 400 calc(11px * var(--expanded-scale, 1)) var(--font);
   color: var(--dim-2);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 2px;
+  margin-bottom: calc(2px * var(--expanded-scale, 1));
 }
 
 .music-progress-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: calc(8px * var(--expanded-scale, 1));
   width: 100%;
 }
 
 .music-time-label {
-  font: 500 9.5px var(--font);
+  font: 500 calc(9.5px * var(--expanded-scale, 1)) var(--font);
   color: var(--dim-2);
-  min-width: 32px;
+  min-width: calc(32px * var(--expanded-scale, 1));
 }
 
 .music-time-label.elapsed {
@@ -3990,9 +3991,9 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 
 .music-progress-bar {
   flex: 1;
-  height: 6px;
+  height: calc(6px * var(--expanded-scale, 1));
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  border-radius: calc(3px * var(--expanded-scale, 1));
   position: relative;
   cursor: pointer;
   overflow: visible;
@@ -4003,15 +4004,15 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 .music-progress-fill {
   height: 100%;
   background: var(--album-accent, #1DB954);
-  border-radius: 3px;
+  border-radius: calc(3px * var(--expanded-scale, 1));
   width: 0%;
   pointer-events: none;
   box-shadow: 0 0 6px var(--album-accent, rgba(29, 185, 84, 0.5));
 }
 
 .music-progress-thumb {
-  width: 12px;
-  height: 12px;
+  width: calc(12px * var(--expanded-scale, 1));
+  height: calc(12px * var(--expanded-scale, 1));
   border-radius: 50%;
   background: #FFFFFF;
   position: absolute;
@@ -4033,16 +4034,16 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  margin-top: 4px;
+  gap: calc(16px * var(--expanded-scale, 1));
+  margin-top: calc(4px * var(--expanded-scale, 1));
 }
 
 .music-ctrl-btn {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--ink);
-  width: 30px;
-  height: 30px;
+  width: calc(30px * var(--expanded-scale, 1));
+  height: calc(30px * var(--expanded-scale, 1));
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -4057,8 +4058,8 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 }
 
 .music-ctrl-btn.play-pause {
-  width: 36px;
-  height: 36px;
+  width: calc(36px * var(--expanded-scale, 1));
+  height: calc(36px * var(--expanded-scale, 1));
   background: var(--album-accent, #1DB954);
   color: #000000;
   border: none;
@@ -4071,7 +4072,7 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 }
 
 .music-play-pause-icon {
-  font-size: 14px;
+  font-size: calc(14px * var(--expanded-scale, 1));
   line-height: 1;
   display: flex;
   align-items: center;
@@ -4085,7 +4086,7 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   align-items: stretch;
   height: 100%;
   min-height: 0;
-  gap: 16px;
+  gap: calc(16px * var(--expanded-scale, 1));
 }
 
 .music-lyrics-list {
@@ -4096,8 +4097,8 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 55px 8px 65px 8px;
+  gap: calc(8px * var(--expanded-scale, 1));
+  padding: calc(55px * var(--expanded-scale, 1)) calc(8px * var(--expanded-scale, 1)) calc(65px * var(--expanded-scale, 1)) calc(8px * var(--expanded-scale, 1));
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
@@ -4119,17 +4120,17 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 }
 
 .music-lyric-spacer {
-  height: 8px;
+  height: calc(8px * var(--expanded-scale, 1));
 }
 
 .music-lyric-line {
-  font: 500 13px var(--font);
+  font: 500 calc(13px * var(--expanded-scale, 1)) var(--font);
   color: rgba(255, 255, 255, 0.42);
   line-height: 1.45;
   transition: color 0.22s ease, font-size 0.22s ease, text-shadow 0.22s ease, background 0.22s ease;
   cursor: pointer;
-  border-radius: 6px;
-  padding: 3px 6px;
+  border-radius: calc(6px * var(--expanded-scale, 1));
+  padding: calc(3px * var(--expanded-scale, 1)) calc(6px * var(--expanded-scale, 1));
   word-break: break-word;
   overflow-wrap: break-word;
   white-space: normal;
@@ -4149,7 +4150,7 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 
 .music-lyric-line.active {
   font-weight: 700;
-  font-size: 14.5px;
+  font-size: calc(14.5px * var(--expanded-scale, 1));
   color: #FFFFFF;
   text-shadow: 0 0 14px var(--album-accent, rgba(29, 185, 84, 0.7));
   background: rgba(255, 255, 255, 0.06);
