@@ -117,6 +117,14 @@ pub struct Settings {
     /// Mochi on the desktop: whether he lives there, and his spot. Owned by
     /// the Rust side (desktop.rs) — what a webview sends back is ignored.
     pub desktop_mochi: DesktopMochiPref,
+    /// Width of the notch in collapsed/compact mode (default 288.0).
+    pub collapsed_width: f64,
+    /// Height of the notch in collapsed/compact mode (default 32.0).
+    pub collapsed_height: f64,
+    /// Width of the notch in expanded mode (default 640.0).
+    pub expanded_width: f64,
+    /// Height scale multiplier of the notch in expanded mode (default 1.0 = 100%).
+    pub expanded_height_scale: f64,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -199,6 +207,10 @@ impl Default for Settings {
             pill_colors: BTreeMap::new(),
             language: String::new(),
             desktop_mochi: DesktopMochiPref::default(),
+            collapsed_width: 288.0,
+            collapsed_height: 32.0,
+            expanded_width: 640.0,
+            expanded_height_scale: 1.0,
         }
     }
 }
@@ -502,7 +514,11 @@ mod tests {
   "mochiOutfit": "witchHat",
   "pillColors": { "integration_claude": "#2DD4BF" },
   "language": "pt-BR",
-  "desktopMochi": { "onDesktop": true, "spot": { "x": 1500.5, "y": -300.0, "space": "screen" } }
+  "desktopMochi": { "onDesktop": true, "spot": { "x": 1500.5, "y": -300.0, "space": "screen" } },
+  "collapsedWidth": 340.0,
+  "collapsedHeight": 36.0,
+  "expandedWidth": 680.0,
+  "expandedHeightScale": 1.1
 }"##;
 
     fn custom() -> Value {

@@ -1256,6 +1256,213 @@ function generalSection(): HTMLElement {
   );
 }
 
+function notchSizingSection(): HTMLElement {
+  // Collapsed Mode Controls
+  const collapsedWidthInput = h("input", {
+    type: "range",
+    min: "200",
+    max: "520",
+    step: "2",
+    value: String(settings.collapsedWidth ?? 288),
+    class: "size-slider",
+  }) as HTMLInputElement;
+
+  const collapsedWidthBadge = h("span", {
+    class: "size-val-badge",
+    text: `${Math.round(settings.collapsedWidth ?? 288)} px`,
+  });
+
+  const resetCollapsedW = h("button", {
+    class: "btn-reset-size",
+    title: t("Reset to defaults"),
+    text: t("Reset"),
+    onclick: () => {
+      collapsedWidthInput.value = "288";
+      settings.collapsedWidth = 288;
+      collapsedWidthBadge.textContent = "288 px";
+      void save();
+    },
+  });
+
+  collapsedWidthInput.addEventListener("input", () => {
+    const val = Number(collapsedWidthInput.value);
+    settings.collapsedWidth = val;
+    collapsedWidthBadge.textContent = `${val} px`;
+    void save();
+  });
+
+  const collapsedHeightInput = h("input", {
+    type: "range",
+    min: "28",
+    max: "48",
+    step: "1",
+    value: String(settings.collapsedHeight ?? 32),
+    class: "size-slider",
+  }) as HTMLInputElement;
+
+  const collapsedHeightBadge = h("span", {
+    class: "size-val-badge",
+    text: `${Math.round(settings.collapsedHeight ?? 32)} px`,
+  });
+
+  const resetCollapsedH = h("button", {
+    class: "btn-reset-size",
+    title: t("Reset to defaults"),
+    text: t("Reset"),
+    onclick: () => {
+      collapsedHeightInput.value = "32";
+      settings.collapsedHeight = 32;
+      collapsedHeightBadge.textContent = "32 px";
+      void save();
+    },
+  });
+
+  collapsedHeightInput.addEventListener("input", () => {
+    const val = Number(collapsedHeightInput.value);
+    settings.collapsedHeight = val;
+    collapsedHeightBadge.textContent = `${val} px`;
+    void save();
+  });
+
+  // Expanded Mode Controls
+  const expandedWidthInput = h("input", {
+    type: "range",
+    min: "480",
+    max: "720",
+    step: "4",
+    value: String(settings.expandedWidth ?? 640),
+    class: "size-slider",
+  }) as HTMLInputElement;
+
+  const expandedWidthBadge = h("span", {
+    class: "size-val-badge",
+    text: `${Math.round(settings.expandedWidth ?? 640)} px`,
+  });
+
+  const resetExpandedW = h("button", {
+    class: "btn-reset-size",
+    title: t("Reset to defaults"),
+    text: t("Reset"),
+    onclick: () => {
+      expandedWidthInput.value = "640";
+      settings.expandedWidth = 640;
+      expandedWidthBadge.textContent = "640 px";
+      void save();
+    },
+  });
+
+  expandedWidthInput.addEventListener("input", () => {
+    const val = Number(expandedWidthInput.value);
+    settings.expandedWidth = val;
+    expandedWidthBadge.textContent = `${val} px`;
+    void save();
+  });
+
+  const expandedHeightScaleInput = h("input", {
+    type: "range",
+    min: "80",
+    max: "125",
+    step: "1",
+    value: String(Math.round((settings.expandedHeightScale ?? 1.0) * 100)),
+    class: "size-slider",
+  }) as HTMLInputElement;
+
+  const expandedHeightBadge = h("span", {
+    class: "size-val-badge",
+    text: `${Math.round((settings.expandedHeightScale ?? 1.0) * 100)}%`,
+  });
+
+  const resetExpandedH = h("button", {
+    class: "btn-reset-size",
+    title: t("Reset to defaults"),
+    text: t("Reset"),
+    onclick: () => {
+      expandedHeightScaleInput.value = "100";
+      settings.expandedHeightScale = 1.0;
+      expandedHeightBadge.textContent = "100%";
+      void save();
+    },
+  });
+
+  expandedHeightScaleInput.addEventListener("input", () => {
+    const val = Number(expandedHeightScaleInput.value);
+    settings.expandedHeightScale = val / 100;
+    expandedHeightBadge.textContent = `${val}%`;
+    void save();
+  });
+
+  const resetAllBtn = h("button", {
+    class: "btn secondary",
+    style: "align-self: flex-start; margin-top: 4px; padding: 5px 12px; font-size: 11.5px; border-radius: 8px; border: 1px solid var(--hairline); background: rgba(255,255,255,0.06); color: var(--ink); cursor: pointer;",
+    text: t("Reset to defaults"),
+    onclick: () => {
+      collapsedWidthInput.value = "288";
+      settings.collapsedWidth = 288;
+      collapsedWidthBadge.textContent = "288 px";
+
+      collapsedHeightInput.value = "32";
+      settings.collapsedHeight = 32;
+      collapsedHeightBadge.textContent = "32 px";
+
+      expandedWidthInput.value = "640";
+      settings.expandedWidth = 640;
+      expandedWidthBadge.textContent = "640 px";
+
+      expandedHeightScaleInput.value = "100";
+      settings.expandedHeightScale = 1.0;
+      expandedHeightBadge.textContent = "100%";
+
+      void save();
+    },
+  });
+
+  return h(
+    "section",
+    {},
+    h("h2", {}, h("span", { text: t("Notch Dimensions & Sizing") })),
+    h("div", {
+      class: "hint",
+      text: t("Adjust the notch width and height dynamically with separate control bars for collapsed and expanded modes."),
+    }),
+
+    // Collapsed Mode Group
+    h("div", { class: "size-control-group" },
+      h("div", { class: "size-control-header", text: t("Collapsed Mode (Compact Notch)") }),
+      h("div", { class: "row size-slider-row" },
+        h("label", { text: t("Collapsed width") }),
+        collapsedWidthInput,
+        collapsedWidthBadge,
+        resetCollapsedW,
+      ),
+      h("div", { class: "row size-slider-row" },
+        h("label", { text: t("Collapsed height") }),
+        collapsedHeightInput,
+        collapsedHeightBadge,
+        resetCollapsedH,
+      ),
+    ),
+
+    // Expanded Mode Group
+    h("div", { class: "size-control-group" },
+      h("div", { class: "size-control-header", text: t("Expanded Mode (Island Card)") }),
+      h("div", { class: "row size-slider-row" },
+        h("label", { text: t("Expanded width") }),
+        expandedWidthInput,
+        expandedWidthBadge,
+        resetExpandedW,
+      ),
+      h("div", { class: "row size-slider-row" },
+        h("label", { text: t("Expanded height") }),
+        expandedHeightScaleInput,
+        expandedHeightBadge,
+        resetExpandedH,
+      ),
+    ),
+
+    resetAllBtn,
+  );
+}
+
 function performanceSection(): HTMLElement {
   return h(
     "section",
@@ -1679,6 +1886,7 @@ async function render() {
     integrationsSection(present),
     welfareSection(),
     generalSection(),
+    notchSizingSection(),
     performanceSection(),
     shortcutsSection(shortcutReport),
     h("div", {

@@ -4,7 +4,7 @@
 import { Tracked, Spring, clamp } from "../core/anim";
 import { Bridge, IS_TAURI, onDragDrop } from "../core/bridge";
 import {
-  EXPANDED_CORNER, EXPANDED_W, NOTCH_H, NOTCH_W, PANEL_H, PANEL_W,
+  COMPACT_W, EXPANDED_CORNER, EXPANDED_W, NOTCH_H, NOTCH_W, PANEL_H, PANEL_W,
   ROUNDED_CORNER, VIEW_LAYOUTS, botGlowColor, botGlowOpacity, botPosition, chatPromptHeight,
   islandSize,
   QUESTION_PICKER_H,
@@ -716,7 +716,8 @@ export class Island {
   private targetSize(): { w: number; h: number; r: number } {
     let { w, h } = islandSize(State.mode, State.view, State.chatHistory.length);
     if (State.mode === "expanded" && State.view === "question" && State.pendingApproval?.questions) {
-      h = QUESTION_PICKER_H;
+      const scale = State.settings.expandedHeightScale || 1.0;
+      h = Math.round(QUESTION_PICKER_H * scale);
     }
     const r = State.mode === "expanded" ? EXPANDED_CORNER : ROUNDED_CORNER;
     return { w, h, r };
@@ -724,7 +725,8 @@ export class Island {
 
   private animateGeometry(shrinking: boolean) {
     const { w, h, r } = this.targetSize();
-    const ty = State.mode === "hidden" ? -NOTCH_H : 0;
+    const compactH = State.settings.collapsedHeight || NOTCH_H;
+    const ty = State.mode === "hidden" ? -compactH : 0;
     if (shrinking) {
       this.width.curveTowards(w);
       this.height.curveTowards(h);
@@ -749,7 +751,8 @@ export class Island {
     this.islandEl.style.borderRadius = `0 0 ${r}px ${r}px`;
     this.islandEl.style.transform = `translateX(-50%) translateY(${ty}px)`;
     if (State.mode === "hidden") {
-      const progress = Math.min(1, Math.max(0, -ty / NOTCH_H));
+      const compactH = State.settings.collapsedHeight || NOTCH_H;
+      const progress = Math.min(1, Math.max(0, -ty / compactH));
       this.islandEl.style.opacity = `${Math.max(0, 1 - progress)}`;
     } else {
       this.islandEl.style.opacity = "1";
@@ -758,8 +761,9 @@ export class Island {
     // the state-driven DOM sync.
     this.miniGrid.style.left = `${w - 40 - 14.5}px`;
     this.miniGrid.style.top = `${hh / 2 - 14.5}px`;
-    this.greetingCanvas.style.left = `${(w - EXPANDED_W) / 2}px`;
-    this.uploadCanvas.el.style.left = `${(w - EXPANDED_W) / 2}px`;
+    const expW = State.settings.expandedWidth || EXPANDED_W;
+    this.greetingCanvas.style.left = `${(w - expW) / 2}px`;
+    this.uploadCanvas.el.style.left = `${(w - expW) / 2}px`;
 
     const rect = { x: (PANEL_W - w) / 2, y: Math.max(0, ty), w, h: Math.max(0, hh + ty) };
     const p = this.pushedRect;
@@ -843,7 +847,9 @@ export class Island {
       }
       // Clicking the top notch area collapses the expanded island back to compact
       const rect = this.islandRect();
-      if (e.clientY <= NOTCH_H + 10 && Math.abs(e.clientX - (rect.x + rect.w / 2)) <= NOTCH_W / 2 + 50) {
+      const compactH = State.settings.collapsedHeight || NOTCH_H;
+      const compactW = State.settings.collapsedWidth || COMPACT_W;
+      if (e.clientY <= compactH + 10 && Math.abs(e.clientX - (rect.x + rect.w / 2)) <= compactW / 2 + 50) {
         this.collapse();
         return;
       }

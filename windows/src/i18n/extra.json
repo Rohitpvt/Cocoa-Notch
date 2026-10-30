@@ -5252,6 +5252,105 @@
    "pt-BR": "Toque música no Spotify ou em qualquer app",
    "ru": "Включите музыку в Spotify или любом приложении",
    "id": "Putar musik di Spotify atau aplikasi apa pun"
+  },
+  "Reset": {
+   "zh-Hans": "重置",
+   "hi": "रीसेट",
+   "es": "Restablecer",
+   "ar": "إعادة تعيين",
+   "fr": "Réinitialiser",
+   "bn": "রিসেট",
+   "pt-BR": "Redefinir",
+   "ru": "Сбросить",
+   "id": "Reset"
+  },
+  "Notch Dimensions & Sizing": {
+   "zh-Hans": "刘海尺寸与大小调整",
+   "hi": "नॉच आयाम और आकार निर्धारण",
+   "es": "Dimensiones y tamaño del notch",
+   "ar": "أبعاد وحجم النوتش",
+   "fr": "Dimensions et taille de l'encoche",
+   "bn": "নচ মাত্রা ও আকার",
+   "pt-BR": "Dimensões e dimensionamento do notch",
+   "ru": "Размеры и масштабирование выреза",
+   "id": "Dimensi dan Ukuran Notch"
+  },
+  "Adjust the notch width and height dynamically with separate control bars for collapsed and expanded modes.": {
+   "zh-Hans": "通过折叠和展开模式的独立控制条动态调整刘海的宽度和高度。",
+   "hi": "संक्षिप्त और विस्तृत मोड के लिए अलग नियंत्रण बार के साथ नॉच की चौड़ाई और ऊंचाई को गतिशील रूप से समायोजित करें।",
+   "es": "Ajuste el ancho y el alto del notch dinámicamente con barras de control separadas para los modos contraído y expandido.",
+   "ar": "اضبط عرض وارتفاع النوتش ديناميكيًا باستخدام أشرطة تحكم منفصلة للوضعين المطوي والموسع.",
+   "fr": "Ajustez dynamiquement la largeur et la hauteur de l'encoche avec des barres de contrôle distinctes pour les modes replié et développé.",
+   "bn": "সংকুচিত এবং প্রসারিত মোডের জন্য পৃথক নিয়ন্ত্রণ বার দিয়ে গতিশীলভাবে নচের প্রস্থ ও উচ্চতা সামঞ্জস্য করুন।",
+   "pt-BR": "Ajuste a largura e a altura do notch dinamicamente com barras de controle separadas para os modos recolhido e expandido.",
+   "ru": "Динамически настраивайте ширину и высоту выреза с помощью отдельных ползунков для свернутого и развернутого режимов.",
+   "id": "Sesuaikan lebar dan tinggi notch secara dinamis dengan bilah kontrol terpisah untuk mode diciutkan dan diperluas."
+  },
+  "Collapsed Mode (Compact Notch)": {
+   "zh-Hans": "折叠模式（紧凑刘海）",
+   "hi": "संक्षिप्त मोड (कॉम्पैक्ट नॉच)",
+   "es": "Modo contraído (Notch compacto)",
+   "ar": "الوضع المطوي (نوتش مدمج)",
+   "fr": "Mode replié (Encoche compacte)",
+   "bn": "সংকুচিত মোড (কম্প্যাক্ট নচ)",
+   "pt-BR": "Modo recolhido (Notch compacto)",
+   "ru": "Свернутый режим (Компактный вырез)",
+   "id": "Mode Diciutkan (Notch Ringkas)"
+  },
+  "Collapsed width": {
+   "zh-Hans": "折叠宽度",
+   "hi": "संक्षिप्त चौड़ाई",
+   "es": "Ancho contraído",
+   "ar": "العرض المطوي",
+   "fr": "Largeur repliée",
+   "bn": "সংকুচিত প্রস্থ",
+   "pt-BR": "Largura recolhida",
+   "ru": "Ширина в свернутом виде",
+   "id": "Lebar diciutkan"
+  },
+  "Collapsed height": {
+   "zh-Hans": "折叠高度",
+   "hi": "संक्षिप्त ऊंचाई",
+   "es": "Altura contraída",
+   "ar": "الارتفاع المطوي",
+   "fr": "Hauteur repliée",
+   "bn": "সংকুচিত উচ্চতা",
+   "pt-BR": "Altura recolhida",
+   "ru": "Высота в свернутом виде",
+   "id": "Tinggi diciutkan"
+  },
+  "Expanded Mode (Island Card)": {
+   "zh-Hans": "展开模式（灵动岛卡片）",
+   "hi": "विस्तृत मोड (आइलैंड कार्ड)",
+   "es": "Modo expandido (Tarjeta de isla)",
+   "ar": "الوضع الموسع (بطاقة الجزيرة)",
+   "fr": "Mode développé (Carte îlot)",
+   "bn": "প্রসারিত মোড (আইল্যান্ড কার্ড)",
+   "pt-BR": "Modo expandido (Cartão da ilha)",
+   "ru": "Развернутый режим (Карточка острова)",
+   "id": "Mode Diperluas (Kartu Pulau)"
+  },
+  "Expanded width": {
+   "zh-Hans": "展开宽度",
+   "hi": "विस्तृत चौड़ाई",
+   "es": "Ancho expandido",
+   "ar": "العرض الموسع",
+   "fr": "Largeur développée",
+   "bn": "প্রসারিত প্রস্থ",
+   "pt-BR": "Largura expandida",
+   "ru": "Ширина в развернутом виде",
+   "id": "Lebar diperluas"
+  },
+  "Expanded height": {
+   "zh-Hans": "展开高度",
+   "hi": "विस्तृत ऊंचाई",
+   "es": "Altura expandida",
+   "ar": "الارتفاع الموسع",
+   "fr": "Hauteur développée",
+   "bn": "প্রসারিত উচ্চতা",
+   "pt-BR": "Altura expandida",
+   "ru": "Высота в развернутом виде",
+   "id": "Tinggi diperluas"
   }
  }
 }

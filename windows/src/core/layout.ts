@@ -2,6 +2,8 @@
 // + IslandRootView.botPosition. All values are logical pixels, identical to the
 // macOS app's points.
 
+import { State, type Settings } from "./state";
+
 export type IslandMode = "hidden" | "compact" | "expanded";
 
 export type IslandViewName =
@@ -123,17 +125,25 @@ export function islandSize(
   mode: IslandMode,
   view: IslandViewName,
   chatCount = 0,
+  settings?: Settings,
 ): { w: number; h: number } {
+  const s = settings ?? (typeof State !== "undefined" ? State.settings : undefined);
+  const compactW = s?.collapsedWidth || COMPACT_W;
+  const compactH = s?.collapsedHeight || NOTCH_H;
+  const expandedW = s?.expandedWidth || EXPANDED_W;
+  const scale = s?.expandedHeightScale || 1.0;
+
   switch (mode) {
     case "hidden":
       // No notch to hide inside on a PC: the island retracts to zero height and
       // slides into the top edge of the screen instead of sitting there as a bar.
-      return { w: NOTCH_W, h: 0 };
+      return { w: compactW, h: 0 };
     case "compact":
-      return { w: COMPACT_W, h: NOTCH_H };
+      return { w: compactW, h: compactH };
     case "expanded": {
-      const h = view === "prompt" ? chatPromptHeight(chatCount) : VIEW_LAYOUTS[view].height;
-      return { w: EXPANDED_W, h };
+      const baseH = view === "prompt" ? chatPromptHeight(chatCount) : VIEW_LAYOUTS[view].height;
+      const h = Math.round(baseH * scale);
+      return { w: expandedW, h };
     }
   }
 }
@@ -156,7 +166,7 @@ export function botPosition(
     case "hidden":
       return { cx: 46, cy: 16, diameter: 6, opacity: 0 };
     case "compact":
-      return { cx: 40, cy: 16, diameter: 20, opacity: 1 };
+      return { cx: 40, cy: Math.round(islandH / 2), diameter: Math.min(22, Math.max(16, islandH - 12)), opacity: 1 };
     case "expanded": {
       const layout = VIEW_LAYOUTS[view];
       if (view === "uploading") {

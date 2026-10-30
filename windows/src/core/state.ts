@@ -194,6 +194,14 @@ export interface Settings {
    *  else English), or one of src/i18n's ten codes ("fr", "pt-BR", "zh-Hans"…).
    */
   language: string;
+  /** Width in px for the notch in collapsed mode (default 288, min 200, max 520) */
+  collapsedWidth: number;
+  /** Height in px for the notch in collapsed mode (default 32, min 28, max 48) */
+  collapsedHeight: number;
+  /** Width in px for the notch in expanded mode (default 640, min 480, max 720) */
+  expandedWidth: number;
+  /** Height scale factor for the notch in expanded mode (default 1.0 = 100%, min 0.8, max 1.25) */
+  expandedHeightScale: number;
   /** Mochi on the desktop. Rust owns it: whatever the page sends back is ignored. */
   desktopMochi?: {
     onDesktop: boolean;
@@ -314,6 +322,10 @@ export const DEFAULT_SETTINGS: Settings = {
   mochiOutfit: DEFAULT_OUTFIT,
   pillColors: {},
   language: "",
+  collapsedWidth: 288,
+  collapsedHeight: 32,
+  expandedWidth: 640,
+  expandedHeightScale: 1.0,
 };
 
 type Listener = () => void;
