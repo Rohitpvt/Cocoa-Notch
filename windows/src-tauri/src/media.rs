@@ -93,10 +93,7 @@ mod win {
 
     fn current_windows_ticks() -> i64 {
         use windows::Win32::System::SystemInformation::GetSystemTimePreciseAsFileTime;
-        let mut ft = windows::Win32::Foundation::FILETIME::default();
-        unsafe {
-            GetSystemTimePreciseAsFileTime(&mut ft);
-        }
+        let ft = unsafe { GetSystemTimePreciseAsFileTime() };
         let ticks = (((ft.dwHighDateTime as u64) << 32) | (ft.dwLowDateTime as u64)) as i64;
         if ticks > 0 {
             ticks
