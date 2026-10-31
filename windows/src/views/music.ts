@@ -17,6 +17,7 @@ export function buildMusic(actions: ViewActions): ViewHost {
   let lastFetchedKey = "";
   let lastTrackKey = "";
   let lastReportedPlaying = false;
+  let hasInitializedBasePos = false;
   let userSeekingUntilMs = 0;
   let isDraggingScrubber = false;
   let lastSyncTimeMs = performance.now();
@@ -175,18 +176,16 @@ export function buildMusic(actions: ViewActions): ViewHost {
 
   function scrollToActiveLyric(lineEl: HTMLElement, smooth = true) {
     if (!lineEl || !lyricsList) return;
-    const listRect = lyricsList.getBoundingClientRect();
-    const lineRect = lineEl.getBoundingClientRect();
-    if (listRect.height <= 0) return;
+    if (lyricsList.clientHeight <= 0 || lineEl.offsetTop == null) return;
 
-    const currentRelTop = lineRect.top - listRect.top;
-    const targetRelTop = (listRect.height - lineRect.height) / 2;
-    const delta = currentRelTop - targetRelTop;
+    // Use offsetTop for stable centering, independent of in-flight smooth scroll animations
+    const targetScrollTop = lineEl.offsetTop - (lyricsList.clientHeight - lineEl.clientHeight) / 2;
+    const clampedScrollTop = Math.max(0, targetScrollTop);
 
-    if (Math.abs(delta) < 2) return;
+    if (Math.abs(lyricsList.scrollTop - clampedScrollTop) < 2) return;
 
     lyricsList.scrollTo({
-      top: Math.max(0, lyricsList.scrollTop + delta),
+      top: clampedScrollTop,
       behavior: smooth ? "smooth" : "auto",
     });
   }
@@ -433,6 +432,9 @@ export function buildMusic(actions: ViewActions): ViewHost {
         const trackKey = `${music.artist || ""}:::${music.title}`;
         const trackChanged = trackKey !== lastTrackKey;
         const playStateChanged = music.isPlaying !== lastReportedPlaying;
+        if (trackChanged) {
+          hasInitializedBasePos = false;
+        }
         lastTrackKey = trackKey;
         lastReportedPlaying = music.isPlaying === true;
 
@@ -447,7 +449,8 @@ export function buildMusic(actions: ViewActions): ViewHost {
           const drift = Math.abs(currentInterpolated - incomingPos);
 
           // Snap if track changed, playback toggled, or drift is significant (> 1.5s)
-          if (trackChanged || playStateChanged || drift > 1.5 || basePositionSecs === 0) {
+          if (trackChanged || playStateChanged || drift > 1.5 || !hasInitializedBasePos) {
+            hasInitializedBasePos = true;
             basePositionSecs = incomingPos;
             lastSyncTimeMs = now;
             updateProgressUi(basePositionSecs, duration);
@@ -461,6 +464,7 @@ export function buildMusic(actions: ViewActions): ViewHost {
       } else {
         lastTrackKey = "";
         lastReportedPlaying = false;
+        hasInitializedBasePos = false;
         basePositionSecs = 0;
         titleEl.textContent = t("No track playing");
         artistEl.textContent = t("Play music in Spotify or any app");
@@ -473,14 +477,13 @@ export function buildMusic(actions: ViewActions): ViewHost {
     },
     tick(nowMs: number) {
       const music = State.musicPlayback;
-      if (!music || !music.isPlaying || isDraggingScrubber) return;
+      if (!music || !music.isPlaying || isDraggingScrubber) return false;
 
       const duration = music.durationSecs || 0;
-      if (duration <= 0) return;
 
       // Smooth interpolation between OS 1s ticks
       const dt = (nowMs - lastSyncTimeMs) / 1000;
-      const currentPos = Math.min(duration, basePositionSecs + dt);
+      const currentPos = duration > 0 ? Math.min(duration, basePositionSecs + dt) : basePositionSecs + dt;
 
       updateProgressUi(currentPos, duration);
 

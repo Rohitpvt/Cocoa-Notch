@@ -66,6 +66,28 @@ export function parseLrc(lrcText: string): LrcLine[] {
 }
 
 /**
+ * Synthesizes evenly distributed timestamps for plain lyrics when synced LRC is unavailable.
+ */
+export function synthesizeLinesFromPlain(plainLyrics: string, durationSecs?: number): LrcLine[] {
+  if (!plainLyrics || typeof plainLyrics !== "string") return [];
+  const rawLines = plainLyrics
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+  if (rawLines.length === 0) return [];
+
+  const totalSecs = durationSecs && durationSecs > 10 ? durationSecs : 210;
+  const introSecs = Math.min(8, totalSecs * 0.05);
+  const outroSecs = Math.min(10, totalSecs * 0.05);
+  const usableSecs = Math.max(10, totalSecs - introSecs - outroSecs);
+
+  return rawLines.map((text, i) => {
+    const timeSecs = introSecs + (i / rawLines.length) * usableSecs;
+    return { timeSecs: Math.round(timeSecs * 10) / 10, text };
+  });
+}
+
+/**
  * Finds the index of the currently active lyric line for the given playback time.
  * Returns -1 if playback is before the first timestamp.
  */
@@ -74,7 +96,7 @@ export function getActiveLyricIndex(lines: LrcLine[], currentTimeSecs: number): 
 
   let active = -1;
   for (let i = 0; i < lines.length; i++) {
-    if (lines[i].timeSecs <= currentTimeSecs + 0.1) {
+    if (lines[i].timeSecs <= currentTimeSecs) {
       active = i;
     } else {
       break;
@@ -146,7 +168,10 @@ export async function fetchLyrics(
         try {
           const nativeData = await Bridge.fetchLyrics(cleanT, cleanA, durationSecs);
           if (nativeData && (nativeData.syncedLyrics || nativeData.plainLyrics)) {
-            const lines = nativeData.syncedLyrics ? parseLrc(nativeData.syncedLyrics) : [];
+            let lines = nativeData.syncedLyrics ? parseLrc(nativeData.syncedLyrics) : [];
+            if (lines.length === 0 && nativeData.plainLyrics) {
+              lines = synthesizeLinesFromPlain(nativeData.plainLyrics, nativeData.duration || durationSecs);
+            }
             const result: LyricsData = {
               trackName: nativeData.trackName || cleanT,
               artistName: nativeData.artistName || cleanA,
@@ -282,7 +307,54 @@ export async function fetchLyrics(
         } catch {}
       }
 
-      // Strategy 6: Fallback to Lyrics.ovh for plain text lyrics
+      // Strategy 6: NetEase Cloud Music search & synced LRC
+      if (!data) {
+        for (const art of artists) {
+          if (data) break;
+          try {
+            const q = `${art ? `${art} ` : ""}${cleanT}`.trim();
+            const searchRes = await fetchWithTimeout(
+              `https://music.163.com/api/search/get?s=${encodeURIComponent(q)}&type=1&limit=1`,
+              {
+                headers: {
+                  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                },
+              },
+              3500
+            );
+            if (searchRes.ok) {
+              const searchData = await searchRes.json().catch(() => null);
+              const song = searchData?.result?.songs?.[0];
+              if (song?.id) {
+                const lrcRes = await fetchWithTimeout(
+                  `https://music.163.com/api/song/lyric?os=pc&id=${song.id}&lv=-1&kv=-1&tv=-1`,
+                  {
+                    headers: {
+                      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                    },
+                  },
+                  3500
+                );
+                if (lrcRes.ok) {
+                  const lrcData = await lrcRes.json().catch(() => null);
+                  const syncedLyrics = lrcData?.lrc?.lyric;
+                  if (syncedLyrics && typeof syncedLyrics === "string" && syncedLyrics.includes("[")) {
+                    data = {
+                      id: song.id,
+                      trackName: song.name || cleanT,
+                      artistName: song.artists?.[0]?.name || art || cleanA,
+                      syncedLyrics,
+                    };
+                    break;
+                  }
+                }
+              }
+            }
+          } catch {}
+        }
+      }
+
+      // Strategy 7: Fallback to Lyrics.ovh for plain text lyrics
       if (!data) {
         for (const art of artists) {
           if (data || !art) continue;
@@ -326,7 +398,10 @@ export async function fetchLyrics(
       const syncedLyrics: string | undefined = data.syncedLyrics || undefined;
       const plainLyrics: string | undefined = data.plainLyrics || undefined;
       const isInstrumental = Boolean(data.instrumental);
-      const lines = syncedLyrics ? parseLrc(syncedLyrics) : [];
+      let lines = syncedLyrics ? parseLrc(syncedLyrics) : [];
+      if (lines.length === 0 && plainLyrics) {
+        lines = synthesizeLinesFromPlain(plainLyrics, data.duration || durationSecs);
+      }
 
       const result: LyricsData = {
         id: data.id,

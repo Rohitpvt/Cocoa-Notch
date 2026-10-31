@@ -637,3 +637,29 @@ test("Lyrics system parses synced LRC and handles fallback without hanging", asy
   assert.equal(getActiveLyricIndex(lines, 16), 1);
   assert.equal(getActiveLyricIndex(lines, 25), 2);
 });
+
+test("Lyrics plain text fallback synthesizes timestamps and supports highlighting and scrolling", async () => {
+  const { synthesizeLinesFromPlain, getActiveLyricIndex } = await import("../src/core/lyrics.ts");
+
+  const plainText = `
+First things first
+I'ma say all the words inside my head
+I'm fired up and tired of the way that things have been, oh-ooh
+
+I was broken from a young age
+Taking my sulkin' to the masses
+`;
+
+  const synthesized = synthesizeLinesFromPlain(plainText, 200);
+  assert.equal(synthesized.length, 5);
+  assert.equal(synthesized[0].text, "First things first");
+  assert.ok(synthesized[0].timeSecs >= 8);
+  assert.ok(synthesized[4].timeSecs <= 200);
+  assert.ok(synthesized[1].timeSecs > synthesized[0].timeSecs);
+
+  // Verifying highlighting progression across song duration
+  assert.equal(getActiveLyricIndex(synthesized, 0), -1);
+  assert.equal(getActiveLyricIndex(synthesized, synthesized[0].timeSecs + 0.1), 0);
+  assert.equal(getActiveLyricIndex(synthesized, synthesized[2].timeSecs + 0.1), 2);
+  assert.equal(getActiveLyricIndex(synthesized, synthesized[4].timeSecs + 0.1), 4);
+});

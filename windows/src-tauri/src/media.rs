@@ -488,6 +488,72 @@ pub async fn fetch_lyrics(
         }
     }
 
+    // Strategy 5.5: NetEase Cloud Music search & synced LRC
+    for art in &artists {
+        let q = if art.is_empty() {
+            clean_t.clone()
+        } else {
+            format!("{} {}", art, clean_t)
+        };
+        if let Ok(mut url) = Url::parse("https://music.163.com/api/search/get") {
+            url.query_pairs_mut()
+                .append_pair("s", &q)
+                .append_pair("type", "1")
+                .append_pair("limit", "1");
+            if let Ok(resp) = client.get(url).send().await {
+                if resp.status().is_success() {
+                    if let Ok(search_val) = resp.json::<serde_json::Value>().await {
+                        if let Some(song) = search_val
+                            .get("result")
+                            .and_then(|r| r.get("songs"))
+                            .and_then(|s| s.as_array())
+                            .and_then(|a| a.first())
+                        {
+                            if let Some(song_id) = song.get("id").and_then(|id| id.as_i64()) {
+                                if let Ok(mut lrc_url) = Url::parse("https://music.163.com/api/song/lyric") {
+                                    lrc_url.query_pairs_mut()
+                                        .append_pair("os", "pc")
+                                        .append_pair("id", &song_id.to_string())
+                                        .append_pair("lv", "-1")
+                                        .append_pair("kv", "-1")
+                                        .append_pair("tv", "-1");
+                                    if let Ok(lrc_resp) = client.get(lrc_url).send().await {
+                                        if lrc_resp.status().is_success() {
+                                            if let Ok(lrc_val) = lrc_resp.json::<serde_json::Value>().await {
+                                                if let Some(synced) = lrc_val
+                                                    .get("lrc")
+                                                    .and_then(|l| l.get("lyric"))
+                                                    .and_then(|s| s.as_str())
+                                                {
+                                                    if synced.contains('[') {
+                                                        let song_name = song
+                                                            .get("name")
+                                                            .and_then(|n| n.as_str())
+                                                            .map(|s| s.to_string());
+                                                        return Some(LyricsPayload {
+                                                            id: Some(song_id),
+                                                            track_name: song_name.or_else(|| Some(clean_t.clone())),
+                                                            artist_name: if art.is_empty() { None } else { Some(art.clone()) },
+                                                            album_name: None,
+                                                            duration: duration_secs,
+                                                            plain_lyrics: None,
+                                                            synced_lyrics: Some(synced.to_string()),
+                                                            instrumental: Some(false),
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // Strategy 6: Fallback to Lyrics.ovh for plain lyrics (with proper URL path encoding)
     for art in &artists {
         if art.is_empty() {
