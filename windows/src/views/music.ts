@@ -377,8 +377,16 @@ export function buildMusic(actions: ViewActions): ViewHost {
     activeLyricIdx = -1;
     if (activeTab === "lyrics") renderLyrics();
 
+    const fetchTimeout = setTimeout(() => {
+      if (key === lastFetchedKey && lyricsLoading) {
+        lyricsLoading = false;
+        if (activeTab === "lyrics") renderLyrics();
+      }
+    }, 8000);
+
     void fetchLyrics(music.title, music.artist || "", music.durationSecs)
       .then((data) => {
+        clearTimeout(fetchTimeout);
         if (key === lastFetchedKey) {
           currentLyrics = data;
           lyricsLoading = false;
@@ -387,6 +395,7 @@ export function buildMusic(actions: ViewActions): ViewHost {
         }
       })
       .catch(() => {
+        clearTimeout(fetchTimeout);
         if (key === lastFetchedKey) {
           currentLyrics = null;
           lyricsLoading = false;

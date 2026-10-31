@@ -612,3 +612,28 @@ test("System notification deduplication suppresses repeating notifications and d
   assert.equal(resurrectAlert, false, "Cleared notifications must not re-alert or resurrect");
   assert.equal(State.notificationHistory.length, 0);
 });
+
+// ── 9. Lyrics Fetch Resilience & Circuit Breaker ───────────────────────────────
+
+test("Lyrics system parses synced LRC and handles fallback without hanging", async () => {
+  const { parseLrc, getActiveLyricIndex } = await import("../src/core/lyrics.ts");
+
+  const sampleLrc = `
+[00:12.50]Line 1 of song
+[00:15.00]Line 2 of song
+[00:20.30]Line 3 of song
+`;
+
+  const lines = parseLrc(sampleLrc);
+  assert.equal(lines.length, 3);
+  assert.equal(lines[0].timeSecs, 12.5);
+  assert.equal(lines[0].text, "Line 1 of song");
+  assert.equal(lines[1].timeSecs, 15);
+  assert.equal(lines[2].timeSecs, 20.3);
+
+  // Active index lookup
+  assert.equal(getActiveLyricIndex(lines, 10), -1);
+  assert.equal(getActiveLyricIndex(lines, 13), 0);
+  assert.equal(getActiveLyricIndex(lines, 16), 1);
+  assert.equal(getActiveLyricIndex(lines, 25), 2);
+});

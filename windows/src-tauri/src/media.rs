@@ -280,7 +280,7 @@ pub async fn fetch_lyrics(
     duration_secs: Option<f64>,
 ) -> Option<LyricsPayload> {
     let client = reqwest::Client::builder()
-        .timeout(Duration::from_secs(6))
+        .timeout(Duration::from_secs(3))
         .user_agent("CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)")
         .build()
         .ok()?;
@@ -335,18 +335,34 @@ pub async fn fetch_lyrics(
         artists.push(String::new());
     }
 
+    let mut lrclib_down = false;
+
     // Strategy 1: Exact GET without strict duration
     for art in &artists {
+        if lrclib_down {
+            break;
+        }
         if let Ok(mut url) = Url::parse("https://lrclib.net/api/get") {
             url.query_pairs_mut()
                 .append_pair("track_name", &clean_t)
                 .append_pair("artist_name", art);
-            if let Ok(resp) = client.get(url).send().await {
-                if resp.status().is_success() {
-                    if let Ok(payload) = resp.json::<LyricsPayload>().await {
-                        if payload.synced_lyrics.is_some() || payload.plain_lyrics.is_some() {
-                            return Some(payload);
+            match client.get(url).send().await {
+                Ok(resp) => {
+                    if resp.status().is_server_error() {
+                        lrclib_down = true;
+                        break;
+                    } else if resp.status().is_success() {
+                        if let Ok(payload) = resp.json::<LyricsPayload>().await {
+                            if payload.synced_lyrics.is_some() || payload.plain_lyrics.is_some() {
+                                return Some(payload);
+                            }
                         }
+                    }
+                }
+                Err(e) => {
+                    if e.is_timeout() || e.is_connect() {
+                        lrclib_down = true;
+                        break;
                     }
                 }
             }
@@ -354,20 +370,36 @@ pub async fn fetch_lyrics(
     }
 
     // Strategy 2: Exact GET with duration
-    if let Some(dur) = duration_secs {
-        if dur > 0.0 {
-            let dur_str = (dur.round() as u64).to_string();
-            for art in &artists {
-                if let Ok(mut url) = Url::parse("https://lrclib.net/api/get") {
-                    url.query_pairs_mut()
-                        .append_pair("track_name", &clean_t)
-                        .append_pair("artist_name", art)
-                        .append_pair("duration", &dur_str);
-                    if let Ok(resp) = client.get(url).send().await {
-                        if resp.status().is_success() {
-                            if let Ok(payload) = resp.json::<LyricsPayload>().await {
-                                if payload.synced_lyrics.is_some() || payload.plain_lyrics.is_some() {
-                                    return Some(payload);
+    if !lrclib_down {
+        if let Some(dur) = duration_secs {
+            if dur > 0.0 {
+                let dur_str = (dur.round() as u64).to_string();
+                for art in &artists {
+                    if lrclib_down {
+                        break;
+                    }
+                    if let Ok(mut url) = Url::parse("https://lrclib.net/api/get") {
+                        url.query_pairs_mut()
+                            .append_pair("track_name", &clean_t)
+                            .append_pair("artist_name", art)
+                            .append_pair("duration", &dur_str);
+                        match client.get(url).send().await {
+                            Ok(resp) => {
+                                if resp.status().is_server_error() {
+                                    lrclib_down = true;
+                                    break;
+                                } else if resp.status().is_success() {
+                                    if let Ok(payload) = resp.json::<LyricsPayload>().await {
+                                        if payload.synced_lyrics.is_some() || payload.plain_lyrics.is_some() {
+                                            return Some(payload);
+                                        }
+                                    }
+                                }
+                            }
+                            Err(e) => {
+                                if e.is_timeout() || e.is_connect() {
+                                    lrclib_down = true;
+                                    break;
                                 }
                             }
                         }
@@ -378,16 +410,32 @@ pub async fn fetch_lyrics(
     }
 
     // Strategy 3: Search endpoint on LRCLIB
-    for art in &artists {
-        if let Ok(mut url) = Url::parse("https://lrclib.net/api/search") {
-            url.query_pairs_mut()
-                .append_pair("track_name", &clean_t)
-                .append_pair("artist_name", art);
-            if let Ok(resp) = client.get(url).send().await {
-                if resp.status().is_success() {
-                    if let Ok(list) = resp.json::<Vec<LyricsPayload>>().await {
-                        if let Some(item) = list.into_iter().find(|it| it.synced_lyrics.is_some() || it.plain_lyrics.is_some()) {
-                            return Some(item);
+    if !lrclib_down {
+        for art in &artists {
+            if lrclib_down {
+                break;
+            }
+            if let Ok(mut url) = Url::parse("https://lrclib.net/api/search") {
+                url.query_pairs_mut()
+                    .append_pair("track_name", &clean_t)
+                    .append_pair("artist_name", art);
+                match client.get(url).send().await {
+                    Ok(resp) => {
+                        if resp.status().is_server_error() {
+                            lrclib_down = true;
+                            break;
+                        } else if resp.status().is_success() {
+                            if let Ok(list) = resp.json::<Vec<LyricsPayload>>().await {
+                                if let Some(item) = list.into_iter().find(|it| it.synced_lyrics.is_some() || it.plain_lyrics.is_some()) {
+                                    return Some(item);
+                                }
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        if e.is_timeout() || e.is_connect() {
+                            lrclib_down = true;
+                            break;
                         }
                     }
                 }
@@ -396,14 +444,25 @@ pub async fn fetch_lyrics(
     }
 
     // Strategy 4: Full query search
-    let query = format!("{} {}", artists.first().map(|s| s.as_str()).unwrap_or(""), clean_t).trim().to_string();
-    if let Ok(mut url) = Url::parse("https://lrclib.net/api/search") {
-        url.query_pairs_mut().append_pair("q", &query);
-        if let Ok(resp) = client.get(url).send().await {
-            if resp.status().is_success() {
-                if let Ok(list) = resp.json::<Vec<LyricsPayload>>().await {
-                    if let Some(item) = list.into_iter().find(|it| it.synced_lyrics.is_some() || it.plain_lyrics.is_some()) {
-                        return Some(item);
+    if !lrclib_down {
+        let query = format!("{} {}", artists.first().map(|s| s.as_str()).unwrap_or(""), clean_t).trim().to_string();
+        if let Ok(mut url) = Url::parse("https://lrclib.net/api/search") {
+            url.query_pairs_mut().append_pair("q", &query);
+            match client.get(url).send().await {
+                Ok(resp) => {
+                    if resp.status().is_server_error() {
+                        lrclib_down = true;
+                    } else if resp.status().is_success() {
+                        if let Ok(list) = resp.json::<Vec<LyricsPayload>>().await {
+                            if let Some(item) = list.into_iter().find(|it| it.synced_lyrics.is_some() || it.plain_lyrics.is_some()) {
+                                return Some(item);
+                            }
+                        }
+                    }
+                }
+                Err(e) => {
+                    if e.is_timeout() || e.is_connect() {
+                        lrclib_down = true;
                     }
                 }
             }
@@ -411,44 +470,55 @@ pub async fn fetch_lyrics(
     }
 
     // Strategy 5: Clean title-only search
-    if let Ok(mut url) = Url::parse("https://lrclib.net/api/search") {
-        url.query_pairs_mut().append_pair("q", &clean_t);
-        if let Ok(resp) = client.get(url).send().await {
-            if resp.status().is_success() {
-                if let Ok(list) = resp.json::<Vec<LyricsPayload>>().await {
-                    if let Some(item) = list.into_iter().find(|it| it.synced_lyrics.is_some() || it.plain_lyrics.is_some()) {
-                        return Some(item);
+    if !lrclib_down {
+        if let Ok(mut url) = Url::parse("https://lrclib.net/api/search") {
+            url.query_pairs_mut().append_pair("q", &clean_t);
+            match client.get(url).send().await {
+                Ok(resp) => {
+                    if resp.status().is_success() {
+                        if let Ok(list) = resp.json::<Vec<LyricsPayload>>().await {
+                            if let Some(item) = list.into_iter().find(|it| it.synced_lyrics.is_some() || it.plain_lyrics.is_some()) {
+                                return Some(item);
+                            }
+                        }
                     }
                 }
+                Err(_) => {}
             }
         }
     }
 
-    // Strategy 6: Fallback to Lyrics.ovh for plain lyrics
+    // Strategy 6: Fallback to Lyrics.ovh for plain lyrics (with proper URL path encoding)
     for art in &artists {
         if art.is_empty() {
             continue;
         }
-        let ovh_url = format!("https://api.lyrics.ovh/v1/{}/{}", art, clean_t);
-        if let Ok(url) = Url::parse(&ovh_url) {
-            if let Ok(resp) = client.get(url).send().await {
-                if resp.status().is_success() {
-                    #[derive(Deserialize)]
-                    struct OvhResp {
-                        lyrics: Option<String>,
-                    }
-                    if let Ok(ovh) = resp.json::<OvhResp>().await {
-                        if let Some(plain) = ovh.lyrics {
-                            if !plain.trim().is_empty() {
-                                return Some(LyricsPayload {
-                                    track_name: Some(clean_t.clone()),
-                                    artist_name: Some(art.clone()),
-                                    plain_lyrics: Some(plain),
-                                    synced_lyrics: None,
-                                    instrumental: Some(false),
-                                    ..Default::default()
-                                });
-                            }
+        let mut url = match Url::parse("https://api.lyrics.ovh/v1/") {
+            Ok(u) => u,
+            Err(_) => continue,
+        };
+        if let Ok(mut segs) = url.path_segments_mut() {
+            segs.push(art);
+            segs.push(&clean_t);
+        }
+        if let Ok(resp) = client.get(url).send().await {
+            if resp.status().is_success() {
+                #[derive(Deserialize)]
+                struct OvhResp {
+                    lyrics: Option<String>,
+                }
+                if let Ok(ovh) = resp.json::<OvhResp>().await {
+                    if let Some(plain) = ovh.lyrics {
+                        let trimmed = plain.trim();
+                        if !trimmed.is_empty() {
+                            return Some(LyricsPayload {
+                                track_name: Some(clean_t.clone()),
+                                artist_name: Some(art.clone()),
+                                plain_lyrics: Some(trimmed.to_string()),
+                                synced_lyrics: None,
+                                instrumental: Some(false),
+                                ..Default::default()
+                            });
                         }
                     }
                 }
