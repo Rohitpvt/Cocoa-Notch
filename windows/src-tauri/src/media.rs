@@ -834,30 +834,6 @@ pub async fn fetch_lyrics(
             }
         }
     }
-        if let Ok(resp) = client.get(url).send().await {
-            if resp.status().is_success() {
-                #[derive(Deserialize)]
-                struct OvhResp {
-                    lyrics: Option<String>,
-                }
-                if let Ok(ovh) = resp.json::<OvhResp>().await {
-                    if let Some(plain) = ovh.lyrics {
-                        let trimmed = plain.trim();
-                        if !trimmed.is_empty() {
-                            return Some(LyricsPayload {
-                                track_name: Some(clean_t.clone()),
-                                artist_name: Some(art.clone()),
-                                plain_lyrics: Some(trimmed.to_string()),
-                                synced_lyrics: None,
-                                instrumental: Some(false),
-                                ..Default::default()
-                            });
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     None
 }
