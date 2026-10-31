@@ -23,6 +23,18 @@ export interface LyricsData {
 const lyricsCache = new Map<string, LyricsData | null>();
 const pendingRequests = new Map<string, Promise<LyricsData | null>>();
 
+export const CREDIT_LINE_REGEX =
+  /^(?:作\s*词|作\s*曲|编\s*曲|制\s*作|监\s*制|混\s*音|母\s*带|吉\s*他|贝\s*斯|鼓|键\s*盘|和\s*声|录\s*音|credits?|written\s+by|composed\s+by|produced\s+by|lyrics\s+by|arranged\s+by)[\s:：]/i;
+
+/**
+ * Validates whether an LRC string contains at least 3 genuine non-credit lyric lines.
+ */
+export function isValidLrc(lrcText: string): boolean {
+  if (!lrcText || typeof lrcText !== "string") return false;
+  const lines = parseLrc(lrcText);
+  return lines.length >= 3;
+}
+
 /**
  * Parses standard LRC format strings ([mm:ss.xx] Lyrics text) into sorted LrcLine items.
  */
@@ -32,8 +44,8 @@ export function parseLrc(lrcText: string): LrcLine[] {
   const lines: LrcLine[] = [];
   const rawLines = lrcText.split(/\r?\n/);
 
-  // Regex to match one or more timestamps: [01:23.45] or [01:23]
-  const tagRegex = /\[(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?\]/g;
+  // Regex to match one or more timestamps: [01:23.45], [01:23], or with offset suffix like [00:00.00-1]
+  const tagRegex = /\[(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?(?:[-+]\d+)?\]/g;
 
   for (const line of rawLines) {
     const trimmed = line.trim();
@@ -56,8 +68,11 @@ export function parseLrc(lrcText: string): LrcLine[] {
 
     if (timestamps.length > 0) {
       const text = trimmed.replace(tagRegex, "").trim();
-      for (const timeSecs of timestamps) {
-        lines.push({ timeSecs, text });
+      // Filter out pure credit / metadata lines
+      if (text && !CREDIT_LINE_REGEX.test(text)) {
+        for (const timeSecs of timestamps) {
+          lines.push({ timeSecs, text });
+        }
       }
     }
   }
@@ -139,6 +154,108 @@ async function fetchWithTimeout(url: string, init?: RequestInit, timeoutMs = 300
 }
 
 /**
+ * Searches and extracts accurate song lyrics from Genius as an open fallback.
+ */
+export async function fetchGeniusLyricsWeb(
+  title: string,
+  artist?: string
+): Promise<{ trackName: string; artistName: string; plainLyrics: string } | null> {
+  const cleanT = cleanTitle(title || "");
+  const cleanA = (artist || "").split("·")[0].split(/[,;&\/]/)[0].trim();
+  const q = `${cleanA ? `${cleanA} ` : ""}${cleanT}`.trim();
+  if (!q) return null;
+
+  try {
+    const searchUrl = `https://genius.com/api/search/multi?per_page=5&q=${encodeURIComponent(q)}`;
+    const searchRes = await fetchWithTimeout(
+      searchUrl,
+      {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        },
+      },
+      3800
+    );
+    if (!searchRes.ok) return null;
+    const searchData = await searchRes.json().catch(() => null);
+    const sections = searchData?.response?.sections || [];
+    const songSection = sections.find((s: any) => s.type === "song" || s.type === "top_hit");
+    const rawHits: any[] = songSection?.hits || [];
+    const songHits = rawHits.filter((h: any) => h.type === "song" && h.result?.path);
+    if (songHits.length === 0) return null;
+
+    const hit =
+      songHits.find((h: any) => {
+        const t = (h.result?.title || "").toLowerCase();
+        const a = (h.result?.primary_artist?.name || "").toLowerCase();
+        return (
+          (t.includes(cleanT.toLowerCase()) || cleanT.toLowerCase().includes(t)) &&
+          (!cleanA || a.includes(cleanA.toLowerCase()) || cleanA.toLowerCase().includes(a))
+        );
+      }) || songHits[0];
+
+    const songPath = hit?.result?.path;
+    if (!songPath) return null;
+
+    const pageRes = await fetchWithTimeout(
+      `https://genius.com${songPath}`,
+      {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        },
+      },
+      4200
+    );
+    if (!pageRes.ok) return null;
+    const html = await pageRes.text();
+
+    const parts = html.split(/data-lyrics-container="true"[^>]*>/);
+    if (parts.length <= 1) return null;
+
+    let combined = "";
+    for (let i = 1; i < parts.length; i++) {
+      let block = parts[i];
+      const cutPos = block.search(
+        /<div class="Lyrics__Footer|<div class="RightSidebar|<section|<div class="SongHeader/
+      );
+      if (cutPos > 0) block = block.slice(0, cutPos);
+      combined +=
+        "\n" +
+        block
+          .replace(/<br\s*[\/]?>/gi, "\n")
+          .replace(/<[^>]+>/g, "")
+          .replace(/&amp;/g, "&")
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">")
+          .replace(/&quot;/g, '"')
+          .replace(/&#x27;/g, "'")
+          .trim();
+    }
+
+    const lines = combined
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(
+        (l) =>
+          l &&
+          !(l.startsWith("[") && l.endsWith("]")) &&
+          !l.includes("Contributors") &&
+          !l.includes("Translations")
+      );
+
+    if (lines.length < 3) return null;
+
+    return {
+      trackName: hit?.result?.title || cleanT,
+      artistName: hit?.result?.primary_artist?.name || cleanA,
+      plainLyrics: lines.join("\n"),
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Fetches synced lyrics with multi-strategy matching and plain lyrics fallback.
  */
 export async function fetchLyrics(
@@ -172,18 +289,20 @@ export async function fetchLyrics(
             if (lines.length === 0 && nativeData.plainLyrics) {
               lines = synthesizeLinesFromPlain(nativeData.plainLyrics, nativeData.duration || durationSecs);
             }
-            const result: LyricsData = {
-              trackName: nativeData.trackName || cleanT,
-              artistName: nativeData.artistName || cleanA,
-              albumName: nativeData.albumName,
-              duration: nativeData.duration,
-              syncedLyrics: nativeData.syncedLyrics,
-              plainLyrics: nativeData.plainLyrics,
-              lines,
-              isInstrumental: nativeData.instrumental === true || (lines.length === 0 && !nativeData.plainLyrics),
-            };
-            lyricsCache.set(cacheKey, result);
-            return result;
+            if (lines.length > 0 || nativeData.plainLyrics) {
+              const result: LyricsData = {
+                trackName: nativeData.trackName || cleanT,
+                artistName: nativeData.artistName || cleanA,
+                albumName: nativeData.albumName,
+                duration: nativeData.duration,
+                syncedLyrics: nativeData.syncedLyrics,
+                plainLyrics: nativeData.plainLyrics,
+                lines,
+                isInstrumental: nativeData.instrumental === true || (lines.length === 0 && !nativeData.plainLyrics),
+              };
+              lyricsCache.set(cacheKey, result);
+              return result;
+            }
           }
         } catch (err) {
           console.warn("[lyrics] Native fetchLyrics failed, falling back to web fetch:", err);
@@ -338,7 +457,7 @@ export async function fetchLyrics(
                 if (lrcRes.ok) {
                   const lrcData = await lrcRes.json().catch(() => null);
                   const syncedLyrics = lrcData?.lrc?.lyric;
-                  if (syncedLyrics && typeof syncedLyrics === "string" && syncedLyrics.includes("[")) {
+                  if (syncedLyrics && typeof syncedLyrics === "string" && isValidLrc(syncedLyrics)) {
                     data = {
                       id: song.id,
                       trackName: song.name || cleanT,
@@ -349,6 +468,20 @@ export async function fetchLyrics(
                   }
                 }
               }
+            }
+          } catch {}
+        }
+      }
+
+      // Strategy 6.5: Genius search and open lyrics extraction (high-accuracy global coverage)
+      if (!data) {
+        for (const art of artists) {
+          if (data) break;
+          try {
+            const geniusData = await fetchGeniusLyricsWeb(cleanT, art || cleanA);
+            if (geniusData && geniusData.plainLyrics) {
+              data = geniusData;
+              break;
             }
           } catch {}
         }

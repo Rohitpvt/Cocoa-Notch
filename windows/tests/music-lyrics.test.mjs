@@ -3,7 +3,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseLrc, getActiveLyricIndex } from "../src/core/lyrics.ts";
+import { parseLrc, getActiveLyricIndex, isValidLrc } from "../src/core/lyrics.ts";
 import { State } from "../src/core/state.ts";
 import { BotEngine } from "../src/mochi/engine.ts";
 
@@ -46,6 +46,27 @@ test("LRC Parser: handles empty, null, or malformed lyrics gracefully", () => {
   assert.deepEqual(parseLrc(""), []);
   assert.deepEqual(parseLrc(null), []);
   assert.deepEqual(parseLrc("Just plain text with no timestamp"), []);
+});
+
+test("LRC Parser & isValidLrc: filters credit stubs and recognizes valid lyric streams", () => {
+  // Bogus credit stub with offset suffix (e.g. NetEase Maula entry)
+  const creditStub = "[00:00.00-1] 作词 : Anuv Jain\n[00:00.00-1] 作曲 : Anuv Jain\n";
+  assert.equal(isValidLrc(creditStub), false, "Credit stub must be rejected as invalid LRC");
+  assert.deepEqual(parseLrc(creditStub), [], "Credits must be filtered out, leaving empty lines array");
+
+  // Song with credit prefix followed by real song lyrics
+  const mixedLrc = `
+[00:00.00] 作词 : Faheem Abdullah/Huzaif Nazar
+[00:01.00] 作曲 : Faheem Abdullah/Huzaif Nazar
+[00:14.05] Sajde Kiye Hote Khuda Ke Maine Agar
+[00:20.91] Chhod Ke Na Jaata Woh Bhi Is Qadar
+[00:27.48] Sajde Kiye Hote Khuda Ke Maine Agar
+`;
+  assert.equal(isValidLrc(mixedLrc), true, "Mixed LRC with >= 3 lyrics lines must be accepted");
+  const parsed = parseLrc(mixedLrc);
+  assert.equal(parsed.length, 3, "Only the 3 real lyrics lines should be parsed");
+  assert.equal(parsed[0].text, "Sajde Kiye Hote Khuda Ke Maine Agar");
+  assert.equal(parsed[0].timeSecs, 14.05);
 });
 
 test("getActiveLyricIndex: returns correct line index matching playback time", () => {
