@@ -23,8 +23,11 @@ export interface LyricsData {
 const lyricsCache = new Map<string, LyricsData | null>();
 const pendingRequests = new Map<string, Promise<LyricsData | null>>();
 
-export const CREDIT_LINE_REGEX =
-  /^(?:作\s*词|作\s*曲|编\s*曲|制\s*作|监\s*制|混\s*音|母\s*带|吉\s*他|贝\s*斯|鼓|键\s*盘|和\s*声|录\s*音|credits?|written\s+by|composed\s+by|produced\s+by|lyrics\s+by|arranged\s+by)[\s:：]/i;
+export const CREDIT_OR_NOISE_LINE =
+  /^(?:作\s*词|作\s*曲|编\s*曲|制\s*作|监\s*制|混\s*音|母\s*带|吉\s*他|贝\s*斯|鼓|键\s*盘|和\s*声|录\s*音|credits?|written\s+by|composed\s+by|produced\s+by|lyrics\s+by|arranged\s+by|published\s+by|mixed\s+by|mastered\s+by|recorded\s+at|engineer|label|copyright|all\s+rights\s+reserved)[\s:：]/i;
+
+export const PLACEHOLDER_OR_STUB_LINE =
+  /^(?:lyrics?\s+(?:not\s+available|not\s+found|pending|to\s+be\s+added)|add\s+lyrics|instrumental|pure\s+music|no\s+lyrics?\s+available|enjoy\s+the\s+music)\.?$/i;
 
 /**
  * Validates whether an LRC string contains at least 3 genuine non-credit lyric lines.
@@ -68,8 +71,8 @@ export function parseLrc(lrcText: string): LrcLine[] {
 
     if (timestamps.length > 0) {
       const text = trimmed.replace(tagRegex, "").trim();
-      // Filter out pure credit / metadata lines
-      if (text && !CREDIT_LINE_REGEX.test(text)) {
+      // Filter out pure credit / metadata lines and placeholder stubs
+      if (text && !CREDIT_OR_NOISE_LINE.test(text) && !PLACEHOLDER_OR_STUB_LINE.test(text)) {
         for (const timeSecs of timestamps) {
           lines.push({ timeSecs, text });
         }
@@ -88,7 +91,12 @@ export function synthesizeLinesFromPlain(plainLyrics: string, durationSecs?: num
   const rawLines = plainLyrics
     .split(/\r?\n/)
     .map((l) => l.trim())
-    .filter(Boolean);
+    .filter((l) => {
+      if (!l) return false;
+      if (l.startsWith("[") && l.endsWith("]")) return false;
+      if (CREDIT_OR_NOISE_LINE.test(l) || PLACEHOLDER_OR_STUB_LINE.test(l)) return false;
+      return true;
+    });
   if (rawLines.length === 0) return [];
 
   const totalSecs = durationSecs && durationSecs > 10 ? durationSecs : 210;
@@ -123,21 +131,71 @@ export function getActiveLyricIndex(lines: LrcLine[], currentTimeSecs: number): 
 export function cleanTitle(title: string): string {
   if (!title) return "";
   const cleaned = title
-    .replace(/\s*[|]\s*.*$/i, "")
-    .replace(/\s*\([^)]*(?:slowed|sped|remix|reverb|edit|version|feat|ft\.|prod|official|audio|video|tribute|cover|instrumental|deluxe|remastered|mono|stereo)[^)]*\)/gi, "")
+    .replace(/\s*[|/]\s*.*$/i, "")
+    // Strip (From "Movie"), (From 'Movie'), (From Movie), [From ...], etc.
+    .replace(/\s*[\(\[](?:from\s+["'“‘]?[^)\"\]]+["'”’]?|original\s+motion\s+picture\s+soundtrack|soundtrack\s+version|ost\s+version|ost)[^)\]]*[\)\]]/gi, "")
+    // Strip common audio/video/edition/featured artist modifiers in parentheses
+    .replace(/\s*\([^)]*(?:slowed|sped|remix|reverb|edit|version|feat|ft\.|prod|with|official|audio|video|tribute|cover|instrumental|deluxe|remaster(?:ed)?|mono|stereo|anniversary|radio|extended|acoustic|live|session|mix|reprise|theme)[^)]*\)/gi, "")
     .replace(/\s*\[[^\]]*\]/gi, "")
-    .replace(/\s*-\s*[^-(]*(?:slowed|sped|remix|reverb|edit|version|instrumental|deluxe|remastered|bonus).*$/gi, "")
+    // Strip trailing "- From ...", "- Remix", "- Live", "- 2013 Remaster", "- Explicit", etc.
+    .replace(/\s*-\s*[^-(]*(?:from\s+["']?[^"'-]+|soundtrack|slowed|sped|remix|reverb|edit|version|instrumental|deluxe|remaster(?:ed)?|\d{4}\s+remaster|bonus|radio|live|acoustic|reprise|session|explicit|clean).*$/gi, "")
+    .replace(/^["'“‘](.*)["'”’]$/, "$1")
     .trim();
   return cleaned || title.trim();
+}
+
+export function getTitleVariants(title: string): string[] {
+  if (!title) return [];
+  const raw = title.trim();
+  const variants = [raw];
+
+  const cleaned = cleanTitle(raw);
+  if (cleaned && !variants.includes(cleaned)) {
+    variants.push(cleaned);
+  }
+
+  // Base title: strip after first ' - ' or '(' or '['
+  const base = raw.split(/\s*[-–—]\s*/)[0].split(/\s*[([|/]/)[0].trim();
+  if (base && !variants.includes(base) && base.length >= 2) {
+    variants.push(base);
+  }
+
+  return variants;
 }
 
 export function getArtistVariants(artist: string): string[] {
   if (!artist) return [];
   const raw = artist.split("·")[0].trim();
   const variants = [raw];
-  const primary = raw.split(/[,;&\/]|\s+(?:feat\.|ft\.|with)\s+/i)[0].trim();
-  if (primary && primary !== raw) variants.push(primary);
+
+  // Disambiguate all collaborating artists
+  const tokens = raw
+    .split(/[,;&\/]|\s+(?:feat\.|ft\.|with|&|x)\s+/i)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  for (const t of tokens) {
+    if (!variants.includes(t)) {
+      variants.push(t);
+    }
+  }
+
   return variants;
+}
+
+export function decodeHtmlEntities(raw: string): string {
+  if (!raw) return "";
+  return raw
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;|&#8217;|&#8216;|&rsquo;|&lsquo;/g, "'")
+    .replace(/&#8220;|&#8221;|&ldquo;|&rdquo;/g, '"')
+    .replace(/&mdash;|&#8212;/g, "—")
+    .replace(/&ndash;|&#8211;/g, "–")
+    .replace(/&hellip;|&#8230;/g, "…")
+    .replace(/\u00a0/g, " ");
 }
 
 async function fetchWithTimeout(url: string, init?: RequestInit, timeoutMs = 3000): Promise<Response> {
@@ -151,6 +209,32 @@ async function fetchWithTimeout(url: string, init?: RequestInit, timeoutMs = 300
     clearTimeout(timer);
     throw err;
   }
+}
+
+function scoreGeniusHit(hit: any, targetTitle: string, targetArtist: string): number {
+  if (hit.type !== "song" || !hit.result?.path) return -100;
+  const t = (hit.result.title || "").toLowerCase();
+  const a = (hit.result.primary_artist?.name || "").toLowerCase();
+  const targetT = targetTitle.toLowerCase();
+  const targetA = targetArtist.toLowerCase();
+
+  let score = 0;
+  if (t === targetT) score += 60;
+  else if (t.includes(targetT)) score += 35;
+
+  if (targetA) {
+    if (a.includes(targetA) || targetA.includes(a)) score += 40;
+    else if (t.includes(targetA)) score += 20;
+  }
+
+  if (t.includes("translation") && !targetT.includes("translation")) score -= 25;
+  if (t.includes("instrumental") && !targetT.includes("instrumental")) score -= 40;
+  if (t.includes("annotated")) score -= 30;
+  if (t.includes("tracklist")) score -= 50;
+  if (t.includes("credits")) score -= 30;
+  if (t.includes("romanized")) score += 5;
+
+  return score;
 }
 
 /**
@@ -184,15 +268,10 @@ export async function fetchGeniusLyricsWeb(
     const songHits = rawHits.filter((h: any) => h.type === "song" && h.result?.path);
     if (songHits.length === 0) return null;
 
-    const hit =
-      songHits.find((h: any) => {
-        const t = (h.result?.title || "").toLowerCase();
-        const a = (h.result?.primary_artist?.name || "").toLowerCase();
-        return (
-          (t.includes(cleanT.toLowerCase()) || cleanT.toLowerCase().includes(t)) &&
-          (!cleanA || a.includes(cleanA.toLowerCase()) || cleanA.toLowerCase().includes(a))
-        );
-      }) || songHits[0];
+    const scoredHits = songHits
+      .map((h: any) => ({ hit: h, score: scoreGeniusHit(h, cleanT, cleanA) }))
+      .sort((a: any, b: any) => b.score - a.score);
+    const hit = scoredHits[0]?.hit || songHits[0];
 
     const songPath = hit?.result?.path;
     if (!songPath) return null;
@@ -221,15 +300,11 @@ export async function fetchGeniusLyricsWeb(
       if (cutPos > 0) block = block.slice(0, cutPos);
       combined +=
         "\n" +
-        block
-          .replace(/<br\s*[\/]?>/gi, "\n")
-          .replace(/<[^>]+>/g, "")
-          .replace(/&amp;/g, "&")
-          .replace(/&lt;/g, "<")
-          .replace(/&gt;/g, ">")
-          .replace(/&quot;/g, '"')
-          .replace(/&#x27;/g, "'")
-          .trim();
+        decodeHtmlEntities(
+          block
+            .replace(/<br\s*[\/]?>/gi, "\n")
+            .replace(/<[^>]+>/g, "")
+        ).trim();
     }
 
     const lines = combined
@@ -240,7 +315,10 @@ export async function fetchGeniusLyricsWeb(
           l &&
           !(l.startsWith("[") && l.endsWith("]")) &&
           !l.includes("Contributors") &&
-          !l.includes("Translations")
+          !l.includes("Translations") &&
+          !l.endsWith("Lyrics") &&
+          !CREDIT_OR_NOISE_LINE.test(l) &&
+          !PLACEHOLDER_OR_STUB_LINE.test(l)
       );
 
     if (lines.length < 3) return null;
@@ -309,42 +387,18 @@ export async function fetchLyrics(
         }
       }
 
+      const titles = getTitleVariants(cleanT);
       const artists = getArtistVariants(cleanA);
       let data: any = null;
       let lrclibDown = false;
 
       // Strategy 1: Exact GET without strict duration (avoids 404 on slowed/sped tracks)
-      for (const art of artists) {
+      for (const t of titles) {
         if (data || lrclibDown) break;
-        try {
-          const params = new URLSearchParams({ track_name: cleanT, artist_name: art });
-          const res = await fetchWithTimeout(`https://lrclib.net/api/get?${params.toString()}`, {
-            headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
-          }, 3000);
-          if (res.status >= 500) {
-            lrclibDown = true;
-            break;
-          }
-          if (res.ok) {
-            const d = await res.json().catch(() => null);
-            if (d && (d.syncedLyrics || d.plainLyrics)) data = d;
-          }
-        } catch {
-          lrclibDown = true;
-          break;
-        }
-      }
-
-      // Strategy 2: Exact GET with duration if provided
-      if (!data && !lrclibDown && durationSecs && durationSecs > 0) {
         for (const art of artists) {
           if (data || lrclibDown) break;
           try {
-            const params = new URLSearchParams({
-              track_name: cleanT,
-              artist_name: art,
-              duration: Math.round(durationSecs).toString(),
-            });
+            const params = new URLSearchParams({ track_name: t, artist_name: art });
             const res = await fetchWithTimeout(`https://lrclib.net/api/get?${params.toString()}`, {
               headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
             }, 3000);
@@ -363,20 +417,79 @@ export async function fetchLyrics(
         }
       }
 
+      // Strategy 2: Exact GET with duration if provided
+      if (!data && !lrclibDown && durationSecs && durationSecs > 0) {
+        for (const t of titles) {
+          if (data || lrclibDown) break;
+          for (const art of artists) {
+            if (data || lrclibDown) break;
+            try {
+              const params = new URLSearchParams({
+                track_name: t,
+                artist_name: art,
+                duration: Math.round(durationSecs).toString(),
+              });
+              const res = await fetchWithTimeout(`https://lrclib.net/api/get?${params.toString()}`, {
+                headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
+              }, 3000);
+              if (res.status >= 500) {
+                lrclibDown = true;
+                break;
+              }
+              if (res.ok) {
+                const d = await res.json().catch(() => null);
+                if (d && (d.syncedLyrics || d.plainLyrics)) data = d;
+              }
+            } catch {
+              lrclibDown = true;
+              break;
+            }
+          }
+        }
+      }
+
       // Strategy 3: Structured search on LRCLIB
       if (!data && !lrclibDown) {
-        for (const art of artists) {
+        for (const t of titles) {
+          if (data || lrclibDown) break;
+          for (const art of artists) {
+            if (data || lrclibDown) break;
+            try {
+              const params = new URLSearchParams({ track_name: t, artist_name: art });
+              const res = await fetchWithTimeout(`https://lrclib.net/api/search?${params.toString()}`, {
+                headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
+              }, 3000);
+              if (res.status >= 500) {
+                lrclibDown = true;
+                break;
+              }
+              if (res.ok) {
+                const list = await res.json().catch(() => null);
+                if (Array.isArray(list) && list.length > 0) {
+                  data = list.find((it: any) => it.syncedLyrics) || list.find((it: any) => it.plainLyrics);
+                }
+              }
+            } catch {
+              lrclibDown = true;
+              break;
+            }
+          }
+        }
+      }
+
+      // Strategy 4: Full query on LRCLIB
+      if (!data && !lrclibDown) {
+        for (const t of titles) {
           if (data || lrclibDown) break;
           try {
-            const params = new URLSearchParams({ track_name: cleanT, artist_name: art });
+            const q = `${artists[0] || ""} ${t}`.trim();
+            const params = new URLSearchParams({ q });
             const res = await fetchWithTimeout(`https://lrclib.net/api/search?${params.toString()}`, {
               headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
             }, 3000);
             if (res.status >= 500) {
               lrclibDown = true;
-              break;
-            }
-            if (res.ok) {
+            } else if (res.ok) {
               const list = await res.json().catch(() => null);
               if (Array.isArray(list) && list.length > 0) {
                 data = list.find((it: any) => it.syncedLyrics) || list.find((it: any) => it.plainLyrics);
@@ -384,131 +497,127 @@ export async function fetchLyrics(
             }
           } catch {
             lrclibDown = true;
-            break;
           }
-        }
-      }
-
-      // Strategy 4: Full query on LRCLIB
-      if (!data && !lrclibDown) {
-        try {
-          const q = `${artists[0] || ""} ${cleanT}`.trim();
-          const params = new URLSearchParams({ q });
-          const res = await fetchWithTimeout(`https://lrclib.net/api/search?${params.toString()}`, {
-            headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
-          }, 3000);
-          if (res.status >= 500) {
-            lrclibDown = true;
-          } else if (res.ok) {
-            const list = await res.json().catch(() => null);
-            if (Array.isArray(list) && list.length > 0) {
-              data = list.find((it: any) => it.syncedLyrics) || list.find((it: any) => it.plainLyrics);
-            }
-          }
-        } catch {
-          lrclibDown = true;
         }
       }
 
       // Strategy 5: Clean title-only query on LRCLIB
       if (!data && !lrclibDown) {
-        try {
-          const params = new URLSearchParams({ q: cleanT });
-          const res = await fetchWithTimeout(`https://lrclib.net/api/search?${params.toString()}`, {
-            headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
-          }, 3000);
-          if (res.ok) {
-            const list = await res.json().catch(() => null);
-            if (Array.isArray(list) && list.length > 0) {
-              data = list.find((it: any) => it.syncedLyrics) || list.find((it: any) => it.plainLyrics);
+        for (const t of titles) {
+          if (data || lrclibDown) break;
+          try {
+            const params = new URLSearchParams({ q: t });
+            const res = await fetchWithTimeout(`https://lrclib.net/api/search?${params.toString()}`, {
+              headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
+            }, 3000);
+            if (res.ok) {
+              const list = await res.json().catch(() => null);
+              if (Array.isArray(list) && list.length > 0) {
+                data = list.find((it: any) => it.syncedLyrics) || list.find((it: any) => it.plainLyrics);
+              }
             }
-          }
-        } catch {}
+          } catch {}
+        }
       }
 
       // Strategy 6: NetEase Cloud Music search & synced LRC
       if (!data) {
-        for (const art of artists) {
+        for (const t of titles) {
           if (data) break;
-          try {
-            const q = `${art ? `${art} ` : ""}${cleanT}`.trim();
-            const searchRes = await fetchWithTimeout(
-              `https://music.163.com/api/search/get?s=${encodeURIComponent(q)}&type=1&limit=1`,
-              {
-                headers: {
-                  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-                },
-              },
-              3500
-            );
-            if (searchRes.ok) {
-              const searchData = await searchRes.json().catch(() => null);
-              const song = searchData?.result?.songs?.[0];
-              if (song?.id) {
-                const lrcRes = await fetchWithTimeout(
-                  `https://music.163.com/api/song/lyric?os=pc&id=${song.id}&lv=-1&kv=-1&tv=-1`,
-                  {
-                    headers: {
-                      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-                    },
+          for (const art of artists) {
+            if (data) break;
+            try {
+              const q = `${art ? `${art} ` : ""}${t}`.trim();
+              const searchRes = await fetchWithTimeout(
+                `https://music.163.com/api/search/get?s=${encodeURIComponent(q)}&type=1&limit=1`,
+                {
+                  headers: {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
                   },
-                  3500
-                );
-                if (lrcRes.ok) {
-                  const lrcData = await lrcRes.json().catch(() => null);
-                  const syncedLyrics = lrcData?.lrc?.lyric;
-                  if (syncedLyrics && typeof syncedLyrics === "string" && isValidLrc(syncedLyrics)) {
-                    data = {
-                      id: song.id,
-                      trackName: song.name || cleanT,
-                      artistName: song.artists?.[0]?.name || art || cleanA,
-                      syncedLyrics,
-                    };
-                    break;
+                },
+                3500
+              );
+              if (searchRes.ok) {
+                const searchData = await searchRes.json().catch(() => null);
+                const song = searchData?.result?.songs?.[0];
+                if (song?.id) {
+                  const lrcRes = await fetchWithTimeout(
+                    `https://music.163.com/api/song/lyric?os=pc&id=${song.id}&lv=-1&kv=-1&tv=-1`,
+                    {
+                      headers: {
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                      },
+                    },
+                    3500
+                  );
+                  if (lrcRes.ok) {
+                    const lrcData = await lrcRes.json().catch(() => null);
+                    const syncedLyrics = lrcData?.lrc?.lyric;
+                    if (syncedLyrics && typeof syncedLyrics === "string" && isValidLrc(syncedLyrics)) {
+                      data = {
+                        id: song.id,
+                        trackName: song.name || t,
+                        artistName: song.artists?.[0]?.name || art || cleanA,
+                        syncedLyrics,
+                      };
+                      break;
+                    }
                   }
                 }
               }
-            }
-          } catch {}
+            } catch {}
+          }
         }
       }
 
       // Strategy 6.5: Genius search and open lyrics extraction (high-accuracy global coverage)
       if (!data) {
-        for (const art of artists) {
+        for (const t of titles) {
           if (data) break;
-          try {
-            const geniusData = await fetchGeniusLyricsWeb(cleanT, art || cleanA);
-            if (geniusData && geniusData.plainLyrics) {
-              data = geniusData;
-              break;
-            }
-          } catch {}
+          for (const art of artists) {
+            if (data) break;
+            try {
+              const geniusData = await fetchGeniusLyricsWeb(t, art || cleanA);
+              if (geniusData && geniusData.plainLyrics) {
+                data = geniusData;
+                break;
+              }
+            } catch {}
+          }
         }
       }
 
       // Strategy 7: Fallback to Lyrics.ovh for plain text lyrics
       if (!data) {
-        for (const art of artists) {
-          if (data || !art) continue;
-          try {
-            const res = await fetchWithTimeout(
-              `https://api.lyrics.ovh/v1/${encodeURIComponent(art)}/${encodeURIComponent(cleanT)}`,
-              undefined,
-              3500
-            );
-            if (res.ok) {
-              const d = await res.json().catch(() => null);
-              if (d && d.lyrics && typeof d.lyrics === "string" && d.lyrics.trim()) {
-                data = {
-                  trackName: cleanT,
-                  artistName: art,
-                  plainLyrics: d.lyrics.trim(),
-                };
-                break;
+        for (const t of titles) {
+          if (data) break;
+          for (const art of artists) {
+            if (data || !art) continue;
+            try {
+              const res = await fetchWithTimeout(
+                `https://api.lyrics.ovh/v1/${encodeURIComponent(art)}/${encodeURIComponent(t)}`,
+                undefined,
+                3500
+              );
+              if (res.ok) {
+                const d = await res.json().catch(() => null);
+                if (d && d.lyrics && typeof d.lyrics === "string" && d.lyrics.trim()) {
+                  const cleanedLines = d.lyrics
+                    .split(/\r?\n/)
+                    .map((l: string) => l.trim())
+                    .filter((l: string) => l && !CREDIT_OR_NOISE_LINE.test(l) && !PLACEHOLDER_OR_STUB_LINE.test(l));
+                  if (cleanedLines.length >= 3) {
+                    data = {
+                      trackName: t,
+                      artistName: art,
+                      plainLyrics: cleanedLines.join("\n"),
+                    };
+                    break;
+                  }
+                }
               }
-            }
-          } catch {}
+            } catch {}
+          }
         }
       }
 

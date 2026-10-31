@@ -290,9 +290,16 @@ fn is_valid_netease_lrc(synced: &str) -> bool {
                 || text.starts_with("作曲")
                 || text.starts_with("编曲")
                 || text.starts_with("制作")
+                || text.starts_with("监制")
+                || text.starts_with("混音")
+                || text.starts_with("母带")
                 || text_lower.starts_with("written by")
                 || text_lower.starts_with("composed by")
+                || text_lower.starts_with("produced by")
                 || text_lower.starts_with("lyrics by")
+                || text_lower.starts_with("credits")
+                || text_lower.starts_with("instrumental")
+                || text_lower.starts_with("pure music")
             {
                 continue;
             }
@@ -323,6 +330,9 @@ pub async fn fetch_lyrics(
     if let Some(pos) = clean_t.find('|') {
         clean_t = clean_t[..pos].trim().to_string();
     }
+    if let Some(pos) = clean_t.find('/') {
+        clean_t = clean_t[..pos].trim().to_string();
+    }
     if let Some(open) = clean_t.find('(') {
         if let Some(close) = clean_t.rfind(')') {
             if close > open {
@@ -337,8 +347,33 @@ pub async fn fetch_lyrics(
             }
         }
     }
+    if let Some(pos) = clean_t.find(" - ") {
+        let suffix = clean_t[pos + 3..].to_lowercase();
+        if suffix.contains("from ")
+            || suffix.contains("soundtrack")
+            || suffix.contains("remaster")
+            || suffix.contains("edit")
+            || suffix.contains("version")
+            || suffix.contains("live")
+            || suffix.contains("acoustic")
+            || suffix.contains("explicit")
+            || suffix.contains("clean")
+            || suffix.contains("slowed")
+            || suffix.contains("sped")
+        {
+            clean_t = clean_t[..pos].trim().to_string();
+        }
+    }
     if clean_t.is_empty() {
         clean_t = raw_title.to_string();
+    }
+
+    let mut titles: Vec<String> = vec![clean_t.clone()];
+    if let Some(pos) = clean_t.find(" - ") {
+        let base = clean_t[..pos].trim().to_string();
+        if !base.is_empty() && !titles.contains(&base) {
+            titles.push(base);
+        }
     }
 
     let raw_artist = artist.as_deref().unwrap_or("").trim();
@@ -346,19 +381,13 @@ pub async fn fetch_lyrics(
     if !raw_artist.is_empty() {
         let first_part = raw_artist.split('·').next().unwrap_or(raw_artist).trim();
         artists.push(first_part.to_string());
-        let primary = first_part
-            .split(&[',', ';', '&', '/'][..])
-            .next()
-            .unwrap_or(first_part)
-            .split(" feat. ")
-            .next()
-            .unwrap_or(first_part)
-            .split(" ft. ")
-            .next()
-            .unwrap_or(first_part)
-            .trim();
-        if !primary.is_empty() && primary != first_part {
-            artists.push(primary.to_string());
+        for sep in [", ", "; ", " & ", " / ", " feat. ", " ft. ", " with ", " x "] {
+            for part in first_part.split(sep) {
+                let trimmed = part.trim().to_string();
+                if !trimmed.is_empty() && !artists.contains(&trimmed) {
+                    artists.push(trimmed);
+                }
+            }
         }
     } else {
         artists.push(String::new());
@@ -518,57 +547,59 @@ pub async fn fetch_lyrics(
     }
 
     // Strategy 5.5: NetEase Cloud Music search & synced LRC
-    for art in &artists {
-        let q = if art.is_empty() {
-            clean_t.clone()
-        } else {
-            format!("{} {}", art, clean_t)
-        };
-        if let Ok(mut url) = Url::parse("https://music.163.com/api/search/get") {
-            url.query_pairs_mut()
-                .append_pair("s", &q)
-                .append_pair("type", "1")
-                .append_pair("limit", "1");
-            if let Ok(resp) = client.get(url).send().await {
-                if resp.status().is_success() {
-                    if let Ok(search_val) = resp.json::<serde_json::Value>().await {
-                        if let Some(song) = search_val
-                            .get("result")
-                            .and_then(|r| r.get("songs"))
-                            .and_then(|s| s.as_array())
-                            .and_then(|a| a.first())
-                        {
-                            if let Some(song_id) = song.get("id").and_then(|id| id.as_i64()) {
-                                if let Ok(mut lrc_url) = Url::parse("https://music.163.com/api/song/lyric") {
-                                    lrc_url.query_pairs_mut()
-                                        .append_pair("os", "pc")
-                                        .append_pair("id", &song_id.to_string())
-                                        .append_pair("lv", "-1")
-                                        .append_pair("kv", "-1")
-                                        .append_pair("tv", "-1");
-                                    if let Ok(lrc_resp) = client.get(lrc_url).send().await {
-                                        if lrc_resp.status().is_success() {
-                                            if let Ok(lrc_val) = lrc_resp.json::<serde_json::Value>().await {
-                                                if let Some(synced) = lrc_val
-                                                    .get("lrc")
-                                                    .and_then(|l| l.get("lyric"))
-                                                    .and_then(|s| s.as_str())
-                                                {
-                                                    if is_valid_netease_lrc(synced) {
-                                                        let song_name = song
-                                                            .get("name")
-                                                            .and_then(|n| n.as_str())
-                                                            .map(|s| s.to_string());
-                                                        return Some(LyricsPayload {
-                                                            id: Some(song_id),
-                                                            track_name: song_name.or_else(|| Some(clean_t.clone())),
-                                                            artist_name: if art.is_empty() { None } else { Some(art.clone()) },
-                                                            album_name: None,
-                                                            duration: duration_secs,
-                                                            plain_lyrics: None,
-                                                            synced_lyrics: Some(synced.to_string()),
-                                                            instrumental: Some(false),
-                                                        });
+    for t in &titles {
+        for art in &artists {
+            let q = if art.is_empty() {
+                t.clone()
+            } else {
+                format!("{} {}", art, t)
+            };
+            if let Ok(mut url) = Url::parse("https://music.163.com/api/search/get") {
+                url.query_pairs_mut()
+                    .append_pair("s", &q)
+                    .append_pair("type", "1")
+                    .append_pair("limit", "1");
+                if let Ok(resp) = client.get(url).send().await {
+                    if resp.status().is_success() {
+                        if let Ok(search_val) = resp.json::<serde_json::Value>().await {
+                            if let Some(song) = search_val
+                                .get("result")
+                                .and_then(|r| r.get("songs"))
+                                .and_then(|s| s.as_array())
+                                .and_then(|a| a.first())
+                            {
+                                if let Some(song_id) = song.get("id").and_then(|id| id.as_i64()) {
+                                    if let Ok(mut lrc_url) = Url::parse("https://music.163.com/api/song/lyric") {
+                                        lrc_url.query_pairs_mut()
+                                            .append_pair("os", "pc")
+                                            .append_pair("id", &song_id.to_string())
+                                            .append_pair("lv", "-1")
+                                            .append_pair("kv", "-1")
+                                            .append_pair("tv", "-1");
+                                        if let Ok(lrc_resp) = client.get(lrc_url).send().await {
+                                            if lrc_resp.status().is_success() {
+                                                if let Ok(lrc_val) = lrc_resp.json::<serde_json::Value>().await {
+                                                    if let Some(synced) = lrc_val
+                                                        .get("lrc")
+                                                        .and_then(|l| l.get("lyric"))
+                                                        .and_then(|s| s.as_str())
+                                                    {
+                                                        if is_valid_netease_lrc(synced) {
+                                                            let song_name = song
+                                                                .get("name")
+                                                                .and_then(|n| n.as_str())
+                                                                .map(|s| s.to_string());
+                                                            return Some(LyricsPayload {
+                                                                id: Some(song_id),
+                                                                track_name: song_name.or_else(|| Some(t.clone())),
+                                                                artist_name: if art.is_empty() { None } else { Some(art.clone()) },
+                                                                album_name: None,
+                                                                duration: duration_secs,
+                                                                plain_lyrics: None,
+                                                                synced_lyrics: Some(synced.to_string()),
+                                                                instrumental: Some(false),
+                                                            });
+                                                        }
                                                     }
                                                 }
                                             }
@@ -584,138 +615,176 @@ pub async fn fetch_lyrics(
     }
 
     // Strategy 5.8: Genius search and open lyrics extraction (high-accuracy global coverage)
-    for art in &artists {
-        let q = if art.is_empty() {
-            clean_t.clone()
-        } else {
-            format!("{} {}", art, clean_t)
-        };
-        let mut search_url = match Url::parse("https://genius.com/api/search/multi") {
-            Ok(u) => u,
-            Err(_) => continue,
-        };
-        search_url.query_pairs_mut()
-            .append_pair("per_page", "5")
-            .append_pair("q", &q);
+    for t in &titles {
+        for art in &artists {
+            let q = if art.is_empty() {
+                t.clone()
+            } else {
+                format!("{} {}", art, t)
+            };
+            let mut search_url = match Url::parse("https://genius.com/api/search/multi") {
+                Ok(u) => u,
+                Err(_) => continue,
+            };
+            search_url.query_pairs_mut()
+                .append_pair("per_page", "5")
+                .append_pair("q", &q);
 
-        let search_res = match client
-            .get(search_url)
-            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
-            .send()
-            .await
-        {
-            Ok(r) if r.status().is_success() => r,
-            _ => continue,
-        };
+            let search_res = match client
+                .get(search_url)
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+                .send()
+                .await
+            {
+                Ok(r) if r.status().is_success() => r,
+                _ => continue,
+            };
 
-        if let Ok(search_val) = search_res.json::<serde_json::Value>().await {
-            let sections = search_val
-                .get("response")
-                .and_then(|r| r.get("sections"))
-                .and_then(|s| s.as_array());
+            if let Ok(search_val) = search_res.json::<serde_json::Value>().await {
+                let sections = search_val
+                    .get("response")
+                    .and_then(|r| r.get("sections"))
+                    .and_then(|s| s.as_array());
 
-            if let Some(sections) = sections {
-                let mut song_path: Option<String> = None;
-                let mut song_title: Option<String> = None;
-                let mut artist_name: Option<String> = None;
+                if let Some(sections) = sections {
+                    let mut song_path: Option<String> = None;
+                    let mut song_title: Option<String> = None;
+                    let mut artist_name: Option<String> = None;
 
-                for sec in sections {
-                    let sec_type = sec.get("type").and_then(|t| t.as_str()).unwrap_or("");
-                    if sec_type == "song" || sec_type == "top_hit" {
-                        if let Some(hits) = sec.get("hits").and_then(|h| h.as_array()) {
-                            for hit in hits {
-                                let htype = hit.get("type").and_then(|t| t.as_str()).unwrap_or("");
-                                if htype == "song" {
-                                    if let Some(result) = hit.get("result") {
-                                        if let Some(path) = result.get("path").and_then(|p| p.as_str()) {
-                                            song_path = Some(path.to_string());
-                                            song_title = result.get("title").and_then(|t| t.as_str()).map(|s| s.to_string());
-                                            artist_name = result
-                                                .get("primary_artist")
-                                                .and_then(|a| a.get("name"))
-                                                .and_then(|n| n.as_str())
-                                                .map(|s| s.to_string());
-                                            break;
+                    for sec in sections {
+                        let sec_type = sec.get("type").and_then(|t| t.as_str()).unwrap_or("");
+                        if sec_type == "song" || sec_type == "top_hit" {
+                            if let Some(hits) = sec.get("hits").and_then(|h| h.as_array()) {
+                                for hit in hits {
+                                    let htype = hit.get("type").and_then(|t| t.as_str()).unwrap_or("");
+                                    if htype == "song" {
+                                        if let Some(result) = hit.get("result") {
+                                            if let Some(path) = result.get("path").and_then(|p| p.as_str()) {
+                                                let title_str = result.get("title").and_then(|t| t.as_str()).unwrap_or("");
+                                                let title_lower = title_str.to_lowercase();
+                                                if title_lower.contains("tracklist")
+                                                    || title_lower.contains("annotated")
+                                                    || (title_lower.contains("instrumental") && !t.to_lowercase().contains("instrumental"))
+                                                {
+                                                    continue;
+                                                }
+                                                song_path = Some(path.to_string());
+                                                song_title = Some(title_str.to_string());
+                                                artist_name = result
+                                                    .get("primary_artist")
+                                                    .and_then(|a| a.get("name"))
+                                                    .and_then(|n| n.as_str())
+                                                    .map(|s| s.to_string());
+                                                break;
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
+                        if song_path.is_some() {
+                            break;
+                        }
                     }
-                    if song_path.is_some() {
-                        break;
-                    }
-                }
 
-                if let Some(path) = song_path {
-                    let page_url = format!("https://genius.com{}", path);
-                    if let Ok(page_res) = client
-                        .get(&page_url)
-                        .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
-                        .send()
-                        .await
-                    {
-                        if page_res.status().is_success() {
-                            if let Ok(html) = page_res.text().await {
-                                let parts: Vec<&str> = html.split("data-lyrics-container=\"true\"").collect();
-                                if parts.len() > 1 {
-                                    let mut full_lyrics = String::new();
-                                    for part in &parts[1..] {
-                                        if let Some(start_idx) = part.find('>') {
-                                            let mut content = &part[start_idx + 1..];
-                                            if let Some(end_idx) = content.find("<div class=\"Lyrics__Footer")
-                                                .or_else(|| content.find("<div class=\"RightSidebar"))
-                                                .or_else(|| content.find("<section"))
-                                                .or_else(|| content.find("<div class=\"SongHeader"))
-                                            {
-                                                content = &content[..end_idx];
-                                            }
-                                            let with_newlines = content
-                                                .replace("<br>", "\n")
-                                                .replace("<br/>", "\n")
-                                                .replace("<br />", "\n");
-                                            let mut in_tag = false;
-                                            for ch in with_newlines.chars() {
-                                                if ch == '<' {
-                                                    in_tag = true;
-                                                } else if ch == '>' {
-                                                    in_tag = false;
-                                                } else if !in_tag {
-                                                    full_lyrics.push(ch);
+                    if let Some(path) = song_path {
+                        let page_url = format!("https://genius.com{}", path);
+                        if let Ok(page_res) = client
+                            .get(&page_url)
+                            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+                            .send()
+                            .await
+                        {
+                            if page_res.status().is_success() {
+                                if let Ok(html) = page_res.text().await {
+                                    let parts: Vec<&str> = html.split("data-lyrics-container=\"true\"").collect();
+                                    if parts.len() > 1 {
+                                        let mut full_lyrics = String::new();
+                                        for part in &parts[1..] {
+                                            if let Some(start_idx) = part.find('>') {
+                                                let mut content = &part[start_idx + 1..];
+                                                if let Some(end_idx) = content.find("<div class=\"Lyrics__Footer")
+                                                    .or_else(|| content.find("<div class=\"RightSidebar"))
+                                                    .or_else(|| content.find("<section"))
+                                                    .or_else(|| content.find("<div class=\"SongHeader"))
+                                                {
+                                                    content = &content[..end_idx];
                                                 }
+                                                let with_newlines = content
+                                                    .replace("<br>", "\n")
+                                                    .replace("<br/>", "\n")
+                                                    .replace("<br />", "\n");
+                                                let mut in_tag = false;
+                                                for ch in with_newlines.chars() {
+                                                    if ch == '<' {
+                                                        in_tag = true;
+                                                    } else if ch == '>' {
+                                                        in_tag = false;
+                                                    } else if !in_tag {
+                                                        full_lyrics.push(ch);
+                                                    }
+                                                }
+                                                full_lyrics.push('\n');
                                             }
-                                            full_lyrics.push('\n');
                                         }
-                                    }
 
-                                    let unescaped = full_lyrics
-                                        .replace("&amp;", "&")
-                                        .replace("&lt;", "<")
-                                        .replace("&gt;", ">")
-                                        .replace("&quot;", "\"")
-                                        .replace("&#x27;", "'");
+                                        let unescaped = full_lyrics
+                                            .replace("&amp;", "&")
+                                            .replace("&lt;", "<")
+                                            .replace("&gt;", ">")
+                                            .replace("&quot;", "\"")
+                                            .replace("&#x27;", "'")
+                                            .replace("&#8217;", "'")
+                                            .replace("&#8216;", "'")
+                                            .replace("&rsquo;", "'")
+                                            .replace("&lsquo;", "'")
+                                            .replace("&#8220;", "\"")
+                                            .replace("&#8221;", "\"")
+                                            .replace("&ldquo;", "\"")
+                                            .replace("&rdquo;", "\"")
+                                            .replace("&mdash;", "—")
+                                            .replace("&#8212;", "—")
+                                            .replace("&ndash;", "–")
+                                            .replace("&#8211;", "–")
+                                            .replace("&hellip;", "…")
+                                            .replace("&#8230;", "…")
+                                            .replace('\u{00a0}', " ");
 
-                                    let clean_lines: Vec<&str> = unescaped
-                                        .lines()
-                                        .map(|l| l.trim())
-                                        .filter(|l| {
-                                            !l.is_empty()
-                                                && !(l.starts_with('[') && l.ends_with(']'))
-                                                && !l.contains("Contributors")
-                                                && !l.contains("Translations")
-                                        })
-                                        .collect();
+                                        let clean_lines: Vec<&str> = unescaped
+                                            .lines()
+                                            .map(|l| l.trim())
+                                            .filter(|l| {
+                                                if l.is_empty() || (l.starts_with('[') && l.ends_with(']')) {
+                                                    return false;
+                                                }
+                                                let lower = l.to_lowercase();
+                                                if lower.contains("contributors")
+                                                    || lower.contains("translations")
+                                                    || lower.ends_with("lyrics")
+                                                    || lower.starts_with("written by")
+                                                    || lower.starts_with("produced by")
+                                                    || lower.starts_with("composed by")
+                                                    || lower.starts_with("lyrics by")
+                                                    || l.starts_with("作词")
+                                                    || l.starts_with("作曲")
+                                                {
+                                                    return false;
+                                                }
+                                                true
+                                            })
+                                            .collect();
 
-                                    if clean_lines.len() >= 3 {
-                                        return Some(LyricsPayload {
-                                            track_name: song_title.or_else(|| Some(clean_t.clone())),
-                                            artist_name: artist_name.or_else(|| if art.is_empty() { None } else { Some(art.clone()) }),
-                                            plain_lyrics: Some(clean_lines.join("\n")),
-                                            synced_lyrics: None,
-                                            duration: duration_secs,
-                                            instrumental: Some(false),
-                                            ..Default::default()
-                                        });
+                                        if clean_lines.len() >= 3 {
+                                            return Some(LyricsPayload {
+                                                track_name: song_title.or_else(|| Some(t.clone())),
+                                                artist_name: artist_name.or_else(|| if art.is_empty() { None } else { Some(art.clone()) }),
+                                                plain_lyrics: Some(clean_lines.join("\n")),
+                                                synced_lyrics: None,
+                                                duration: duration_secs,
+                                                instrumental: Some(false),
+                                                ..Default::default()
+                                            });
+                                        }
                                     }
                                 }
                             }
@@ -727,18 +796,44 @@ pub async fn fetch_lyrics(
     }
 
     // Strategy 6: Fallback to Lyrics.ovh for plain lyrics (with proper URL path encoding)
-    for art in &artists {
-        if art.is_empty() {
-            continue;
+    for t in &titles {
+        for art in &artists {
+            if art.is_empty() {
+                continue;
+            }
+            let mut url = match Url::parse("https://api.lyrics.ovh/v1/") {
+                Ok(u) => u,
+                Err(_) => continue,
+            };
+            if let Ok(mut segs) = url.path_segments_mut() {
+                segs.push(art);
+                segs.push(t);
+            }
+            if let Ok(resp) = client.get(url).send().await {
+                if resp.status().is_success() {
+                    #[derive(Deserialize)]
+                    struct OvhResp {
+                        lyrics: Option<String>,
+                    }
+                    if let Ok(ovh) = resp.json::<OvhResp>().await {
+                        if let Some(plain) = ovh.lyrics {
+                            let trimmed = plain.trim();
+                            if !trimmed.is_empty() {
+                                return Some(LyricsPayload {
+                                    track_name: Some(t.clone()),
+                                    artist_name: Some(art.clone()),
+                                    plain_lyrics: Some(trimmed.to_string()),
+                                    synced_lyrics: None,
+                                    instrumental: Some(false),
+                                    ..Default::default()
+                                });
+                            }
+                        }
+                    }
+                }
+            }
         }
-        let mut url = match Url::parse("https://api.lyrics.ovh/v1/") {
-            Ok(u) => u,
-            Err(_) => continue,
-        };
-        if let Ok(mut segs) = url.path_segments_mut() {
-            segs.push(art);
-            segs.push(&clean_t);
-        }
+    }
         if let Ok(resp) = client.get(url).send().await {
             if resp.status().is_success() {
                 #[derive(Deserialize)]

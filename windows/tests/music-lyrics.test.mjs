@@ -3,7 +3,18 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseLrc, getActiveLyricIndex, isValidLrc } from "../src/core/lyrics.ts";
+import {
+  parseLrc,
+  getActiveLyricIndex,
+  isValidLrc,
+  cleanTitle,
+  getTitleVariants,
+  getArtistVariants,
+  synthesizeLinesFromPlain,
+  decodeHtmlEntities,
+  CREDIT_OR_NOISE_LINE,
+  PLACEHOLDER_OR_STUB_LINE,
+} from "../src/core/lyrics.ts";
 import { State } from "../src/core/state.ts";
 import { BotEngine } from "../src/mochi/engine.ts";
 
@@ -67,6 +78,62 @@ test("LRC Parser & isValidLrc: filters credit stubs and recognizes valid lyric s
   assert.equal(parsed.length, 3, "Only the 3 real lyrics lines should be parsed");
   assert.equal(parsed[0].text, "Sajde Kiye Hote Khuda Ke Maine Agar");
   assert.equal(parsed[0].timeSecs, 14.05);
+});
+
+test("Universal Title Cleaning: handles complex movie tags, versions, remasters, and suffixes", () => {
+  assert.equal(cleanTitle('Tum Hi Ho (From "Aashiqui 2")'), "Tum Hi Ho");
+  assert.equal(cleanTitle('Chaleya - From "Jawan"'), "Chaleya");
+  assert.equal(cleanTitle('Kesariya (From "Brahmastra") [Audio]'), "Kesariya");
+  assert.equal(cleanTitle("Die With A Smile (Live in Las Vegas)"), "Die With A Smile");
+  assert.equal(cleanTitle("Blinding Lights - Remastered 2020"), "Blinding Lights");
+  assert.equal(cleanTitle("Stay (with Justin Bieber)"), "Stay");
+  assert.equal(cleanTitle("Starboy (feat. Daft Punk) - Explicit"), "Starboy");
+  assert.equal(cleanTitle("Hotel California - 2013 Remaster"), "Hotel California");
+  assert.equal(cleanTitle("Maula (Slowed + Reverb)"), "Maula");
+  assert.equal(cleanTitle("Nights - Radio Edit"), "Nights");
+  assert.equal(cleanTitle('Lose Yourself - From "8 Mile" Soundtrack'), "Lose Yourself");
+});
+
+test("Universal Title and Artist Disambiguation: generates comprehensive variants", () => {
+  const titles = getTitleVariants('Chaleya (From "Jawan")');
+  assert.ok(titles.includes("Chaleya"));
+  assert.ok(titles.length >= 2);
+
+  const artists = getArtistVariants("The Chainsmokers, Coldplay");
+  assert.ok(artists.includes("The Chainsmokers, Coldplay"));
+  assert.ok(artists.includes("The Chainsmokers"));
+  assert.ok(artists.includes("Coldplay"));
+
+  const collab = getArtistVariants("Lady Gaga & Bruno Mars");
+  assert.ok(collab.includes("Lady Gaga"));
+  assert.ok(collab.includes("Bruno Mars"));
+});
+
+test("Universal HTML and Stub Sanitization: decodes entities and purges credit noise", () => {
+  const dirty = "Don&#x27;t stop &amp; look &quot;away&quot; &#8212; yes";
+  assert.equal(decodeHtmlEntities(dirty), "Don't stop & look \"away\" — yes");
+
+  assert.ok(CREDIT_OR_NOISE_LINE.test("作词 : Someone"));
+  assert.ok(CREDIT_OR_NOISE_LINE.test("Written by Artist"));
+  assert.ok(CREDIT_OR_NOISE_LINE.test("Produced by Producer"));
+  assert.ok(PLACEHOLDER_OR_STUB_LINE.test("Lyrics not available"));
+  assert.ok(PLACEHOLDER_OR_STUB_LINE.test("Instrumental"));
+});
+
+test("Universal Timestamp Synthesis: generates evenly distributed active lyrics without stubs", () => {
+  const raw = `
+[Verse 1]
+Written by: Author
+First real singing line
+Second real singing line
+Third real singing line
+Fourth real singing line
+Lyrics not available
+`;
+  const synthesized = synthesizeLinesFromPlain(raw, 200);
+  assert.equal(synthesized.length, 4, "Must exclude section header, credit line, and placeholder stub");
+  assert.equal(synthesized[0].text, "First real singing line");
+  assert.equal(synthesized[3].text, "Fourth real singing line");
 });
 
 test("getActiveLyricIndex: returns correct line index matching playback time", () => {
