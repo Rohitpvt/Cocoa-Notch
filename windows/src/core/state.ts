@@ -409,6 +409,7 @@ class AppState {
   notificationHistory: SystemNotification[] = [];
 
   private recentNotifFingerprints = new Map<string, number>();
+  private dismissedNotifFingerprints = new Map<string, number>();
 
   loadNotificationHistory() {
     try {
@@ -417,7 +418,17 @@ class AppState {
         if (raw) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed)) {
-            this.notificationHistory = parsed.slice(0, 60);
+            const seen = new Set<string>();
+            const deduped: SystemNotification[] = [];
+            for (const item of parsed) {
+              if (!item || typeof item !== "object") continue;
+              const fp = `${(item.appName || "").replace(/\s+/g, " ").trim()}|${(item.title || "").replace(/\s+/g, " ").trim()}|${(item.body || "").replace(/\s+/g, " ").trim()}`;
+              if (!seen.has(fp)) {
+                seen.add(fp);
+                deduped.push(item);
+              }
+            }
+            this.notificationHistory = deduped.slice(0, 60);
           }
         }
       }
@@ -433,48 +444,93 @@ class AppState {
   }
 
   /**
-   * Adds a system notification with deduplication.
+   * Adds a system notification with robust content deduplication.
    * Returns true if the notification is fresh and should trigger a notch alert/chime,
-   * or false if it is a duplicate within the cooldown window.
+   * or false if it is a duplicate within the cooldown window or was dismissed.
    */
   addSystemNotification(notif: SystemNotification): boolean {
     const now = Date.now();
-    const fp = `${(notif.appName || "").trim()}|${(notif.title || "").trim()}|${(notif.body || "").trim()}`;
+    const normApp = (notif.appName || "").replace(/\s+/g, " ").trim();
+    const normTitle = (notif.title || "").replace(/\s+/g, " ").trim();
+    const normBody = (notif.body || "").replace(/\s+/g, " ").trim();
+    const fp = `${normApp}|${normTitle}|${normBody}`;
+
+    // 1. If this exact notification was dismissed by the user within 12 hours, suppress completely
+    const dismissedTime = this.dismissedNotifFingerprints.get(fp) || 0;
+    if (now - dismissedTime < 43200000) {
+      return false;
+    }
+
+    // 2. Check if identical content was alerted within cooldown (15 minutes = 900,000 ms)
     const lastSeen = this.recentNotifFingerprints.get(fp) || 0;
+    const isDuplicateCooldown = (now - lastSeen) < 900000;
 
-    // Suppress repeated identical notifications within 30 seconds
-    const isDuplicate = (now - lastSeen) < 30000;
+    // 3. Check if exact same notification already exists in notificationHistory
+    const existsInHistory = this.notificationHistory.some((n) =>
+      (n.appName || "").replace(/\s+/g, " ").trim() === normApp &&
+      (n.title || "").replace(/\s+/g, " ").trim() === normTitle &&
+      (n.body || "").replace(/\s+/g, " ").trim() === normBody
+    );
+
+    // If duplicate or already present, update occurrence time and return false without altering UI/history
+    if (isDuplicateCooldown || existsInHistory) {
+      this.recentNotifFingerprints.set(fp, now);
+      return false;
+    }
+
+    // Fresh notification: record fingerprint and prune stale map entries
     this.recentNotifFingerprints.set(fp, now);
-
-    // Clean up old fingerprints
     for (const [key, time] of this.recentNotifFingerprints) {
-      if (now - time > 120000) {
+      if (now - time > 1800000) {
         this.recentNotifFingerprints.delete(key);
+      }
+    }
+    for (const [key, time] of this.dismissedNotifFingerprints) {
+      if (now - time > 86400000) {
+        this.dismissedNotifFingerprints.delete(key);
       }
     }
 
     // Standardize timestamp to milliseconds
     const tsMs = notif.timestamp && notif.timestamp < 1e11 ? notif.timestamp * 1000 : (notif.timestamp || now);
-    const item: SystemNotification = { ...notif, timestamp: tsMs };
+    const item: SystemNotification = {
+      id: notif.id,
+      appName: normApp,
+      title: normTitle,
+      body: normBody,
+      timestamp: tsMs,
+    };
 
     this.activeNotification = item;
 
-    // Prepend to history, filtering out near-identical recent items
+    // Prepend to history, filtering out any existing instance of this exact notification
     this.notificationHistory = [
       item,
       ...this.notificationHistory.filter(
-        (n) => !(n.id === item.id && Math.abs((n.timestamp || 0) - tsMs) < 10000) &&
-               !(n.appName === item.appName && n.title === item.title && n.body === item.body && Math.abs((n.timestamp || 0) - tsMs) < 30000)
+        (n) => !(
+          (n.appName || "").replace(/\s+/g, " ").trim() === normApp &&
+          (n.title || "").replace(/\s+/g, " ").trim() === normTitle &&
+          (n.body || "").replace(/\s+/g, " ").trim() === normBody
+        )
       ),
     ].slice(0, 60);
 
     this.saveNotificationHistory();
     this.notify();
 
-    return !isDuplicate;
+    return true;
   }
 
   removeSystemNotification(id: number, timestamp?: number) {
+    const target = this.notificationHistory.find((n) =>
+      (timestamp && n.timestamp === timestamp) || (!timestamp && n.id === id)
+    ) || (this.activeNotification && (this.activeNotification.id === id || (timestamp && this.activeNotification.timestamp === timestamp)) ? this.activeNotification : null);
+
+    if (target) {
+      const fp = `${(target.appName || "").replace(/\s+/g, " ").trim()}|${(target.title || "").replace(/\s+/g, " ").trim()}|${(target.body || "").replace(/\s+/g, " ").trim()}`;
+      this.dismissedNotifFingerprints.set(fp, Date.now());
+    }
+
     this.notificationHistory = this.notificationHistory.filter((n) => {
       if (timestamp && n.timestamp === timestamp) return false;
       if (!timestamp && n.id === id) return false;
@@ -488,6 +544,11 @@ class AppState {
   }
 
   clearNotificationHistory() {
+    const now = Date.now();
+    for (const n of this.notificationHistory) {
+      const fp = `${(n.appName || "").replace(/\s+/g, " ").trim()}|${(n.title || "").replace(/\s+/g, " ").trim()}|${(n.body || "").replace(/\s+/g, " ").trim()}`;
+      this.dismissedNotifFingerprints.set(fp, now);
+    }
     this.notificationHistory = [];
     this.activeNotification = null;
     this.saveNotificationHistory();

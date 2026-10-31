@@ -525,3 +525,90 @@ test("tickMiniBots and pruneMiniBots handle disconnected canvases and negative d
   pruneMiniBots();
   assert.ok(miniBotCount() < initialCount, "Disconnected canvas must be pruned from live map");
 });
+
+// ── 8. Notification Deduplication & Repeat Suppression ──────────────────────────
+
+test("System notification deduplication suppresses repeating notifications and duplicate cards", () => {
+  State.clearNotificationHistory();
+
+  const notif1 = {
+    id: 101,
+    appName: "WhatsApp",
+    title: "Adikala Members",
+    body: "Congratulations to My Entire Adikala Family!",
+    timestamp: Date.now(),
+  };
+
+  // 1. Fresh notification alerts
+  const firstAlert = State.addSystemNotification(notif1);
+  assert.equal(firstAlert, true, "First arrival should alert");
+  assert.equal(State.notificationHistory.length, 1);
+  assert.equal(State.activeNotification?.title, "Adikala Members");
+
+  // 2. Duplicate notification with new ID (WhatsApp background sync re-post) within cooldown is suppressed
+  const notifRepeat = {
+    id: 102,
+    appName: "WhatsApp",
+    title: "Adikala Members",
+    body: "Congratulations to My Entire Adikala Family!",
+    timestamp: Date.now() + 120000,
+  };
+  const repeatAlert = State.addSystemNotification(notifRepeat);
+  assert.equal(repeatAlert, false, "Repeating notification within cooldown must be suppressed");
+  assert.equal(State.notificationHistory.length, 1, "Duplicate notification must not pollute history list");
+
+  // 3. Whitespace variation (e.g. trailing newlines/tabs from Windows toasts) is normalized and suppressed
+  const notifWhitespace = {
+    id: 103,
+    appName: " WhatsApp  ",
+    title: "Adikala   Members",
+    body: "Congratulations to My Entire Adikala Family!\n\t\t",
+    timestamp: Date.now() + 180000,
+  };
+  const wsAlert = State.addSystemNotification(notifWhitespace);
+  assert.equal(wsAlert, false, "Whitespace-varied identical notification must be suppressed");
+  assert.equal(State.notificationHistory.length, 1);
+
+  // 4. Fresh notification from same chat with DIFFERENT body alerts immediately
+  const notifNewMessage = {
+    id: 104,
+    appName: "WhatsApp",
+    title: "Adikala Members",
+    body: "Meeting at 5 PM today!",
+    timestamp: Date.now() + 200000,
+  };
+  const newAlert = State.addSystemNotification(notifNewMessage);
+  assert.equal(newAlert, true, "New message with different content must alert immediately");
+  assert.equal(State.notificationHistory.length, 2);
+  assert.equal(State.activeNotification?.body, "Meeting at 5 PM today!");
+
+  // 5. User dismisses a notification -> subsequent repeats of dismissed notification are completely suppressed
+  State.removeSystemNotification(104);
+  assert.equal(State.notificationHistory.length, 1);
+
+  const notifDismissedRepeat = {
+    id: 105,
+    appName: "WhatsApp",
+    title: "Adikala Members",
+    body: "Meeting at 5 PM today!",
+    timestamp: Date.now() + 300000,
+  };
+  const dismissedAlert = State.addSystemNotification(notifDismissedRepeat);
+  assert.equal(dismissedAlert, false, "Dismissed notification must not re-alert");
+  assert.equal(State.notificationHistory.length, 1);
+
+  // 6. Clear all suppresses all currently existing notifications from resurrecting
+  State.clearNotificationHistory();
+  assert.equal(State.notificationHistory.length, 0);
+
+  const notifResurrect = {
+    id: 106,
+    appName: "WhatsApp",
+    title: "Adikala Members",
+    body: "Congratulations to My Entire Adikala Family!",
+    timestamp: Date.now() + 400000,
+  };
+  const resurrectAlert = State.addSystemNotification(notifResurrect);
+  assert.equal(resurrectAlert, false, "Cleared notifications must not re-alert or resurrect");
+  assert.equal(State.notificationHistory.length, 0);
+});

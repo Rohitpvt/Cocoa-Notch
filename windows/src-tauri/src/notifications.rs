@@ -30,6 +30,11 @@ pub fn start(app: AppHandle) {
 pub fn start(_app: AppHandle) {}
 
 #[cfg(windows)]
+fn normalize_str(s: &str) -> String {
+    s.split_whitespace().collect::<Vec<_>>().join(" ")
+}
+
+#[cfg(windows)]
 fn run_listener(app: AppHandle) {
     use windows::UI::Notifications::Management::{UserNotificationListener, UserNotificationListenerAccessStatus};
     use windows::UI::Notifications::NotificationKinds;
@@ -139,16 +144,43 @@ fn run_listener(app: AppHandle) {
                     title = format!("{app_name} Notification");
                 }
 
-                // Content fingerprint deduplication (45-second cooldown for identical content)
-                let fingerprint = (app_name.clone(), title.clone(), body.clone());
+                let norm_app = normalize_str(&app_name);
+                let norm_title = normalize_str(&title);
+                let norm_body = normalize_str(&body);
+
+                // Content fingerprint deduplication (900-second / 15-minute cooldown for identical content)
+                let fingerprint = (norm_app.clone(), norm_title.clone(), norm_body.clone());
                 if let Some(&last_seen) = recent_content.get(&fingerprint) {
-                    if now.saturating_sub(last_seen) < 45 {
+                    if now.saturating_sub(last_seen) < 900 {
                         if id != 0 && !seen_ids.contains(&id) {
                             seen_ids.insert(id);
                             seen_id_order.push_back(id);
                         }
                         continue;
                     }
+                }
+
+                // Extract Windows creation timestamp if available
+                let creation_ts = un.CreationTime()
+                    .ok()
+                    .map(|dt| {
+                        let ticks = dt.UniversalTime;
+                        if ticks >= 116_444_736_000_000_000 {
+                            ((ticks - 116_444_736_000_000_000) / 10_000_000) as u64
+                        } else {
+                            now
+                        }
+                    })
+                    .unwrap_or(now);
+
+                // Discard stale notifications older than 10 minutes outside initial scan
+                if !initial_scan && now.saturating_sub(creation_ts) > 600 {
+                    if id != 0 && !seen_ids.contains(&id) {
+                        seen_ids.insert(id);
+                        seen_id_order.push_back(id);
+                    }
+                    recent_content.insert(fingerprint, now);
+                    continue;
                 }
 
                 // Mark seen
@@ -169,7 +201,7 @@ fn run_listener(app: AppHandle) {
                         app_name,
                         title,
                         body,
-                        timestamp: now,
+                        timestamp: creation_ts,
                     };
 
                     crate::log::line(format!(
@@ -181,9 +213,9 @@ fn run_listener(app: AppHandle) {
             }
         }
 
-        // Periodically purge fingerprints older than 300 seconds
-        if recent_content.len() > 100 {
-            recent_content.retain(|_, ts| now.saturating_sub(*ts) < 300);
+        // Periodically purge fingerprints older than 3600 seconds (1 hour)
+        if recent_content.len() > 300 {
+            recent_content.retain(|_, ts| now.saturating_sub(*ts) < 3600);
         }
 
         initial_scan = false;
