@@ -78,6 +78,8 @@ body {
   border-radius: 0 0 14px 14px;
   overflow: visible;
   will-change: width, height, transform, opacity;
+  container-type: inline-size;
+  container-name: island;
 }
 
 #island-clip {
@@ -98,8 +100,8 @@ body {
 #upload-layer {
   position: absolute;
   top: 0;
-  width: 640px;
-  height: 176px;
+  width: 100%;
+  height: 100%;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.22s ease-in-out;
@@ -272,22 +274,24 @@ body {
   flex: 0 0 calc(34px * var(--expanded-scale, 1));
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin: 0 -10px;
+  gap: calc(4px * var(--expanded-scale, 1));
+  min-width: 0;
+  overflow: hidden;
   transition: opacity 0.2s ease-in-out;
 }
 
 .header-stats {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  flex: 1 1 auto;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: calc(3px * var(--expanded-scale, 1));
   pointer-events: none;
   z-index: 2;
   transition: opacity 0.2s ease-in-out;
-  max-width: calc(100% - 150px);
   overflow: hidden;
   white-space: nowrap;
 }
@@ -295,26 +299,33 @@ body {
 .stat-chip {
   display: inline-flex;
   align-items: center;
-  gap: calc(4px * var(--expanded-scale, 1));
+  gap: calc(3px * var(--expanded-scale, 1));
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: calc(6px * var(--expanded-scale, 1));
-  padding: calc(2px * var(--expanded-scale, 1)) calc(7px * var(--expanded-scale, 1));
-  height: calc(20px * var(--expanded-scale, 1));
+  padding: calc(1.5px * var(--expanded-scale, 1)) calc(5px * var(--expanded-scale, 1));
+  height: calc(19px * var(--expanded-scale, 1));
   box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   line-height: 1;
   backdrop-filter: blur(4px);
   white-space: nowrap;
   flex-shrink: 0;
-  max-width: calc(140px * var(--expanded-scale, 1));
+  max-width: calc(130px * var(--expanded-scale, 1));
   overflow: hidden;
 }
 
+.stat-chip.accessory-chip,
+.stat-chip.pomodoro-chip,
+.stat-chip.music-chip {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
 .stat-chip-label {
-  font-size: calc(9px * var(--expanded-scale, 1));
+  font-size: calc(8.5px * var(--expanded-scale, 1));
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
   color: rgba(255, 255, 255, 0.45);
   text-transform: uppercase;
   white-space: nowrap;
@@ -322,14 +333,14 @@ body {
 }
 
 .stat-chip-value {
-  font-size: calc(10.5px * var(--expanded-scale, 1));
+  font-size: calc(10px * var(--expanded-scale, 1));
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: #e2e8f0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: calc(100px * var(--expanded-scale, 1));
+  max-width: calc(90px * var(--expanded-scale, 1));
   display: inline-block;
   vertical-align: middle;
 }
@@ -342,14 +353,28 @@ body {
   color: #f87171;
 }
 
+@container island (max-width: 560px) {
+  .header-stats .stat-chip-low {
+    display: none !important;
+  }
+}
+
+@container island (max-width: 500px) {
+  .header-stats .stat-chip-med {
+    display: none !important;
+  }
+}
+
 .tabs {
+  flex: 0 0 auto;
   display: flex;
-  gap: calc(5px * var(--expanded-scale, 1));
-  padding-left: calc(14px * var(--expanded-scale, 1));
+  gap: calc(4px * var(--expanded-scale, 1));
+  padding-left: calc(12px * var(--expanded-scale, 1));
+  z-index: 3;
 }
 
 .tab {
-  width: calc(30px * var(--expanded-scale, 1));
+  width: calc(28px * var(--expanded-scale, 1));
   height: calc(22px * var(--expanded-scale, 1));
   display: grid;
   place-items: center;
@@ -359,6 +384,7 @@ body {
   color: var(--dim-2);
   cursor: default;
   position: relative;
+  flex-shrink: 0;
 }
 
 .tab:hover {
@@ -384,11 +410,13 @@ body {
 }
 
 .header-actions {
+  flex: 0 0 auto;
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding-right: 16px;
+  gap: calc(10px * var(--expanded-scale, 1));
+  padding-right: calc(14px * var(--expanded-scale, 1));
+  z-index: 3;
 }
 
 .header-actions button {
@@ -568,17 +596,18 @@ body {
 
 .overview {
   display: flex;
-  gap: 10px;
+  gap: calc(10px * var(--expanded-scale, 1));
   height: 100%;
 }
 
 .overview > .left {
-  flex: 0 0 322px;
-  width: 322px;
+  flex: 1.15 1 0;
+  min-width: 0;
 }
 
 .overview > .right {
-  flex: 1 1 auto;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .card-body {
@@ -588,7 +617,7 @@ body {
 }
 
 .who {
-  padding: 0 36px 0 108px;
+  padding: 0 calc(28px * var(--expanded-scale, 1)) 0 calc(104px * var(--expanded-scale, 1));
   display: flex;
   align-items: center;
   gap: 6px;
@@ -636,7 +665,7 @@ body {
 .ticker {
   position: relative;
   height: 44px;
-  margin: 6px 12px 0 108px;
+  margin: 6px calc(10px * var(--expanded-scale, 1)) 0 calc(104px * var(--expanded-scale, 1));
   overflow: hidden;
   -webkit-mask-image: linear-gradient(
     to bottom,

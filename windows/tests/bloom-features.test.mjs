@@ -9,6 +9,7 @@ import { WelfareManager } from "../src/core/welfare.ts";
 import { BotEngine } from "../src/mochi/engine.ts";
 import { buildShelf } from "../src/views/shelf.ts";
 import { buildAccessory } from "../src/views/accessory.ts";
+import { buildHeader } from "../src/views/views.ts";
 
 installFakeDom();
 
@@ -329,4 +330,102 @@ test("Ambient Artwork Glow resolves color, follows playback, and respects settin
 
   // Restore setting
   State.settings.ambientMusicGlow = true;
+});
+
+// ── 5. Responsive Header Stats & Non-Overlapping Layout ───────────────────────
+
+test("Header layout mounts tabs on left, stats in center, actions on right", () => {
+  State.setMusicPlayback(null);
+  const actions = {
+    blip: () => {},
+    collapse: () => {},
+    setView: () => {},
+    toggleSound: () => {},
+    openTarget: () => {},
+  };
+  const header = buildHeader(actions);
+  header.sync();
+
+  const el = header.el;
+  assert.equal(el.getAttribute("id"), "header");
+  assert.equal(el.children.length, 3);
+
+  const tabs = el.children[0];
+  const stats = el.children[1];
+  const actionsEl = el.children[2];
+
+  assert.ok(tabs.classList.contains("tabs"), "First child must be .tabs");
+  assert.ok(stats.classList.contains("header-stats"), "Second child must be .header-stats");
+  assert.ok(actionsEl.classList.contains("header-actions"), "Third child must be .header-actions");
+});
+
+test("Header stats dynamically declutter and apply priority classes at narrow expanded widths", () => {
+  State.setMusicPlayback(null);
+  const actions = {
+    blip: () => {},
+    collapse: () => {},
+    setView: () => {},
+    toggleSound: () => {},
+    openTarget: () => {},
+  };
+  const header = buildHeader(actions);
+
+  // Setup system stats and accessory
+  State.setSystemStats({
+    cpuUsage: 25,
+    gpuUsage: 35,
+    gpuTemp: 45,
+    ramUsage: 50,
+    ramUsedGb: 8.0,
+    ramTotalGb: 16.0,
+  });
+  State.settings.showSystemStats = true;
+  State.settings.showCpuUsage = true;
+  State.settings.showGpuUsage = true;
+  State.settings.showGpuTemp = true;
+  State.settings.showRamUsage = true;
+  State.settings.showBluetoothBattery = true;
+  State.setAccessoryDevices([
+    {
+      id: "buds-1",
+      name: "AirPods Pro",
+      battery: 80,
+      connected: true,
+      kind: "earbuds",
+    },
+  ]);
+
+  // Case A: Default wide width (640px)
+  State.settings.expandedWidth = 640;
+  header.sync();
+
+  const statsEl = header.el.children[1];
+  const chipsWide = statsEl.find(".stat-chip");
+  // Accessory (high), CPU (high), GPU (med), Temp (low), RAM (low)
+  assert.ok(chipsWide.length >= 4, `At 640px wide should render all permitted chips (got ${chipsWide.length})`);
+  assert.ok(chipsWide.some((c) => c.classList.contains("stat-chip-high")), "Must contain high priority chips");
+  assert.ok(chipsWide.some((c) => c.classList.contains("stat-chip-med")), "Must contain med priority chips");
+  assert.ok(chipsWide.some((c) => c.classList.contains("stat-chip-low")), "Must contain low priority chips");
+
+  // Case B: Narrow width (520px) with active accessory
+  State.settings.expandedWidth = 520;
+  header.sync();
+
+  const chipsNarrow = statsEl.find(".stat-chip");
+  // Should omit temp and ram (low priority) when media is active at narrow width
+  assert.ok(!chipsNarrow.some((c) => c.classList.contains("stat-chip-low")), "At 520px with active accessory, low priority chips must be suppressed");
+  assert.ok(chipsNarrow.some((c) => c.classList.contains("accessory-chip")), "Accessory chip must stay visible");
+  assert.ok(chipsNarrow.some((c) => c.textContent?.includes("CPU")), "CPU chip must stay visible");
+
+  // Case C: Minimum supported width (480px)
+  State.settings.expandedWidth = 480;
+  header.sync();
+
+  const chipsMin = statsEl.find(".stat-chip");
+  assert.ok(chipsMin.length <= 3, `At 480px should render at most 2-3 essential chips (got ${chipsMin.length})`);
+  assert.ok(!chipsMin.some((c) => c.classList.contains("stat-chip-low")), "Low priority chips must not be present at 480px");
+
+  // Restore defaults
+  State.settings.expandedWidth = 640;
+  State.setAccessoryDevices([]);
 });

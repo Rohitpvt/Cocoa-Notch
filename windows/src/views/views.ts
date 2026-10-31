@@ -144,14 +144,14 @@ export function buildHeader(actions: ViewActions): ViewHost {
     }
   }
 
+  const headerActions = h("div", { class: "header-actions" }, planPills, gearBtn, soundBtn, collapseBtn);
   const el = h(
     "div",
     { id: "header" },
     h("div", { class: "tabs" }, tabHome, tabChat, tabDrop, tabNotifs),
     headerStats,
-    h("div", { class: "header-actions" }, planPills, gearBtn, soundBtn, collapseBtn),
+    headerActions,
   );
-  const headerActions = el.lastElementChild as HTMLElement;
 
   return {
     el,
@@ -197,7 +197,7 @@ export function buildHeader(actions: ViewActions): ViewHost {
         h(
           "div",
           {
-            class: `stat-chip pomodoro-chip ${pClass}`.trim(),
+            class: `stat-chip stat-chip-high pomodoro-chip ${pClass}`.trim(),
             title: `Focus Sprint (${State.pomodoro.phase}): ${timeStr} (Click to pause/resume)`,
             onclick: (e: Event) => {
               e.stopPropagation();
@@ -225,7 +225,7 @@ export function buildHeader(actions: ViewActions): ViewHost {
         const chip = h(
           "div",
           {
-            class: `stat-chip accessory-chip ${bClass}${State.view === "accessory" ? " active" : ""}`.trim(),
+            class: `stat-chip stat-chip-high accessory-chip ${bClass}${State.view === "accessory" ? " active" : ""}`.trim(),
             title: `${dev.name}: ${dev.battery}% battery${dev.caseBattery != null ? ` (Case: ${dev.caseBattery}%)` : ""}`,
             onclick: (e: Event) => {
               e.stopPropagation();
@@ -255,7 +255,7 @@ export function buildHeader(actions: ViewActions): ViewHost {
         h(
           "div",
           {
-            class: `stat-chip music-chip${activeClass}`,
+            class: `stat-chip stat-chip-high music-chip${activeClass}`,
             style: `border-color: ${albumColor}55; background: ${albumColor}20; color: ${albumColor}; cursor: pointer; pointer-events: auto;`,
             title: `${title}${artist}`,
             onclick: (e: Event) => {
@@ -275,51 +275,56 @@ export function buildHeader(actions: ViewActions): ViewHost {
     }
 
     if (stats) {
+      const expW = State.settings.expandedWidth || 640;
+      const isNarrow = expW < 560;
+      const isVeryNarrow = expW < 500;
+      const hasMedia = isMusicPlaying || (State.settings.showBluetoothBattery !== false && State.activeAccessory?.connected === true);
+
       if (State.settings.showCpuUsage) {
         const cpu = Math.round(stats.cpuUsage);
         const cClass = cpu > 85 ? "hot" : cpu > 60 ? "warm" : "";
         items.push(
           h(
             "div",
-            { class: `stat-chip ${cClass}`.trim(), title: `CPU: ${cpu}%` },
+            { class: `stat-chip stat-chip-high ${cClass}`.trim(), title: `CPU: ${cpu}%` },
             h("span", { class: "stat-chip-label", text: "CPU" }),
             h("span", { class: "stat-chip-value", text: `${cpu}%` }),
           ),
         );
       }
-      if (State.settings.showGpuUsage && stats.gpuUsage != null) {
+      if ((!isVeryNarrow || !hasMedia) && State.settings.showGpuUsage && stats.gpuUsage != null) {
         const gpu = Math.round(stats.gpuUsage);
         const gClass = gpu > 85 ? "hot" : gpu > 60 ? "warm" : "";
         items.push(
           h(
             "div",
-            { class: `stat-chip ${gClass}`.trim(), title: `GPU: ${gpu}%` },
+            { class: `stat-chip stat-chip-med ${gClass}`.trim(), title: `GPU: ${gpu}%` },
             h("span", { class: "stat-chip-label", text: "GPU" }),
             h("span", { class: "stat-chip-value", text: `${gpu}%` }),
           ),
         );
       }
-      // Keep header uncluttered when music is playing alongside accessory and CPU/GPU
-      if (!isMusicPlaying && State.settings.showGpuTemp && stats.gpuTemp != null) {
+      // Keep header uncluttered when music/accessory is active or width is narrow
+      if (!isMusicPlaying && (!hasMedia || !isNarrow) && !isVeryNarrow && State.settings.showGpuTemp && stats.gpuTemp != null) {
         const temp = Math.round(stats.gpuTemp);
         const tClass = temp > 80 ? "hot" : temp > 68 ? "warm" : "";
         items.push(
           h(
             "div",
-            { class: `stat-chip ${tClass}`.trim(), title: `GPU Temp: ${temp}°C` },
+            { class: `stat-chip stat-chip-low ${tClass}`.trim(), title: `GPU Temp: ${temp}°C` },
             h("span", { class: "stat-chip-label", text: "GPU" }),
             h("span", { class: "stat-chip-value", text: `${temp}°C` }),
           ),
         );
       }
-      if (!isMusicPlaying && State.settings.showRamUsage) {
+      if (!isMusicPlaying && (!hasMedia || !isNarrow) && !isVeryNarrow && State.settings.showRamUsage) {
         const ramGb = stats.ramUsedGb.toFixed(1);
         const ramPct = Math.round(stats.ramUsage);
         const rClass = ramPct > 85 ? "hot" : ramPct > 70 ? "warm" : "";
         items.push(
           h(
             "div",
-            { class: `stat-chip ${rClass}`.trim(), title: `RAM: ${ramGb} GB (${ramPct}%)` },
+            { class: `stat-chip stat-chip-low ${rClass}`.trim(), title: `RAM: ${ramGb} GB (${ramPct}%)` },
             h("span", { class: "stat-chip-label", text: "RAM" }),
             h("span", { class: "stat-chip-value", text: `${ramGb}G` }),
           ),
