@@ -1065,12 +1065,19 @@ export class Island {
   ensureRunning() {
     if (this.running) return;
     this.running = true;
-    this.lastFrame = performance.now();
+    this.lastFrame = 0;
     requestAnimationFrame(this.frame);
   }
 
   private frame = (nowMs: number) => {
-    const dt = Math.min(0.05, (nowMs - this.lastFrame) / 1000);
+    let dt = 1 / 60;
+    if (this.lastFrame > 0 && nowMs > this.lastFrame) {
+      const delta = (nowMs - this.lastFrame) / 1000;
+      if (Number.isFinite(delta) && delta > 0 && delta <= 0.1) {
+        dt = delta;
+      }
+    }
+    dt = Math.min(0.05, Math.max(0.0005, dt));
     this.lastFrame = nowMs;
 
     this.width.step(dt, nowMs);
@@ -1093,22 +1100,40 @@ export class Island {
     if (greetingActive) {
       const gctx = this.greetingCanvas.getContext("2d");
       if (gctx) {
-        const dpr = Math.min(2, window.devicePixelRatio || 1);
-        gctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        this.greeting.draw(gctx);
+        try {
+          const dpr = Math.min(2, window.devicePixelRatio || 1);
+          gctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          this.greeting.draw(gctx);
+        } catch (e) {
+          console.warn("Greeting draw error:", e);
+        }
       }
     } else {
       // Kept running even while the drop canvas is up, so the island's own Mochi
       // is already in the right place the moment the canvas fades out.
-      this.drawBot(dt);
+      try {
+        this.drawBot(dt);
+      } catch (e) {
+        console.warn("Main bot draw error:", e);
+      }
     }
 
     const uploadActive = this.uploadActive;
-    if (uploadActive) this.uploadCanvas.draw(UploadSeq.frame(), nowMs / 1000);
+    if (uploadActive) {
+      try {
+        this.uploadCanvas.draw(UploadSeq.frame(), nowMs / 1000);
+      } catch (e) {
+        console.warn("Upload canvas draw error:", e);
+      }
+    }
     this.uploadCanvas.el.classList.toggle("on", uploadActive);
     this.viewsEl.classList.toggle("hidden-by-upload", uploadActive);
 
-    tickMiniBots(dt);
+    try {
+      tickMiniBots(dt);
+    } catch (e) {
+      console.warn("Mini bots tick error:", e);
+    }
     // A ticker scroll that loses its frames freezes mid-way, rows overlapping.
     const viewAnimating = this.views.get(State.view)?.tick?.(nowMs) === true;
     if (UploadSeq.isActive) this.stepSequence();
@@ -1138,9 +1163,9 @@ export class Island {
 
   private updateBotTargets() {
     const p = botPosition(State.mode, State.view, this.height.value, State.uploadProgress);
-    this.botCx.target = p.cx;
-    this.botCy.target = p.cy;
-    this.botSize.target = p.diameter / 0.6;
+    if (Number.isFinite(p.cx)) this.botCx.target = p.cx;
+    if (Number.isFinite(p.cy)) this.botCy.target = p.cy;
+    if (Number.isFinite(p.diameter) && p.diameter > 0) this.botSize.target = p.diameter / 0.6;
 
     const greetingActive = State.mode === "expanded" && State.view === "greeting";
     // The drop canvas draws its own Mochi; two of them would overlap. Out on the
@@ -1165,6 +1190,10 @@ export class Island {
   }
 
   private drawBot(dt: number) {
+    if (!Number.isFinite(this.botCx.value)) this.botCx.value = this.botCx.target;
+    if (!Number.isFinite(this.botCy.value)) this.botCy.value = this.botCy.target;
+    if (!Number.isFinite(this.botSize.value) || this.botSize.value <= 0) this.botSize.value = this.botSize.target;
+
     const size = this.botSize.value;
     const w = Math.max(1, Math.round(size));
     const hCss = w + BOT_OVERHANG;
@@ -1212,10 +1241,15 @@ export class Island {
     const outfit = State.wardrobePreview ?? this.seasons.get(parseOutfit(State.settings.mochiOutfit));
     this.engine.setOutfit(showOutfit ? outfit : "none", !inWardrobe);
 
-    this.engine.update(dt);
-    ctx.setTransform(dpr, 0, 0, dpr, BOT_SIDE * dpr, 0);
-    ctx.clearRect(-BOT_SIDE, 0, wCss, hCss);
-    this.engine.draw(ctx, w, hCss);
+    try {
+      ctx.save();
+      this.engine.update(dt);
+      ctx.setTransform(dpr, 0, 0, dpr, BOT_SIDE * dpr, 0);
+      ctx.clearRect(-BOT_SIDE, 0, wCss, hCss);
+      this.engine.draw(ctx, w, hCss);
+    } finally {
+      ctx.restore();
+    }
   }
 
   /** BotCanvasView.lookX / lookY — tanh of the distance to the bot. */

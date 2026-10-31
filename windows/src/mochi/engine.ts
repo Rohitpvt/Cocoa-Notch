@@ -554,18 +554,19 @@ export class BotEngine {
   // ── Update ──────────────────────────────────────────────────────────────────
 
   update(dt: number) {
+    const safeDt = Number.isFinite(dt) && dt > 0 ? Math.min(5.0, Math.max(0.0005, dt)) : 1 / 60;
     const dancingTarget = this.isDancing ? 1 : 0;
     if (this.dancingLevel < dancingTarget) {
-      this.dancingLevel = Math.min(dancingTarget, this.dancingLevel + dt / 0.3);
+      this.dancingLevel = Math.min(dancingTarget, this.dancingLevel + safeDt / 0.3);
     } else if (this.dancingLevel > dancingTarget) {
-      this.dancingLevel = Math.max(dancingTarget, this.dancingLevel - dt / 0.5);
+      this.dancingLevel = Math.max(dancingTarget, this.dancingLevel - safeDt / 0.5);
     }
 
     const hpTarget = this.hasHeadphones ? 1 : 0;
     if (this.headphonesPresence < hpTarget) {
-      this.headphonesPresence = Math.min(hpTarget, this.headphonesPresence + dt / 0.25);
+      this.headphonesPresence = Math.min(hpTarget, this.headphonesPresence + safeDt / 0.25);
     } else if (this.headphonesPresence > hpTarget) {
-      this.headphonesPresence = Math.max(hpTarget, this.headphonesPresence - dt / 0.35);
+      this.headphonesPresence = Math.max(hpTarget, this.headphonesPresence - safeDt / 0.35);
     }
 
     const n = now();
@@ -573,7 +574,7 @@ export class BotEngine {
 
     for (const tw of [...this.tweens.values()]) {
       const k = tw.keys[tw.index];
-      const p = Math.min(1, Math.max(0, (nowMs - tw.startMs) / k[1]));
+      const p = Math.min(1, Math.max(0, (nowMs - tw.startMs) / Math.max(1, k[1])));
       this[tw.prop] = tw.from + (k[0] - tw.from) * k[2](p);
       if (p >= 1) {
         tw.from = k[0];
@@ -625,7 +626,7 @@ export class BotEngine {
     }
 
     const bounce = this.cfg.bounces ? -Math.abs(Math.sin(t * 5.2)) * 0.07 : 0;
-    const kGen = 1 - Math.pow(0.0008, dt);
+    const kGen = 1 - Math.pow(0.0008, safeDt);
     if (!this.locks.has("oy")) this.oy += (bounce - this.oy) * kGen;
 
     if (this.cfg.breathes) {
@@ -642,7 +643,7 @@ export class BotEngine {
 
     if (this.isMini && n > this.miniNextBehavior) this.doMiniBehaviorLoop();
 
-    const kLook = 1 - Math.pow(0.0025, dt);
+    const kLook = 1 - Math.pow(0.0025, safeDt);
     if (!this.locks.has("yaw")) this.yaw += (this.tgYaw - this.yaw) * kLook;
     if (!this.locks.has("pitch")) this.pitch += (this.tgPitch - this.pitch) * kLook;
     if (!this.locks.has("tilt")) this.tilt += (this.tgTilt - this.tilt) * kGen;
@@ -650,7 +651,19 @@ export class BotEngine {
     if (!this.locks.has("sx")) this.sx += (this.tgSx - this.sx) * kGen;
     if (!this.locks.has("es")) this.es += (this.tgEs - this.es) * kGen;
 
-    this.col = mix3(this.col, this.colT, 1 - Math.pow(0.002, dt));
+    this.col = mix3(this.col, this.colT, 1 - Math.pow(0.002, safeDt));
+
+    // Self-healing sanitization against non-finite corruption
+    if (!Number.isFinite(this.sx) || this.sx <= 0 || this.sx > 5) this.sx = 1;
+    if (!Number.isFinite(this.sy) || this.sy <= 0 || this.sy > 5) this.sy = 1;
+    if (!Number.isFinite(this.es) || this.es <= 0 || this.es > 5) this.es = 1;
+    if (!Number.isFinite(this.yaw)) this.yaw = 0;
+    if (!Number.isFinite(this.pitch)) this.pitch = 0;
+    if (!Number.isFinite(this.tilt)) this.tilt = 0;
+    if (!Number.isFinite(this.roll)) this.roll = 0;
+    if (!Number.isFinite(this.ox)) this.ox = 0;
+    if (!Number.isFinite(this.oy)) this.oy = 0;
+    if (!Number.isFinite(this.morph) || this.morph < 0 || this.morph > 1) this.morph = 0;
 
     if (n > this.nextBlink) {
       if (this.state !== "sleeping" && this.state !== "dizzy") {
@@ -744,11 +757,14 @@ export class BotEngine {
    * `w`×`h` CSS pixels (the caller has already applied the DPR transform).
    */
   draw(x: CanvasRenderingContext2D, W: number, H: number) {
+    if (!Number.isFinite(W) || !Number.isFinite(H) || W <= 0 || H <= 0) return;
     const R = W * 0.3;
     const rx = R * 1.14;
     const ry = R * 0.88;
-    const cx = W / 2 + this.ox * R;
-    const cy = H / 2 + this.particleOverhang / 2 + this.oy * R + R * 0.06;
+    const ox = Number.isFinite(this.ox) ? this.ox : 0;
+    const oy = Number.isFinite(this.oy) ? this.oy : 0;
+    const cx = W / 2 + ox * R;
+    const cy = H / 2 + this.particleOverhang / 2 + oy * R + R * 0.06;
 
     // With an outfit on, a roll turns the whole character — hat included — as
     // one piece instead of rolling the eyes over the body (BotCanvasView, macOS).

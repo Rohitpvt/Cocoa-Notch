@@ -76,8 +76,10 @@ export class Spring {
   }
 
   step(dt: number) {
-    const steps = Math.max(1, Math.ceil(dt / (1 / 240)));
-    const h = dt / steps;
+    if (!Number.isFinite(dt) || dt <= 0) return;
+    const clampedDt = Math.min(0.05, Math.max(0.0005, dt));
+    const steps = Math.max(1, Math.ceil(clampedDt / (1 / 240)));
+    const h = clampedDt / steps;
     for (let i = 0; i < steps; i++) {
       const acc =
         this.omega * this.omega * (this.target - this.value) -
@@ -85,6 +87,8 @@ export class Spring {
       this.velocity += acc * h;
       this.value += this.velocity * h;
     }
+    if (!Number.isFinite(this.value)) this.value = this.target;
+    if (!Number.isFinite(this.velocity)) this.velocity = 0;
   }
 }
 
@@ -136,20 +140,25 @@ export class Tracked {
   }
 
   step(dt: number, now = performance.now()) {
+    const safeDt = Number.isFinite(dt) && dt > 0 ? Math.min(0.05, Math.max(0.0005, dt)) : 1 / 60;
     if (this.mode === "spring") {
-      this.spring.step(dt);
+      this.spring.step(safeDt);
       if (this.spring.settled) {
         this.spring.value = this.spring.target;
         this.spring.velocity = 0;
         this.mode = "idle";
       }
     } else if (this.mode === "curve") {
-      const p = clamp((now - this.curveStart) / this.curveDur, 0, 1);
+      const p = clamp((now - this.curveStart) / Math.max(1, this.curveDur), 0, 1);
       this.spring.value = lerp(this.curveFrom, this.curveTo, closeCurve(p));
       if (p >= 1) {
         this.spring.velocity = 0;
         this.mode = "idle";
       }
+    }
+    if (!Number.isFinite(this.spring.value)) {
+      this.spring.value = this.spring.target;
+      this.spring.velocity = 0;
     }
   }
 }

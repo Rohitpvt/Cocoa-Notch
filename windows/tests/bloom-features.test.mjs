@@ -429,3 +429,99 @@ test("Header stats dynamically declutter and apply priority classes at narrow ex
   State.settings.expandedWidth = 640;
   State.setAccessoryDevices([]);
 });
+
+// ── 5. Canvas Animation Loop & Notification Glitch Hardening ──────────────────
+
+test("Spring and Tracked handle negative, zero, and NaN dt without exploding or becoming NaN", async () => {
+  const { Spring, Tracked } = await import("../src/core/anim.ts");
+  const s = new Spring(100);
+  s.target = 200;
+
+  // Normal step
+  s.step(0.016);
+  assert.ok(Number.isFinite(s.value));
+
+  // Extreme negative dt (e.g. clock drift or wake from throttled suspension)
+  s.step(-1000);
+  assert.ok(Number.isFinite(s.value), "Spring value must remain finite after negative dt");
+  assert.ok(Number.isFinite(s.velocity), "Spring velocity must remain finite after negative dt");
+
+  // NaN dt
+  s.step(Number.NaN);
+  assert.ok(Number.isFinite(s.value), "Spring value must remain finite after NaN dt");
+
+  // Tracked
+  const t = new Tracked(50);
+  t.springTo(100);
+  t.step(-500);
+  assert.ok(Number.isFinite(t.value), "Tracked value must remain finite after negative dt");
+  t.step(Number.NaN);
+  assert.ok(Number.isFinite(t.value), "Tracked value must remain finite after NaN dt");
+});
+
+test("BotEngine update sanitizes negative, zero, or NaN dt and keeps sx, sy, es bounded", () => {
+  const engine = new BotEngine();
+  engine.isMini = true;
+
+  // Initial values
+  assert.equal(engine.sx, 1);
+  assert.equal(engine.sy, 1);
+
+  // Severe negative dt (which previously caused Math.pow(0.0008, dt) to produce Infinity)
+  engine.update(-1200);
+  assert.ok(Number.isFinite(engine.sx), "engine.sx must remain finite");
+  assert.ok(Number.isFinite(engine.sy), "engine.sy must remain finite");
+  assert.ok(engine.sx >= 0.1 && engine.sx <= 5, "engine.sx must stay within bounded range [0.1, 5]");
+  assert.ok(engine.sy >= 0.1 && engine.sy <= 5, "engine.sy must stay within bounded range [0.1, 5]");
+
+  // NaN dt
+  engine.update(Number.NaN);
+  assert.ok(Number.isFinite(engine.sx), "engine.sx must remain finite on NaN dt");
+  assert.ok(Number.isFinite(engine.sy), "engine.sy must remain finite on NaN dt");
+
+  // Verify normal ticking works cleanly after recovery
+  engine.update(0.016);
+  assert.ok(Number.isFinite(engine.sx));
+  assert.ok(Number.isFinite(engine.sy));
+});
+
+test("tickMiniBots and pruneMiniBots handle disconnected canvases and negative dt safely", async () => {
+  const { createMiniBot, tickMiniBots, pruneMiniBots, miniBotCount } = await import("../src/mochi/minibots.ts");
+
+  const task = {
+    id: "test_task_1",
+    name: "Test Pill",
+    color: "#10b981",
+    state: "idle",
+    steps: [],
+    stepIndex: 0,
+  };
+
+  const el = createMiniBot(task, 24);
+  const initialCount = miniBotCount();
+  assert.ok(initialCount >= 1, "Must have at least one live mini bot registered");
+
+  // Canvas child element in slot
+  const canvas = el.children[0];
+  assert.ok(canvas, "Canvas must exist in slot");
+
+  // Negative dt should not throw
+  assert.doesNotThrow(() => {
+    tickMiniBots(-50);
+  });
+
+  // NaN dt should not throw
+  assert.doesNotThrow(() => {
+    tickMiniBots(Number.NaN);
+  });
+
+  // Normal dt should not throw
+  assert.doesNotThrow(() => {
+    tickMiniBots(0.016);
+  });
+
+  // When element is disconnected, pruneMiniBots removes it from live map
+  canvas.isConnected = false;
+  pruneMiniBots();
+  assert.ok(miniBotCount() < initialCount, "Disconnected canvas must be pruned from live map");
+});

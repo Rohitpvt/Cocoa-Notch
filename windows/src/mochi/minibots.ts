@@ -64,7 +64,11 @@ export function pruneMiniBots() {
 }
 
 export function syncMiniBotStates(tasks: AgentTask[]) {
-  for (const mb of live.values()) {
+  for (const [canvas, mb] of live) {
+    if (!canvas.isConnected) {
+      live.delete(canvas);
+      continue;
+    }
     const task = tasks.find((t) => t.id === mb.taskId);
     if (!task) continue;
     mb.engine.setState(task.state);
@@ -73,14 +77,26 @@ export function syncMiniBotStates(tasks: AgentTask[]) {
 }
 
 export function tickMiniBots(dt: number) {
+  const safeDt = Number.isFinite(dt) && dt > 0 ? Math.min(0.05, Math.max(0.0005, dt)) : 1 / 60;
   const dpr = Math.min(2, window.devicePixelRatio || 1);
-  for (const mb of live.values()) {
-    const ctx = mb.canvas.getContext("2d");
+  for (const [canvas, mb] of live) {
+    if (!canvas.isConnected) {
+      live.delete(canvas);
+      continue;
+    }
+    const ctx = canvas.getContext("2d");
     if (!ctx) continue;
-    mb.engine.update(dt);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, mb.cssSize, mb.cssSize);
-    mb.engine.draw(ctx, mb.cssSize, mb.cssSize);
+    try {
+      ctx.save();
+      mb.engine.update(safeDt);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, mb.cssSize, mb.cssSize);
+      mb.engine.draw(ctx, mb.cssSize, mb.cssSize);
+    } catch (err) {
+      console.warn("Mini bot render warning:", err);
+    } finally {
+      ctx.restore();
+    }
   }
 }
 
