@@ -173,6 +173,9 @@ export function buildMusic(actions: ViewActions): ViewHost {
   lyricsList.addEventListener("touchstart", () => {
     userScrollUntilMs = performance.now() + 3000;
   }, { passive: true });
+  lyricsList.addEventListener("pointerdown", () => {
+    userScrollUntilMs = performance.now() + 3000;
+  }, { passive: true });
 
   function scrollToActiveLyric(lineEl: HTMLElement, smooth = true) {
     if (!lineEl || !lyricsList) return;
@@ -279,7 +282,11 @@ export function buildMusic(actions: ViewActions): ViewHost {
       if (!currentLyrics && !lyricsLoading && State.musicPlayback) {
         checkLyricsFetch(State.musicPlayback, true);
       }
-      const pos = State.musicPlayback?.positionSecs || basePositionSecs || 0;
+      const now = performance.now();
+      const isPlaying = State.musicPlayback?.isPlaying === true;
+      const pos = State.musicPlayback?.positionSecs != null
+        ? basePositionSecs + (isPlaying ? (now - lastSyncTimeMs) / 1000 : 0)
+        : basePositionSecs;
       updateLyricsHighlight(pos, false);
     }
   }
@@ -343,7 +350,11 @@ export function buildMusic(actions: ViewActions): ViewHost {
         });
         lyricsList.append(lineEl);
       }
-      const pos = State.musicPlayback?.positionSecs || basePositionSecs || 0;
+      const now = performance.now();
+      const isPlaying = State.musicPlayback?.isPlaying === true;
+      const pos = State.musicPlayback?.positionSecs != null
+        ? basePositionSecs + (isPlaying ? (now - lastSyncTimeMs) / 1000 : 0)
+        : basePositionSecs;
       activeLyricIdx = -1;
       requestAnimationFrame(() => {
         updateLyricsHighlight(pos, false);
@@ -445,22 +456,39 @@ export function buildMusic(actions: ViewActions): ViewHost {
         if (isDraggingScrubber) {
           // Keep dragging position untouched
         } else if (now > userSeekingUntilMs) {
-          const currentInterpolated = basePositionSecs + (isPlaying ? (now - lastSyncTimeMs) / 1000 : 0);
-          const drift = Math.abs(currentInterpolated - incomingPos);
-
-          // Snap if track changed, playback toggled, or drift is significant (> 1.5s)
-          if (trackChanged || playStateChanged || drift > 1.5 || !hasInitializedBasePos) {
+          // When track changes, play state toggles, or initializing: snap cleanly
+          if (trackChanged || playStateChanged || !hasInitializedBasePos) {
             hasInitializedBasePos = true;
             basePositionSecs = incomingPos;
             lastSyncTimeMs = now;
             updateProgressUi(basePositionSecs, duration);
+            if (activeTab === "lyrics") {
+              activeLyricIdx = -1;
+              updateLyricsHighlight(basePositionSecs, false);
+            }
+          } else {
+            // Live playback tracking: check drift against interpolated position
+            const currentInterpolated = basePositionSecs + (isPlaying ? (now - lastSyncTimeMs) / 1000 : 0);
+            const drift = Math.abs(currentInterpolated - incomingPos);
+
+            // If user jumped externally in Spotify (> 1.0s drift), snap smoothly
+            if (drift > 1.0) {
+              basePositionSecs = incomingPos;
+              lastSyncTimeMs = now;
+              updateProgressUi(basePositionSecs, duration);
+              if (activeTab === "lyrics") {
+                activeLyricIdx = -1;
+                updateLyricsHighlight(basePositionSecs, true);
+              }
+            } else if (isPlaying) {
+              // Re-anchor to ground truth from OS without snapping or jumping UI
+              basePositionSecs = incomingPos;
+              lastSyncTimeMs = now;
+            }
           }
         }
 
         checkLyricsFetch(music);
-        if (activeTab === "lyrics") {
-          updateLyricsHighlight(basePositionSecs, false);
-        }
       } else {
         lastTrackKey = "";
         lastReportedPlaying = false;

@@ -4153,13 +4153,12 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 }
 
 .music-lyric-line {
-  font: 500 calc(13px * var(--expanded-scale, 1)) var(--font);
-  color: rgba(255, 255, 255, 0.45);
-  line-height: 1.45;
-  transition: color 0.25s ease, font-size 0.25s ease, text-shadow 0.25s ease, background 0.25s ease, transform 0.25s ease;
+  font: 500 calc(13.5px * var(--expanded-scale, 1)) / 1.5 var(--font);
+  color: rgba(255, 255, 255, 0.42);
+  transition: color 0.22s ease, text-shadow 0.22s ease, background 0.22s ease;
   cursor: pointer;
   border-radius: calc(6px * var(--expanded-scale, 1));
-  padding: calc(3px * var(--expanded-scale, 1)) calc(8px * var(--expanded-scale, 1));
+  padding: calc(4px * var(--expanded-scale, 1)) calc(8px * var(--expanded-scale, 1));
   word-break: break-word;
   overflow-wrap: break-word;
   white-space: normal;
@@ -4167,7 +4166,7 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 }
 
 .music-lyric-line.plain {
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.65);
   font-weight: 500;
   cursor: pointer;
 }
@@ -4179,13 +4178,10 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 
 .music-lyric-line.active {
   font-weight: 700;
-  font-size: calc(15px * var(--expanded-scale, 1));
   color: var(--album-accent, #1DB954) !important;
-  text-shadow: 0 0 16px var(--album-accent, rgba(29, 185, 84, 0.75)), 0 0 32px var(--album-accent, rgba(29, 185, 84, 0.35));
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: calc(8px * var(--expanded-scale, 1));
-  transform: scale(1.02);
-  transform-origin: left center;
+  text-shadow: 0 0 16px var(--album-accent, #1DB954);
+  background: rgba(255, 255, 255, 0.09);
+  border-radius: calc(6px * var(--expanded-scale, 1));
 }
 
 .music-lyrics-empty {
