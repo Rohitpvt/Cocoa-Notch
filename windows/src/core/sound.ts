@@ -12,6 +12,8 @@ export const SOUND_NAMES = [
 
 export type SoundName = (typeof SOUND_NAMES)[number];
 
+const CORE_SOUNDS: readonly SoundName[] = ["peek", "open", "close", "hover", "blip"];
+
 class SoundEngine {
   enabled = true;
   volume = 0.12;
@@ -19,35 +21,73 @@ class SoundEngine {
   private ctx: AudioContext | null = null;
   private master: GainNode | null = null;
   private buffers = new Map<string, AudioBuffer>();
+  private pendingLoads = new Map<string, Promise<AudioBuffer | null>>();
   private loading: Promise<void> | null = null;
   private idleTimer: number | null = null;
   /** Sounds still playing, by name, so one can be faded out (the greeting). */
   private playing = new Map<string, Set<{ src: AudioBufferSourceNode; gain: GainNode }>>();
 
-  /** Creates the context and decodes every WAV. Safe to call more than once. */
+  private ensureContext(): AudioContext | null {
+    if (this.ctx) return this.ctx;
+    const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    if (!Ctor) return null;
+    const ctx = new Ctor();
+    this.ctx = ctx;
+    const master = ctx.createGain();
+    master.gain.value = this.volume;
+    master.connect(ctx.destination);
+    this.master = master;
+    return ctx;
+  }
+
+  private async fetchAndDecode(name: string): Promise<AudioBuffer | null> {
+    if (this.buffers.has(name)) return this.buffers.get(name)!;
+    const pending = this.pendingLoads.get(name);
+    if (pending) return pending;
+
+    const promise = (async () => {
+      try {
+        const ctx = this.ensureContext();
+        if (!ctx) return null;
+        const res = await fetch(`/sounds/${name}.wav`);
+        if (!res.ok) return null;
+        const buf = await ctx.decodeAudioData(await res.arrayBuffer());
+        this.buffers.set(name, buf);
+        return buf;
+      } catch {
+        return null;
+      } finally {
+        this.pendingLoads.delete(name);
+      }
+    })();
+
+    this.pendingLoads.set(name, promise);
+    return promise;
+  }
+
+  /** Creates the context and decodes essential sounds; remaining sounds load on idle. */
   preload(): Promise<void> {
     if (this.loading) return this.loading;
     this.loading = (async () => {
-      const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      if (!Ctor) return;
-      const ctx = new Ctor();
-      this.ctx = ctx;
-      const master = ctx.createGain();
-      master.gain.value = this.volume;
-      master.connect(ctx.destination);
-      this.master = master;
-      await Promise.all(
-        SOUND_NAMES.map(async (name) => {
-          try {
-            const res = await fetch(`/sounds/${name}.wav`);
-            if (!res.ok) return;
-            const buf = await ctx.decodeAudioData(await res.arrayBuffer());
-            this.buffers.set(name, buf);
-          } catch {
-            /* a missing sound must never break the island */
-          }
-        }),
-      );
+      if (!this.enabled) return;
+      const ctx = this.ensureContext();
+      if (!ctx) return;
+      // 1. Immediately preload the high-frequency interactive micro-feedback sounds
+      await Promise.all(CORE_SOUNDS.map((name) => this.fetchAndDecode(name)));
+
+      // 2. Schedule remaining secondary sounds on idle to keep initial launch instantaneous
+      const remaining = SOUND_NAMES.filter((n) => !CORE_SOUNDS.includes(n));
+      const loadRemaining = () => {
+        for (const name of remaining) {
+          void this.fetchAndDecode(name);
+        }
+      };
+
+      if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+        (window as unknown as { requestIdleCallback: (fn: () => void) => void }).requestIdleCallback(loadRemaining);
+      } else {
+        globalThis.setTimeout(loadRemaining, 1500);
+      }
     })();
     return this.loading;
   }
@@ -88,10 +128,20 @@ class SoundEngine {
 
   play(name: SoundName | string) {
     if (!this.enabled) return;
+    const buf = this.buffers.get(name);
+    if (buf) {
+      this.playBuffer(name, buf);
+    } else {
+      void this.fetchAndDecode(name).then((b) => {
+        if (b && this.enabled) this.playBuffer(name, b);
+      });
+    }
+  }
+
+  private playBuffer(name: string, buf: AudioBuffer) {
     const ctx = this.ctx;
     const master = this.master;
-    const buf = this.buffers.get(name);
-    if (!ctx || !master || !buf) return;
+    if (!ctx || !master) return;
     if (this.idleTimer != null) {
       window.clearTimeout(this.idleTimer);
       this.idleTimer = null;

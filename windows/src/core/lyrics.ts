@@ -20,7 +20,16 @@ export interface LyricsData {
   isInstrumental: boolean;
 }
 
+const MAX_CACHED_TRACKS = 50;
 const lyricsCache = new Map<string, LyricsData | null>();
+
+function cacheLyrics(key: string, data: LyricsData | null): void {
+  if (lyricsCache.size >= MAX_CACHED_TRACKS && !lyricsCache.has(key)) {
+    const oldest = lyricsCache.keys().next().value;
+    if (oldest) lyricsCache.delete(oldest);
+  }
+  lyricsCache.set(key, data);
+}
 const pendingRequests = new Map<string, Promise<LyricsData | null>>();
 
 export function clearLyricsCache(title?: string, artist?: string): void {
@@ -456,7 +465,7 @@ export async function fetchLyrics(
                 lines,
                 isInstrumental: nativeData.instrumental === true || (lines.length === 0 && !nativeData.plainLyrics),
               };
-              lyricsCache.set(cacheKey, result);
+              cacheLyrics(cacheKey, result);
               return result;
             }
           }
@@ -709,7 +718,7 @@ export async function fetchLyrics(
           lines: [],
           isInstrumental: true,
         };
-        lyricsCache.set(cacheKey, emptyResult);
+        cacheLyrics(cacheKey, emptyResult);
         setTimeout(() => {
           if (lyricsCache.get(cacheKey) === emptyResult) {
             lyricsCache.delete(cacheKey);
@@ -738,7 +747,7 @@ export async function fetchLyrics(
         isInstrumental,
       };
 
-      lyricsCache.set(cacheKey, result);
+      cacheLyrics(cacheKey, result);
       return result;
     } catch {
       return null;

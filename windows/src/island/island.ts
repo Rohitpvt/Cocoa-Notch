@@ -80,6 +80,7 @@ export class Island {
 
   private running = false;
   private lastFrame = 0;
+  private lastRenderMs = 0;
   private dirty = true;
   private canvasPx = 0;
 
@@ -1066,10 +1067,27 @@ export class Island {
     if (this.running) return;
     this.running = true;
     this.lastFrame = 0;
+    this.lastRenderMs = 0;
     requestAnimationFrame(this.frame);
   }
 
   private frame = (nowMs: number) => {
+    const settling =
+      this.width.animating || this.height.animating || this.radius.animating || this.translateY.animating;
+    const isQuietIdle =
+      State.mode === "compact" &&
+      !settling &&
+      this.botCx.settled && this.botCy.settled && this.botSize.settled &&
+      !this.wasInIsland &&
+      this.engine.isIdleQuiet &&
+      !UploadSeq.isActive;
+
+    if (isQuietIdle && this.lastRenderMs > 0 && nowMs - this.lastRenderMs < 33) {
+      requestAnimationFrame(this.frame);
+      return;
+    }
+    this.lastRenderMs = nowMs;
+
     let dt = 1 / 60;
     if (this.lastFrame > 0 && nowMs > this.lastFrame) {
       const delta = (nowMs - this.lastFrame) / 1000;
@@ -1145,8 +1163,6 @@ export class Island {
     // looping animation — breathing, ratelimit sweat, sleeping z's, the search
     // sweep — so a hidden island went on burning frames in exactly the states it
     // spends most of its life in. Geometry still has to finish retracting.
-    const settling =
-      this.width.animating || this.height.animating || this.radius.animating || this.translateY.animating;
     const busy = State.mode === "hidden"
       ? settling
       : settling ||

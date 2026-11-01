@@ -542,6 +542,20 @@ export class BotEngine {
     );
   }
 
+  /** True when Mochi is in quiet steady-state idle without active interaction or animation. */
+  get isIdleQuiet(): boolean {
+    return (
+      this.state === "idle" &&
+      !this.isDancing &&
+      this.dancingLevel <= 0.001 &&
+      this.tweens.size === 0 &&
+      this.particles.length === 0 &&
+      Math.abs(this.tgYaw - this.yaw) <= 0.002 &&
+      Math.abs(this.tgPitch - this.pitch) <= 0.002 &&
+      Math.abs(this.tgTilt - this.tilt) <= 0.002
+    );
+  }
+
   // ── Tweens ──────────────────────────────────────────────────────────────────
 
   anim(prop: PropKey, keys: TweenKey[], onComplete?: () => void) {

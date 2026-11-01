@@ -353,13 +353,14 @@ pub fn spawn_cursor_poll(app: AppHandle, gate: Arc<PollGate>) {
         // Without a cursor to read (Linux) the loop only watches the display
         // layout, and twice a second is plenty for that: waking at 60 Hz just to
         // find no cursor costs CPU for nothing.
-        let (period, screen_every) = if platform::CURSOR_POLL { (16, 30) } else { (500, 1) };
+        let mut sleep_ms: u64 = if platform::CURSOR_POLL { 16 } else { 500 };
+        let screen_every = if platform::CURSOR_POLL { 30 } else { 1 };
         loop {
             gate.wait_until_active();
             let mut last = (f64::MIN, f64::MIN);
             let mut ticks: u32 = 0;
             while gate.is_active() {
-                std::thread::sleep(Duration::from_millis(period));
+                std::thread::sleep(Duration::from_millis(sleep_ms));
 
                 // Monitors get plugged in, unplugged, rearranged and rescaled, and
                 // an island pinned to coordinates that no longer exist is an island
@@ -429,6 +430,14 @@ pub fn spawn_cursor_poll(app: AppHandle, gate: Arc<PollGate>) {
                 if gate.ignoring.load(Ordering::Relaxed) == accept {
                     gate.ignoring.store(!accept, Ordering::Relaxed);
                     let _ = win.set_ignore_cursor_events(!accept);
+                }
+
+                // Adaptive polling: fast (16ms) near the island, dragging, or expanded;
+                // relaxed (80ms) when the pointer is away in other apps.
+                if platform::CURSOR_POLL {
+                    let near_island = y <= (r.y + r.h + HIT_MARGIN + 80.0);
+                    let fast = near_island || dragging || !gate.collapsed.load(Ordering::Relaxed);
+                    sleep_ms = if fast { 16 } else { 80 };
                 }
 
                 let _ = win.emit("cursor", CursorPayload { x, y });
