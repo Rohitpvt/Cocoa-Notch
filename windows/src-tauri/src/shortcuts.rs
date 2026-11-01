@@ -417,10 +417,11 @@ mod tests {
 
     // testEnabledByDefault
     #[test]
-    fn all_ported_actions_are_enabled_by_default() {
+    fn all_actions_are_enabled_by_default() {
         for def in ACTIONS {
+            assert!(def.enabled_by_default, "{}", def.id);
             let reserved = matches!(def.id, "attachFrontWindow" | "desktopToggle");
-            assert_eq!(def.enabled_by_default, !reserved, "{}", def.id);
+            assert_eq!(def.ported, !reserved, "{}", def.id);
         }
     }
 
