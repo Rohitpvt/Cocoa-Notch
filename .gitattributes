@@ -27,16 +27,23 @@
 *.jpeg binary
 *.gif binary
 *.ico binary
+*.icns binary
 *.svg text
 *.wav binary
 *.mp3 binary
 *.exe binary
+*.msi binary
 *.dll binary
 *.dylib binary
 *.so binary
 *.zip binary
 *.tar.gz binary
 *.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.xcassets/** binary
 
 # Linguist documentation tagging
 docs/** linguist-documentation

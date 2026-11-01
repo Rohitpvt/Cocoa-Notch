@@ -58,6 +58,11 @@ You can also [build it yourself](#build-it-yourself).
 | Drag Mochi out of the island | He moves onto your desktop and hangs out there, in his outfit, watching your cursor. Drop him back on the island to bring him home |
 | On the desktop: click / right-click / double-click Mochi | Poke him / the wardrobe / he flies home. Drag him to move him |
 | Drag a file onto the island | Mochi turns into a box, swallows it, then offers to answer questions about it |
+| Shelf tab | Stash and preview up to 50 files, quick copy, or hand off as AI prompt context |
+| Pomodoro timer chip | Click to start focus sprint (25m/5m), pause/resume, or transition to celebratory break |
+| Accessory chip | Shows Bluetooth headphones/earbuds battery level (L/R buds + case), click for sound settings |
+| Music player & lyrics | Album cover, scrubber seeking, beat-reactive dancing Mochi, ambient glow, and synced lyrics |
+| Hardware telemetry | Live CPU, GPU %, GPU temp, and RAM chips in expanded header with responsive decluttering |
 | Click a file in the session ticker | Its diff opens in the island; ↗ opens the file in VS Code or Antigravity IDE, ‹ or `Esc` goes back |
 | Click 🔼 (collapse chevron) | Folds the island back to the compact bar |
 | Click 🔔 (Notifications tab) | Opens the notification history view (view past system toast alerts, dismiss items, clear all) |
@@ -65,11 +70,11 @@ You can also [build it yourself](#build-it-yourself).
 | Tray icon | Open, Weekly recap, Wardrobe…, Settings…, Pause, Quit |
 | `Ctrl+Alt+Space` | Opens the chat, from any app |
 | `Ctrl+Alt+A` | Jumps to the waiting permission or question |
-| `Ctrl+Alt+T` | Brings the session's window forward ("Open terminal") |
+| `Ctrl+Alt+T` | Opens the terminal (session window, Windows Terminal `wt.exe`, PowerShell, or cmd) |
 | `Ctrl+Alt+→` / `Ctrl+Alt+←` | Next / previous pill |
 | `Ctrl+Alt+S` | Mutes or unmutes Mochi |
 | `Ctrl+Alt+G` | Opens the wardrobe |
-| `Ctrl+Alt+N` | Opens and closes the island (off until you turn it on) |
+| `Ctrl+Alt+N` | Opens and closes the island (enabled by default) |
 | In the open island: `Ctrl+→` `Ctrl+←`, `Ctrl+1`–`Ctrl+9` | Switch pills |
 | In the open island: `Ctrl+Enter`, `Ctrl+K` | Send, start a new chat |
 | In the open island: `Ctrl+,`, `Ctrl+P` | Settings, keep the island open |

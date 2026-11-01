@@ -7,7 +7,7 @@ Cocoa is a native macOS app (`NotchBuddy/`); `windows/` is the Tauri version for
 - `NotchBuddy/Sources/CocoaKit/PillCatalog.swift` — single source of truth for all declared pills (workspace tools, agents, AI providers, services). Every pill ID, color, category and subtitle lives here.
 - `docs/SPEC.md`, `docs/INTEGRATIONS.md` — behaviour, views, states, integrations (in French).
 - `design/prototype/notch-buddy.html` — original prototype, the visual source of truth. `design/captures/` — target screenshots.
-- `windows/` — the Tauri app for Windows and Linux: Rust in `src-tauri/`, TypeScript in `src/`, the `cocoa-hook` relay in `hook/`. `windows/README.md` lists what differs from the Mac.
+- `windows/` — the Tauri app for Windows and Linux: Rust in `src-tauri/`, TypeScript in `src/`, the `cocoa-hook` relay in `hook/`. Modules include `src/views/accessory.ts` (Bluetooth battery), `src/views/shelf.ts` (file staging), `src/views/music.ts` (player & synced lyrics), `src/core/lyrics.ts` (LRC engine), `src/core/welfare.ts` (Pomodoro & welfare), and hardware telemetry in `src/island/island.ts` and `src/views/views.ts`. `windows/README.md` lists what differs from the Mac.
 - `docs/*.html` — the GitHub Pages site (privacy, terms, support, legal notice).
 - `relay/` — the Cocoa relay, a stateless Cloudflare Worker that forwards the iPhone Live Activity pushes (it holds the APNs key, which must never ship in an app). See `relay/README.md`.
 

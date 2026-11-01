@@ -7,6 +7,13 @@
 - **Ambient Artwork Glow**: Dynamic liquid glass diffuse backlight aura projected behind the notch reflecting album artwork colors.
 - **Connected Bluetooth Headphone / Earbud Battery Pill**: Live battery tracking for Bluetooth headphones, AirPods, and wireless earbuds in both the compact notch and expanded island header, with low-battery warning indicators, multi-earbud (L / R / Case) status inspection, and 1-click Windows sound settings shortcuts.
 - **Staging Shelf (Dual-Mode File Drop)**: Dedicated file tray to stash and manage parked files with direct 1-click "Ask AI" context handoff.
+- **Synchronized LRC Lyrics Engine**: Real-time synchronized lyrics with multi-provider fallbacks (LRCLIB, NetEase, open web), duration-proximity scoring, and collaborating artist tokenization across all tracks.
+- **Smooth Monotonic Lyric Scrolling**: Eliminated stale timestamp resets in `sync()` that caused active lyric lines to bounce up and down during non-music state changes.
+- **Notch Global Shortcuts Enabled by Default**: `Ctrl+Alt+N` (Open or close island) enabled out-of-the-box in both Rust and TypeScript configs.
+- **Multilingual AltGr Diacritic Compatibility**: Fixed `ctrl_alt_types` so Indian English (`0x4009`) and multilingual layouts do not mistakenly classify standard shortcut letters (`N`, `T`, `G`, `A`, `S`) as typing Latin diacritics, ensuring reliable Windows `RegisterHotKey` binding.
+- **Terminal Fallback Cascade**: `Ctrl+Alt+T` automatically cascades to Windows Terminal (`wt.exe`), PowerShell (`pwsh.exe`/`powershell.exe`), or `cmd.exe` when no session or VS Code instance is active.
+- **Wardrobe Shortcut Dispatch**: Broadcaster now emits both `open-wardrobe` and `shortcut` events for instant hotkey response.
+- **Top Header Safe Alignment & Decluttering**: Applied `justify-content: safe center` and container queries (`@container island`) to prevent hardware telemetry chips from overflowing into navigation tabs when the island width is reduced.
 
 ## Windows 0.2.2 — October 15, 2026
 

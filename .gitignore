@@ -10,6 +10,9 @@ DerivedData/
 node_modules/
 dist/
 *.tsbuildinfo
+.vite/
+.turbo/
+.eslintcache
 
 # Rust & Tauri
 target/
@@ -24,7 +27,6 @@ Coucou-Windows-setup.exe
 !Cocoa-Windows-setup.exe
 !Cocoa-Windows.exe
 !Cocoa-Windows.msi
-
 
 # OS generated files
 .DS_Store
@@ -43,6 +45,22 @@ $RECYCLE.BIN/
 coucou.log
 cocoa.log
 recap.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Test, coverage & scratch files
+coverage/
+.nyc_output/
+test-results/
+scratch/
+.brain/
+.system_generated/
+*.swp
+*.swo
+*~
+*.bak
 
 # IDEs & agent local files
 .claude/
