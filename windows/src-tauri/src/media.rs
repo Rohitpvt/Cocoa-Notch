@@ -316,7 +316,7 @@ pub async fn fetch_lyrics(
     duration_secs: Option<f64>,
 ) -> Option<LyricsPayload> {
     let client = reqwest::Client::builder()
-        .timeout(Duration::from_secs(3))
+        .timeout(Duration::from_secs(4))
         .user_agent("CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)")
         .build()
         .ok()?;
@@ -369,6 +369,9 @@ pub async fn fetch_lyrics(
     }
 
     let mut titles: Vec<String> = vec![clean_t.clone()];
+    if !raw_title.is_empty() && !titles.contains(&raw_title.to_string()) {
+        titles.push(raw_title.to_string());
+    }
     if let Some(pos) = clean_t.find(" - ") {
         let base = clean_t[..pos].trim().to_string();
         if !base.is_empty() && !titles.contains(&base) {
@@ -388,6 +391,9 @@ pub async fn fetch_lyrics(
                     artists.push(trimmed);
                 }
             }
+        }
+        if !artists.contains(&raw_artist.to_string()) {
+            artists.push(raw_artist.to_string());
         }
     } else {
         artists.push(String::new());

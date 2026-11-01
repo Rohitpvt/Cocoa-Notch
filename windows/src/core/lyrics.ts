@@ -23,6 +23,19 @@ export interface LyricsData {
 const lyricsCache = new Map<string, LyricsData | null>();
 const pendingRequests = new Map<string, Promise<LyricsData | null>>();
 
+export function clearLyricsCache(title?: string, artist?: string): void {
+  if (title) {
+    const cleanT = cleanTitle(title || "");
+    const cleanA = (artist || "").trim();
+    const cacheKey = `${cleanA.toLowerCase()}:::${cleanT.toLowerCase()}`;
+    lyricsCache.delete(cacheKey);
+    pendingRequests.delete(cacheKey);
+  } else {
+    lyricsCache.clear();
+    pendingRequests.clear();
+  }
+}
+
 export const CREDIT_OR_NOISE_LINE =
   /^(?:作\s*词|作\s*曲|编\s*曲|制\s*作|监\s*制|混\s*音|母\s*带|吉\s*他|贝\s*斯|鼓|键\s*盘|和\s*声|录\s*音|credits?|written\s+by|composed\s+by|produced\s+by|lyrics\s+by|arranged\s+by|published\s+by|mixed\s+by|mastered\s+by|recorded\s+at|engineer|label|copyright|all\s+rights\s+reserved)[\s:：]/i;
 
@@ -198,7 +211,7 @@ export function decodeHtmlEntities(raw: string): string {
     .replace(/\u00a0/g, " ");
 }
 
-async function fetchWithTimeout(url: string, init?: RequestInit, timeoutMs = 3000): Promise<Response> {
+async function fetchWithTimeout(url: string, init?: RequestInit, timeoutMs = 4500): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -365,6 +378,7 @@ export async function fetchLyrics(
   title: string,
   artist: string,
   durationSecs?: number,
+  force = false,
 ): Promise<LyricsData | null> {
   const cleanT = cleanTitle(title || "");
   const cleanA = (artist || "").trim();
@@ -372,7 +386,10 @@ export async function fetchLyrics(
   if (!cleanT) return null;
 
   const cacheKey = `${cleanA.toLowerCase()}:::${cleanT.toLowerCase()}`;
-  if (lyricsCache.has(cacheKey)) {
+  if (force) {
+    lyricsCache.delete(cacheKey);
+    pendingRequests.delete(cacheKey);
+  } else if (lyricsCache.has(cacheKey)) {
     const cached = lyricsCache.get(cacheKey);
     if (cached) return cached;
   }

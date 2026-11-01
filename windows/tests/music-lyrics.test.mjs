@@ -12,6 +12,7 @@ import {
   getArtistVariants,
   synthesizeLinesFromPlain,
   decodeHtmlEntities,
+  clearLyricsCache,
   CREDIT_OR_NOISE_LINE,
   PLACEHOLDER_OR_STUB_LINE,
 } from "../src/core/lyrics.ts";
@@ -271,4 +272,11 @@ test("Lyrics auto-centering math: vertically centers the active line accurately"
   // Case 4: Line at top with no room to scroll up clamps to 0
   nextScroll = computeTargetScrollTop(containerH, 0, 10, lineH);
   assert.equal(nextScroll, 0, "Clamps cleanly to 0");
+});
+
+test("clearLyricsCache: successfully clears track-specific cache or all entries", () => {
+  assert.doesNotThrow(() => {
+    clearLyricsCache("Maula", "Anuv Jain");
+    clearLyricsCache();
+  });
 });

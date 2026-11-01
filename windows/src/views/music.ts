@@ -8,7 +8,7 @@ import { State, type MusicPlaybackState } from "../core/state";
 import { card, type ViewActions, type ViewHost } from "./views";
 import { Bridge } from "../core/bridge";
 import { t, tl } from "../i18n/i18n";
-import { fetchLyrics, getActiveLyricIndex, type LyricsData } from "../core/lyrics";
+import { clearLyricsCache, fetchLyrics, getActiveLyricIndex, type LyricsData } from "../core/lyrics";
 
 export function buildMusic(actions: ViewActions): ViewHost {
   let activeTab: "player" | "lyrics" = "player";
@@ -322,7 +322,22 @@ export function buildMusic(actions: ViewActions): ViewHost {
     }
 
     if (!currentLyrics || currentLyrics.isInstrumental || (currentLyrics.lines.length === 0 && !currentLyrics.plainLyrics)) {
-      lyricsList.append(h("div", { class: "music-lyrics-empty", text: t("♪ Lyrics not available for this track ♪") }));
+      const emptyContainer = h("div", { class: "music-lyrics-empty" }, [
+        h("div", { class: "music-lyrics-empty-text", text: t("♪ Lyrics not available for this track ♪") }),
+        h("button", {
+          class: "music-lyrics-retry-btn",
+          text: `↻ ${t("Retry")}`,
+          onclick: (e: Event) => {
+            e.stopPropagation();
+            actions.blip();
+            if (State.musicPlayback) {
+              clearLyricsCache(State.musicPlayback.title, State.musicPlayback.artist);
+              checkLyricsFetch(State.musicPlayback, true);
+            }
+          },
+        }),
+      ]);
+      lyricsList.append(emptyContainer);
       return;
     }
 
@@ -395,7 +410,7 @@ export function buildMusic(actions: ViewActions): ViewHost {
       }
     }, 8000);
 
-    void fetchLyrics(music.title, music.artist || "", music.durationSecs)
+    void fetchLyrics(music.title, music.artist || "", music.durationSecs, force)
       .then((data) => {
         clearTimeout(fetchTimeout);
         if (key === lastFetchedKey) {
