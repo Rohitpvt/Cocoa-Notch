@@ -322,7 +322,9 @@ export function buildMusic(actions: ViewActions): ViewHost {
     }
 
     if (!currentLyrics || currentLyrics.isInstrumental || (currentLyrics.lines.length === 0 && !currentLyrics.plainLyrics)) {
-      const emptyContainer = h("div", { class: "music-lyrics-empty" }, [
+      const emptyContainer = h(
+        "div",
+        { class: "music-lyrics-empty" },
         h("div", { class: "music-lyrics-empty-text", text: t("♪ Lyrics not available for this track ♪") }),
         h("button", {
           class: "music-lyrics-retry-btn",
@@ -336,7 +338,7 @@ export function buildMusic(actions: ViewActions): ViewHost {
             }
           },
         }),
-      ]);
+      );
       lyricsList.append(emptyContainer);
       return;
     }
