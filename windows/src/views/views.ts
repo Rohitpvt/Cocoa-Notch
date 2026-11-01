@@ -276,8 +276,9 @@ export function buildHeader(actions: ViewActions): ViewHost {
 
     if (stats) {
       const expW = State.settings.expandedWidth || 640;
-      const isNarrow = expW < 560;
-      const isVeryNarrow = expW < 500;
+      const isNarrow = expW < 600;
+      const isVeryNarrow = expW < 530;
+      const isUltraNarrow = expW < 470;
       const hasMedia = isMusicPlaying || (State.settings.showBluetoothBattery !== false && State.activeAccessory?.connected === true);
 
       if (State.settings.showCpuUsage) {
@@ -292,7 +293,7 @@ export function buildHeader(actions: ViewActions): ViewHost {
           ),
         );
       }
-      if ((!isVeryNarrow || !hasMedia) && State.settings.showGpuUsage && stats.gpuUsage != null) {
+      if (!isUltraNarrow && (!isVeryNarrow || !hasMedia) && State.settings.showGpuUsage && stats.gpuUsage != null) {
         const gpu = Math.round(stats.gpuUsage);
         const gClass = gpu > 85 ? "hot" : gpu > 60 ? "warm" : "";
         items.push(

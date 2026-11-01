@@ -92,6 +92,8 @@ export const Bridge = {
 
   /** "Open terminal" → opens the folder in VS Code when `code` is on PATH. */
   openInVSCode: (path: string | null) => call<boolean>("open_in_vscode", { path }),
+  /** "Open terminal" fallback for shortcuts or sessions without a specific tool. */
+  openTerminal: (path: string | null = null) => call<boolean>("open_terminal", { path }),
 
   /**
    * "Open terminal": the window the session runs in when Rust found it

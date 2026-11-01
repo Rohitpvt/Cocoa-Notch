@@ -393,23 +393,15 @@ pub async fn fetch_lyrics(
         artists.push(String::new());
     }
 
-    let mut lrclib_down = false;
-
     // Strategy 1: Exact GET without strict duration
-    for art in &artists {
-        if lrclib_down {
-            break;
-        }
-        if let Ok(mut url) = Url::parse("https://lrclib.net/api/get") {
-            url.query_pairs_mut()
-                .append_pair("track_name", &clean_t)
-                .append_pair("artist_name", art);
-            match client.get(url).send().await {
-                Ok(resp) => {
-                    if resp.status().is_server_error() {
-                        lrclib_down = true;
-                        break;
-                    } else if resp.status().is_success() {
+    for t in &titles {
+        for art in &artists {
+            if let Ok(mut url) = Url::parse("https://lrclib.net/api/get") {
+                url.query_pairs_mut()
+                    .append_pair("track_name", t)
+                    .append_pair("artist_name", art);
+                if let Ok(resp) = client.get(url).send().await {
+                    if resp.status().is_success() {
                         if let Ok(payload) = resp.json::<LyricsPayload>().await {
                             if payload.synced_lyrics.is_some() || payload.plain_lyrics.is_some() {
                                 return Some(payload);
@@ -417,49 +409,29 @@ pub async fn fetch_lyrics(
                         }
                     }
                 }
-                Err(e) => {
-                    if e.is_timeout() || e.is_connect() {
-                        lrclib_down = true;
-                        break;
-                    }
-                }
             }
         }
     }
 
     // Strategy 2: Exact GET with duration
-    if !lrclib_down {
-        if let Some(dur) = duration_secs {
-            if dur > 0.0 {
-                let dur_str = (dur.round() as u64).to_string();
+    if let Some(dur) = duration_secs {
+        if dur > 0.0 {
+            let dur_str = (dur.round() as u64).to_string();
+            for t in &titles {
                 for art in &artists {
-                    if lrclib_down {
-                        break;
-                    }
                     if let Ok(mut url) = Url::parse("https://lrclib.net/api/get") {
                         url.query_pairs_mut()
-                            .append_pair("track_name", &clean_t)
+                            .append_pair("track_name", t)
                             .append_pair("artist_name", art)
                             .append_pair("duration", &dur_str);
-                        match client.get(url).send().await {
-                            Ok(resp) => {
-                                if resp.status().is_server_error() {
-                                    lrclib_down = true;
-                                    break;
-                                } else if resp.status().is_success() {
-                                    if let Ok(payload) = resp.json::<LyricsPayload>().await {
-                                        if payload.synced_lyrics.is_some() || payload.plain_lyrics.is_some() {
-                                            return Some(payload);
-                                        }
+                        if let Ok(resp) = client.get(url).send().await {
+                            if resp.status().is_success() {
+                                if let Ok(payload) = resp.json::<LyricsPayload>().await {
+                                    if payload.synced_lyrics.is_some() || payload.plain_lyrics.is_some() {
+                                        return Some(payload);
                                     }
                                 }
                             }
-                            Err(e) => {
-                                if e.is_timeout() || e.is_connect() {
-                                    lrclib_down = true;
-                                    break;
-                                }
-                            }
                         }
                     }
                 }
@@ -467,81 +439,83 @@ pub async fn fetch_lyrics(
         }
     }
 
-    // Strategy 3: Search endpoint on LRCLIB
-    if !lrclib_down {
+    // Strategy 3: Search endpoint on LRCLIB (structured track + artist)
+    for t in &titles {
         for art in &artists {
-            if lrclib_down {
-                break;
-            }
             if let Ok(mut url) = Url::parse("https://lrclib.net/api/search") {
                 url.query_pairs_mut()
-                    .append_pair("track_name", &clean_t)
+                    .append_pair("track_name", t)
                     .append_pair("artist_name", art);
-                match client.get(url).send().await {
-                    Ok(resp) => {
-                        if resp.status().is_server_error() {
-                            lrclib_down = true;
-                            break;
-                        } else if resp.status().is_success() {
-                            if let Ok(list) = resp.json::<Vec<LyricsPayload>>().await {
-                                if let Some(item) = list.into_iter().find(|it| it.synced_lyrics.is_some() || it.plain_lyrics.is_some()) {
-                                    return Some(item);
+                if let Ok(resp) = client.get(url).send().await {
+                    if resp.status().is_success() {
+                        if let Ok(mut list) = resp.json::<Vec<LyricsPayload>>().await {
+                            if !list.is_empty() {
+                                let mut synced: Vec<LyricsPayload> = list.drain(..).filter(|it| it.synced_lyrics.is_some()).collect();
+                                let target_dur = duration_secs.unwrap_or(0.0);
+                                if !synced.is_empty() {
+                                    if target_dur > 0.0 {
+                                        synced.sort_by(|a, b| {
+                                            let da = (a.duration.unwrap_or(0.0) - target_dur).abs();
+                                            let db = (b.duration.unwrap_or(0.0) - target_dur).abs();
+                                            da.partial_cmp(&db).unwrap_or(std::cmp::Ordering::Equal)
+                                        });
+                                    }
+                                    return Some(synced.remove(0));
                                 }
                             }
                         }
                     }
-                    Err(e) => {
-                        if e.is_timeout() || e.is_connect() {
-                            lrclib_down = true;
-                            break;
-                        }
-                    }
                 }
             }
         }
     }
 
-    // Strategy 4: Full query search
-    if !lrclib_down {
-        let query = format!("{} {}", artists.first().map(|s| s.as_str()).unwrap_or(""), clean_t).trim().to_string();
-        if let Ok(mut url) = Url::parse("https://lrclib.net/api/search") {
-            url.query_pairs_mut().append_pair("q", &query);
-            match client.get(url).send().await {
-                Ok(resp) => {
-                    if resp.status().is_server_error() {
-                        lrclib_down = true;
-                    } else if resp.status().is_success() {
-                        if let Ok(list) = resp.json::<Vec<LyricsPayload>>().await {
-                            if let Some(item) = list.into_iter().find(|it| it.synced_lyrics.is_some() || it.plain_lyrics.is_some()) {
-                                return Some(item);
-                            }
-                        }
-                    }
-                }
-                Err(e) => {
-                    if e.is_timeout() || e.is_connect() {
-                        lrclib_down = true;
-                    }
-                }
-            }
-        }
-    }
-
-    // Strategy 5: Clean title-only search
-    if !lrclib_down {
-        if let Ok(mut url) = Url::parse("https://lrclib.net/api/search") {
-            url.query_pairs_mut().append_pair("q", &clean_t);
-            match client.get(url).send().await {
-                Ok(resp) => {
+    // Strategy 4: Full query search on LRCLIB (q = artist track)
+    for t in &titles {
+        for art in &artists {
+            let q = if art.is_empty() { t.clone() } else { format!("{} {}", art, t) };
+            if let Ok(mut url) = Url::parse("https://lrclib.net/api/search") {
+                url.query_pairs_mut().append_pair("q", &q);
+                if let Ok(resp) = client.get(url).send().await {
                     if resp.status().is_success() {
-                        if let Ok(list) = resp.json::<Vec<LyricsPayload>>().await {
-                            if let Some(item) = list.into_iter().find(|it| it.synced_lyrics.is_some() || it.plain_lyrics.is_some()) {
-                                return Some(item);
+                        if let Ok(mut list) = resp.json::<Vec<LyricsPayload>>().await {
+                            let mut synced: Vec<LyricsPayload> = list.drain(..).filter(|it| it.synced_lyrics.is_some()).collect();
+                            let target_dur = duration_secs.unwrap_or(0.0);
+                            if !synced.is_empty() {
+                                if target_dur > 0.0 {
+                                    synced.sort_by(|a, b| {
+                                        let da = (a.duration.unwrap_or(0.0) - target_dur).abs();
+                                        let db = (b.duration.unwrap_or(0.0) - target_dur).abs();
+                                        da.partial_cmp(&db).unwrap_or(std::cmp::Ordering::Equal)
+                                    });
+                                }
+                                return Some(synced.remove(0));
                             }
                         }
                     }
                 }
-                Err(_) => {}
+            }
+        }
+    }
+
+    // Strategy 5: Clean title-only search on LRCLIB
+    for t in &titles {
+        if let Ok(mut url) = Url::parse("https://lrclib.net/api/search") {
+            url.query_pairs_mut().append_pair("q", t);
+            if let Ok(resp) = client.get(url).send().await {
+                if resp.status().is_success() {
+                    if let Ok(list) = resp.json::<Vec<LyricsPayload>>().await {
+                        if let Some(item) = list.into_iter().find(|it| {
+                            let has_lrc = it.synced_lyrics.is_some() || it.plain_lyrics.is_some();
+                            if !has_lrc { return false; }
+                            if artists.is_empty() || artists[0].is_empty() { return true; }
+                            let it_art = it.artist_name.as_deref().unwrap_or("").to_lowercase();
+                            artists.iter().any(|a| !a.is_empty() && it_art.contains(&a.to_lowercase()))
+                        }) {
+                            return Some(item);
+                        }
+                    }
+                }
             }
         }
     }

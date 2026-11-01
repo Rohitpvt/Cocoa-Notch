@@ -68,7 +68,7 @@ const def = (id: ShortcutId, defaultKeys: string, enabledByDefault: boolean, por
 
 /** Same order and defaults as ACTIONS in src-tauri/src/shortcuts.rs. */
 export const SHORTCUTS: readonly ShortcutDef[] = [
-  def("toggleIsland", "Ctrl+Alt+N", false, true),
+  def("toggleIsland", "Ctrl+Alt+N", true, true),
   def("openChat", "Ctrl+Alt+Space", true, true),
   def("goToAlert", "Ctrl+Alt+A", true, true),
   def("jumpToTerminal", "Ctrl+Alt+T", true, true),

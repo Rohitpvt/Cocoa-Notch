@@ -22,6 +22,7 @@ export function buildMusic(actions: ViewActions): ViewHost {
   let isDraggingScrubber = false;
   let lastSyncTimeMs = performance.now();
   let basePositionSecs = 0;
+  let lastReportedPosSecs = -1;
   let activeLyricIdx = -1;
   let userScrollUntilMs = 0;
 
@@ -459,11 +460,11 @@ export function buildMusic(actions: ViewActions): ViewHost {
           // When track changes, play state toggles, or initializing: snap cleanly
           if (trackChanged || playStateChanged || !hasInitializedBasePos) {
             hasInitializedBasePos = true;
+            lastReportedPosSecs = incomingPos;
             basePositionSecs = incomingPos;
             lastSyncTimeMs = now;
             updateProgressUi(basePositionSecs, duration);
             if (activeTab === "lyrics") {
-              activeLyricIdx = -1;
               updateLyricsHighlight(basePositionSecs, false);
             }
           } else {
@@ -471,17 +472,18 @@ export function buildMusic(actions: ViewActions): ViewHost {
             const currentInterpolated = basePositionSecs + (isPlaying ? (now - lastSyncTimeMs) / 1000 : 0);
             const drift = Math.abs(currentInterpolated - incomingPos);
 
-            // If user jumped externally in Spotify (> 1.0s drift), snap smoothly
-            if (drift > 1.0) {
+            // If user jumped externally in Spotify (> 1.5s drift), snap smoothly
+            if (drift > 1.5) {
+              lastReportedPosSecs = incomingPos;
               basePositionSecs = incomingPos;
               lastSyncTimeMs = now;
               updateProgressUi(basePositionSecs, duration);
               if (activeTab === "lyrics") {
-                activeLyricIdx = -1;
                 updateLyricsHighlight(basePositionSecs, true);
               }
-            } else if (isPlaying) {
-              // Re-anchor to ground truth from OS without snapping or jumping UI
+            } else if (isPlaying && incomingPos !== lastReportedPosSecs) {
+              // Only re-anchor when OS delivered a genuinely new position tick, preventing time resets
+              lastReportedPosSecs = incomingPos;
               basePositionSecs = incomingPos;
               lastSyncTimeMs = now;
             }

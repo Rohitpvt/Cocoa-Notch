@@ -336,6 +336,31 @@ export async function fetchGeniusLyricsWeb(
 /**
  * Fetches synced lyrics with multi-strategy matching and plain lyrics fallback.
  */
+export function pickBestLrclibMatch(list: any[], durationSecs?: number): any {
+  if (!Array.isArray(list) || list.length === 0) return null;
+  const synced = list.filter((it: any) => it.syncedLyrics);
+  if (synced.length > 0) {
+    if (durationSecs && durationSecs > 0) {
+      synced.sort(
+        (a: any, b: any) =>
+          Math.abs((a.duration || 0) - durationSecs) - Math.abs((b.duration || 0) - durationSecs)
+      );
+    }
+    return synced[0];
+  }
+  const plain = list.filter((it: any) => it.plainLyrics);
+  if (plain.length > 0) {
+    if (durationSecs && durationSecs > 0) {
+      plain.sort(
+        (a: any, b: any) =>
+          Math.abs((a.duration || 0) - durationSecs) - Math.abs((b.duration || 0) - durationSecs)
+      );
+    }
+    return plain[0];
+  }
+  return null;
+}
+
 export async function fetchLyrics(
   title: string,
   artist: string,
@@ -390,39 +415,31 @@ export async function fetchLyrics(
       const titles = getTitleVariants(cleanT);
       const artists = getArtistVariants(cleanA);
       let data: any = null;
-      let lrclibDown = false;
-
       // Strategy 1: Exact GET without strict duration (avoids 404 on slowed/sped tracks)
       for (const t of titles) {
-        if (data || lrclibDown) break;
+        if (data) break;
         for (const art of artists) {
-          if (data || lrclibDown) break;
+          if (data) break;
           try {
             const params = new URLSearchParams({ track_name: t, artist_name: art });
             const res = await fetchWithTimeout(`https://lrclib.net/api/get?${params.toString()}`, {
               headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
             }, 3000);
-            if (res.status >= 500) {
-              lrclibDown = true;
-              break;
-            }
+            if (res.status >= 500) continue;
             if (res.ok) {
               const d = await res.json().catch(() => null);
               if (d && (d.syncedLyrics || d.plainLyrics)) data = d;
             }
-          } catch {
-            lrclibDown = true;
-            break;
-          }
+          } catch {}
         }
       }
 
       // Strategy 2: Exact GET with duration if provided
-      if (!data && !lrclibDown && durationSecs && durationSecs > 0) {
+      if (!data && durationSecs && durationSecs > 0) {
         for (const t of titles) {
-          if (data || lrclibDown) break;
+          if (data) break;
           for (const art of artists) {
-            if (data || lrclibDown) break;
+            if (data) break;
             try {
               const params = new URLSearchParams({
                 track_name: t,
@@ -432,79 +449,63 @@ export async function fetchLyrics(
               const res = await fetchWithTimeout(`https://lrclib.net/api/get?${params.toString()}`, {
                 headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
               }, 3000);
-              if (res.status >= 500) {
-                lrclibDown = true;
-                break;
-              }
+              if (res.status >= 500) continue;
               if (res.ok) {
                 const d = await res.json().catch(() => null);
                 if (d && (d.syncedLyrics || d.plainLyrics)) data = d;
               }
-            } catch {
-              lrclibDown = true;
-              break;
-            }
+            } catch {}
           }
         }
       }
 
       // Strategy 3: Structured search on LRCLIB
-      if (!data && !lrclibDown) {
+      if (!data) {
         for (const t of titles) {
-          if (data || lrclibDown) break;
+          if (data) break;
           for (const art of artists) {
-            if (data || lrclibDown) break;
+            if (data) break;
             try {
               const params = new URLSearchParams({ track_name: t, artist_name: art });
               const res = await fetchWithTimeout(`https://lrclib.net/api/search?${params.toString()}`, {
                 headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
               }, 3000);
-              if (res.status >= 500) {
-                lrclibDown = true;
-                break;
-              }
+              if (res.status >= 500) continue;
               if (res.ok) {
                 const list = await res.json().catch(() => null);
                 if (Array.isArray(list) && list.length > 0) {
-                  data = list.find((it: any) => it.syncedLyrics) || list.find((it: any) => it.plainLyrics);
+                  data = pickBestLrclibMatch(list, durationSecs);
                 }
               }
-            } catch {
-              lrclibDown = true;
-              break;
-            }
+            } catch {}
           }
         }
       }
 
       // Strategy 4: Full query on LRCLIB
-      if (!data && !lrclibDown) {
+      if (!data) {
         for (const t of titles) {
-          if (data || lrclibDown) break;
+          if (data) break;
           try {
             const q = `${artists[0] || ""} ${t}`.trim();
             const params = new URLSearchParams({ q });
             const res = await fetchWithTimeout(`https://lrclib.net/api/search?${params.toString()}`, {
               headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
             }, 3000);
-            if (res.status >= 500) {
-              lrclibDown = true;
-            } else if (res.ok) {
+            if (res.status >= 500) continue; else if (res.ok) {
               const list = await res.json().catch(() => null);
               if (Array.isArray(list) && list.length > 0) {
-                data = list.find((it: any) => it.syncedLyrics) || list.find((it: any) => it.plainLyrics);
+                data = pickBestLrclibMatch(list, durationSecs);
               }
             }
-          } catch {
-            lrclibDown = true;
-          }
+          } catch {}
         }
       }
 
       // Strategy 5: Clean title-only query on LRCLIB
-      if (!data && !lrclibDown) {
+      if (!data) {
         for (const t of titles) {
-          if (data || lrclibDown) break;
+          if (data) break;
           try {
             const params = new URLSearchParams({ q: t });
             const res = await fetchWithTimeout(`https://lrclib.net/api/search?${params.toString()}`, {
@@ -513,7 +514,7 @@ export async function fetchLyrics(
             if (res.ok) {
               const list = await res.json().catch(() => null);
               if (Array.isArray(list) && list.length > 0) {
-                data = list.find((it: any) => it.syncedLyrics) || list.find((it: any) => it.plainLyrics);
+                data = pickBestLrclibMatch(list, durationSecs);
               }
             }
           } catch {}

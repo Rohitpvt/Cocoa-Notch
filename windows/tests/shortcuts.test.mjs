@@ -65,13 +65,13 @@ test("the defaults are the same on both sides of the bridge", () => {
 });
 
 // testEnabledByDefault
-test("only the island toggle is off by default; the two not ported yet are reserved", () => {
+test("all actions are enabled by default; the two not ported yet are reserved", () => {
   for (const d of SHORTCUTS) {
-    assert.equal(d.enabledByDefault, d.id !== "toggleIsland", d.id);
+    assert.equal(d.enabledByDefault, true, d.id);
     assert.equal(d.ported, !["attachFrontWindow", "desktopToggle"].includes(d.id), d.id);
   }
   assert.deepEqual(activeKeys({}).map(([id]) => id), [
-    "openChat", "goToAlert", "jumpToTerminal", "nextPill", "prevPill", "muteToggle", "wardrobeToggle",
+    "toggleIsland", "openChat", "goToAlert", "jumpToTerminal", "nextPill", "prevPill", "muteToggle", "wardrobeToggle",
   ]);
 });
 

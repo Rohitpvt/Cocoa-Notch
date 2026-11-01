@@ -238,7 +238,18 @@ fn open_session(session_id: Option<String>, path: Option<String>, agent: Option<
     if agent.as_deref() == Some("agent_antigravity") || agent.as_deref() == Some("antigravity") {
         return platform::open_antigravity(path.as_deref());
     }
-    open_in_vscode(path)
+    if agent.as_deref() == Some("agent_claude-desktop") {
+        return platform::open_claude_desktop();
+    }
+    if path.is_some() && open_in_vscode(path.clone()) {
+        return true;
+    }
+    platform::open_terminal(path.as_deref())
+}
+
+#[tauri::command]
+fn open_terminal(path: Option<String>) -> bool {
+    platform::open_terminal(path.as_deref())
 }
 
 /// The Antigravity IDE pill's target: brings forward or opens Antigravity IDE.
@@ -682,6 +693,7 @@ pub fn run() {
             open_url,
             open_in_vscode,
             open_session,
+            open_terminal,
             open_antigravity,
             open_claude_desktop,
             open_file_in_vscode,

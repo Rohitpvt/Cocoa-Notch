@@ -504,6 +504,35 @@ pub fn antigravity_candidates() -> Vec<PathBuf> {
 
 /// The Antigravity IDE app: brought forward when it runs, or started via
 /// antigravity-ide / Antigravity IDE.exe with the optional file or project path.
+/// "Open terminal": launches Windows Terminal (wt.exe), PowerShell, or cmd.exe.
+pub fn open_terminal(path: Option<&str>) -> bool {
+    let path = path.filter(|p| !p.is_empty());
+    if let Some(wt) = find_on_path("wt") {
+        let mut cmd = Command::new(wt);
+        if let Some(p) = path {
+            cmd.arg("-d").arg(p);
+        }
+        if no_console(&mut cmd).spawn().is_ok() {
+            return true;
+        }
+    }
+    let ps = find_on_path("pwsh").or_else(|| find_on_path("powershell"));
+    if let Some(ps_exe) = ps {
+        let mut cmd = Command::new(ps_exe);
+        if let Some(p) = path {
+            cmd.current_dir(p);
+        }
+        if cmd.spawn().is_ok() {
+            return true;
+        }
+    }
+    let mut cmd = Command::new("cmd.exe");
+    if let Some(p) = path {
+        cmd.current_dir(p);
+    }
+    cmd.spawn().is_ok()
+}
+
 pub fn open_antigravity(path: Option<&str>) -> bool {
     let path = path.filter(|p| !p.is_empty());
     let folder = path.map(crate::session_window::folder_name).unwrap_or_default();
@@ -591,6 +620,13 @@ pub fn ctrl_alt_types(vk: u16, shift: bool) -> Option<String> {
             0 => continue,
             n => String::from_utf16_lossy(&buf[..(n as usize).min(buf.len())]),
         };
+        let lcid = (layout.0 as usize) & 0xFFFF;
+        if lcid == 0x4009 {
+            if typed.contains('₹') {
+                return Some(typed);
+            }
+            continue;
+        }
         if typed.chars().any(|c| !c.is_control()) {
             return Some(typed);
         }

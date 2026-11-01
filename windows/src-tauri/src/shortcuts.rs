@@ -54,7 +54,7 @@ const fn action(id: &'static str, keys: &'static str, on: bool, ported: bool) ->
 
 /// Same order as `ShortcutAction.allCases`.
 pub const ACTIONS: &[ActionDef] = &[
-    action("toggleIsland", "Ctrl+Alt+N", false, true),
+    action("toggleIsland", "Ctrl+Alt+N", true, true),
     action("openChat", "Ctrl+Alt+Space", true, true),
     action("goToAlert", "Ctrl+Alt+A", true, true),
     action("jumpToTerminal", "Ctrl+Alt+T", true, true),
@@ -270,10 +270,11 @@ pub fn plugin<R: Runtime>() -> tauri::plugin::TauriPlugin<R> {
 /// Hands an action to the island.
 pub fn dispatch<R: Runtime>(app: &AppHandle<R>, action: &str) {
     crate::log::line(format!("shortcut {action}"));
+    let _ = app.emit("shortcut", action.to_string());
+    let _ = app.emit_to(WINDOW_LABEL, "shortcut", action.to_string());
     if action == "wardrobeToggle" {
+        let _ = app.emit("open-wardrobe", ());
         let _ = app.emit_to(WINDOW_LABEL, "open-wardrobe", ());
-    } else {
-        let _ = app.emit_to(WINDOW_LABEL, "shortcut", action.to_string());
     }
 }
 
@@ -416,9 +417,10 @@ mod tests {
 
     // testEnabledByDefault
     #[test]
-    fn only_the_island_toggle_is_off_by_default() {
+    fn all_ported_actions_are_enabled_by_default() {
         for def in ACTIONS {
-            assert_eq!(def.enabled_by_default, def.id != "toggleIsland", "{}", def.id);
+            let reserved = matches!(def.id, "attachFrontWindow" | "desktopToggle");
+            assert_eq!(def.enabled_by_default, !reserved, "{}", def.id);
         }
     }
 
@@ -431,7 +433,7 @@ mod tests {
             match outcome {
                 Ok(_) => assert!(def.ported && def.enabled_by_default, "{}", def.id),
                 Err(s) if reserved => assert_eq!(s.status, Status::NotPorted),
-                Err(s) => assert_eq!((def.id, s.status), ("toggleIsland", Status::Off)),
+                Err(s) => panic!("unexpected error for {}: {:?}", def.id, s.status),
             }
         }
     }
@@ -489,7 +491,7 @@ mod tests {
         // Same key, other modifiers: not a duplicate.
         stored.insert("jumpToTerminal".into(), Binding { keys: "Ctrl+Shift+A".into(), enabled: true });
         let plan = super::plan(&stored, never);
-        assert!(plan.iter().all(|(d, o)| o.is_ok() || !d.ported || d.id == "toggleIsland"));
+        assert!(plan.iter().all(|(d, o)| o.is_ok() || !d.ported));
 
         // A disabled action doesn't hold its keys.
         stored.insert("goToAlert".into(), Binding { keys: "Ctrl+Alt+A".into(), enabled: false });
@@ -519,7 +521,7 @@ mod tests {
         let alert = effective(find("goToAlert").unwrap(), &stored);
         assert_eq!(alert, Binding { keys: "Ctrl+Alt+A".into(), enabled: true });
         let toggle = effective(find("toggleIsland").unwrap(), &stored);
-        assert!(!toggle.enabled);
+        assert!(toggle.enabled);
         let plan = plan(&stored, never);
         let mute = plan.iter().find(|(d, _)| d.id == "muteToggle").unwrap();
         assert_eq!(mute.1.as_ref().unwrap_err().status, Status::Off);

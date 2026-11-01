@@ -282,6 +282,22 @@ pub fn open_claude_desktop() -> bool {
     false
 }
 
+pub fn open_terminal(path: Option<&str>) -> bool {
+    let path = path.filter(|p| !p.is_empty());
+    for name in ["x-terminal-emulator", "gnome-terminal", "konsole", "alacritty", "kitty", "xfce4-terminal", "xterm"] {
+        if let Some(bin) = find_on_path(name) {
+            let mut cmd = Command::new(bin);
+            if let Some(p) = path {
+                cmd.current_dir(p);
+            }
+            if cmd.spawn().is_ok() {
+                return true;
+            }
+        }
+    }
+    false
+}
+
 pub fn open_antigravity(path: Option<&str>) -> bool {
     let path = path.filter(|p| !p.is_empty());
     for name in ["antigravity-ide", "antigravity", "agy"] {

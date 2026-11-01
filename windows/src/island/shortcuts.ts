@@ -85,7 +85,8 @@ export function runGlobalShortcut(host: ShortcutHost, action: string, resume: ()
       const task = State.focusTask;
       if (task?.id === CLAUDE_DESKTOP_ID) void Bridge.openClaudeDesktop();
       else if (task?.id === "agent_antigravity") void Bridge.openAntigravity(task?.sessionCwd ?? null);
-      else void Bridge.openSession(task?.sessionId ?? null, task?.sessionCwd ?? null, task?.id ?? null);
+      else if (task?.sessionId || task?.sessionCwd) void Bridge.openSession(task?.sessionId ?? null, task?.sessionCwd ?? null, task?.id ?? null);
+      else void Bridge.openTerminal(null);
       if (State.mode === "expanded") host.collapse();
       break;
     }
