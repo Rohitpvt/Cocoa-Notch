@@ -853,15 +853,6 @@ pub async fn fetch_lyrics(
             }
         }
     }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     // Strategy 6: Fallback to Lyrics.ovh for plain lyrics (with proper URL path encoding)
     for t in &titles {
