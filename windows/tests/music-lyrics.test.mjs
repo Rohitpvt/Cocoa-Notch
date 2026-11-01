@@ -13,6 +13,7 @@ import {
   synthesizeLinesFromPlain,
   decodeHtmlEntities,
   clearLyricsCache,
+  pickBestLrclibMatch,
   CREDIT_OR_NOISE_LINE,
   PLACEHOLDER_OR_STUB_LINE,
 } from "../src/core/lyrics.ts";
@@ -279,4 +280,16 @@ test("clearLyricsCache: successfully clears track-specific cache or all entries"
     clearLyricsCache("Maula", "Anuv Jain");
     clearLyricsCache();
   });
+});
+
+test("pickBestLrclibMatch: accurately selects closest duration synced match with artist/studio suffixes", () => {
+  const candidates = [
+    { name: "Unrelated Track", duration: 180, syncedLyrics: "[00:10.00] Other" },
+    { name: "Anuv Jain - MAULA (Studio)", duration: 244, syncedLyrics: "[00:14.76] line 1\n[00:25.30] line 2\n[00:35.97] line 3" },
+    { name: "Anuv Jain - MAULA (Extended)", duration: 320, syncedLyrics: "[00:14.76] line 1\n[00:25.30] line 2\n[00:35.97] line 3" },
+  ];
+  const best = pickBestLrclibMatch(candidates, 238);
+  assert.ok(best, "Candidate should be found");
+  assert.equal(best.name, "Anuv Jain - MAULA (Studio)");
+  assert.equal(best.duration, 244);
 });

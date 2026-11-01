@@ -526,6 +526,54 @@ pub async fn fetch_lyrics(
         }
     }
 
+    // Strategy 5.2: Artist search on LRCLIB (recovers tracks with suffixes like (Studio) or when track name 503s)
+    for art in &artists {
+        if art.is_empty() {
+            continue;
+        }
+        if let Ok(mut url) = Url::parse("https://lrclib.net/api/search") {
+            url.query_pairs_mut().append_pair("q", art);
+            if let Ok(resp) = client.get(url).send().await {
+                if resp.status().is_success() {
+                    if let Ok(list) = resp.json::<Vec<LyricsPayload>>().await {
+                        let norm_targets: Vec<String> = titles
+                            .iter()
+                            .map(|t| t.to_lowercase().chars().filter(|c| c.is_alphanumeric()).collect())
+                            .filter(|s: &String| !s.is_empty())
+                            .collect();
+
+                        let mut matches: Vec<LyricsPayload> = list
+                            .into_iter()
+                            .filter(|it| {
+                                let raw_name = it.track_name.as_deref().unwrap_or("").to_lowercase();
+                                let norm_name: String = raw_name.chars().filter(|c| c.is_alphanumeric()).collect();
+                                norm_targets.iter().any(|target| norm_name.contains(target) || target.contains(&norm_name))
+                            })
+                            .collect();
+
+                        if !matches.is_empty() {
+                            let mut synced: Vec<LyricsPayload> = matches.drain(..).filter(|it| it.synced_lyrics.is_some()).collect();
+                            let target_dur = duration_secs.unwrap_or(0.0);
+                            if !synced.is_empty() {
+                                if target_dur > 0.0 {
+                                    synced.sort_by(|a, b| {
+                                        let da = (a.duration.unwrap_or(0.0) - target_dur).abs();
+                                        let db = (b.duration.unwrap_or(0.0) - target_dur).abs();
+                                        da.partial_cmp(&db).unwrap_or(std::cmp::Ordering::Equal)
+                                    });
+                                }
+                                return Some(synced.remove(0));
+                            }
+                            if let Some(plain_item) = matches.into_iter().find(|it| it.plain_lyrics.is_some()) {
+                                return Some(plain_item);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // Strategy 5.5: NetEase Cloud Music search & synced LRC
     for t in &titles {
         for art in &artists {
@@ -612,7 +660,8 @@ pub async fn fetch_lyrics(
 
             let search_res = match client
                 .get(search_url)
-                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
+                .header("Accept", "application/json, text/plain, */*")
                 .send()
                 .await
             {
@@ -627,51 +676,81 @@ pub async fn fetch_lyrics(
                     .and_then(|s| s.as_array());
 
                 if let Some(sections) = sections {
-                    let mut song_path: Option<String> = None;
-                    let mut song_title: Option<String> = None;
-                    let mut artist_name: Option<String> = None;
+                    // Candidates: (path, title, artist, score)
+                    let mut candidates: Vec<(String, String, Option<String>, i32)> = Vec::new();
+                    let target_t_lower = t.to_lowercase();
+                    let target_a_lower = art.to_lowercase();
 
                     for sec in sections {
-                        let sec_type = sec.get("type").and_then(|t| t.as_str()).unwrap_or("");
+                        let sec_type = sec.get("type").and_then(|st| st.as_str()).unwrap_or("");
                         if sec_type == "song" || sec_type == "top_hit" {
                             if let Some(hits) = sec.get("hits").and_then(|h| h.as_array()) {
                                 for hit in hits {
-                                    let htype = hit.get("type").and_then(|t| t.as_str()).unwrap_or("");
-                                    if htype == "song" {
-                                        if let Some(result) = hit.get("result") {
-                                            if let Some(path) = result.get("path").and_then(|p| p.as_str()) {
-                                                let title_str = result.get("title").and_then(|t| t.as_str()).unwrap_or("");
-                                                let title_lower = title_str.to_lowercase();
-                                                if title_lower.contains("tracklist")
-                                                    || title_lower.contains("annotated")
-                                                    || (title_lower.contains("instrumental") && !t.to_lowercase().contains("instrumental"))
-                                                {
-                                                    continue;
-                                                }
-                                                song_path = Some(path.to_string());
-                                                song_title = Some(title_str.to_string());
-                                                artist_name = result
-                                                    .get("primary_artist")
-                                                    .and_then(|a| a.get("name"))
-                                                    .and_then(|n| n.as_str())
-                                                    .map(|s| s.to_string());
-                                                break;
+                                    if hit.get("type").and_then(|ty| ty.as_str()).unwrap_or("") != "song" {
+                                        continue;
+                                    }
+                                    if let Some(result) = hit.get("result") {
+                                        if let Some(path) = result.get("path").and_then(|p| p.as_str()) {
+                                            if candidates.iter().any(|c| c.0 == path) {
+                                                continue;
                                             }
+                                            let title_str = result.get("title").and_then(|ti| ti.as_str()).unwrap_or("");
+                                            let title_lower = title_str.to_lowercase();
+                                            if title_lower.contains("tracklist")
+                                                || title_lower.contains("annotated")
+                                                || (title_lower.contains("instrumental") && !target_t_lower.contains("instrumental"))
+                                            {
+                                                continue;
+                                            }
+                                            let p_artist = result
+                                                .get("primary_artist")
+                                                .and_then(|a| a.get("name"))
+                                                .and_then(|n| n.as_str())
+                                                .map(|s| s.to_string());
+                                            let p_artist_lower = p_artist.as_deref().unwrap_or("").to_lowercase();
+
+                                            let mut score = 0;
+                                            if title_lower == target_t_lower {
+                                                score += 60;
+                                            } else if title_lower.contains(&target_t_lower) {
+                                                score += 35;
+                                            }
+                                            if !target_a_lower.is_empty() {
+                                                if p_artist_lower.contains(&target_a_lower) || target_a_lower.contains(&p_artist_lower) {
+                                                    score += 40;
+                                                } else if title_lower.contains(&target_a_lower) {
+                                                    score += 20;
+                                                }
+                                            }
+                                            if title_lower.contains("translation") && !target_t_lower.contains("translation") {
+                                                score -= 10;
+                                            }
+                                            if title_lower.contains("romanized") {
+                                                score += 5;
+                                            }
+
+                                            candidates.push((path.to_string(), title_str.to_string(), p_artist, score));
                                         }
                                     }
                                 }
                             }
                         }
-                        if song_path.is_some() {
-                            break;
-                        }
                     }
 
-                    if let Some(path) = song_path {
-                        let page_url = format!("https://genius.com{}", path);
+                    candidates.sort_by(|a, b| b.3.cmp(&a.3));
+
+                    for (cand_path, cand_title, cand_artist, _) in candidates {
+                        let page_url = format!("https://genius.com{}", cand_path);
                         if let Ok(page_res) = client
                             .get(&page_url)
-                            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+                            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
+                            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
+                            .header("Accept-Language", "en-US,en;q=0.9")
+                            .header("Sec-Fetch-Dest", "document")
+                            .header("Sec-Fetch-Mode", "navigate")
+                            .header("Sec-Fetch-Site", "none")
+                            .header("Sec-Fetch-User", "?1")
+                            .header("Upgrade-Insecure-Requests", "1")
                             .send()
                             .await
                         {
@@ -756,8 +835,8 @@ pub async fn fetch_lyrics(
 
                                         if clean_lines.len() >= 3 {
                                             return Some(LyricsPayload {
-                                                track_name: song_title.or_else(|| Some(t.clone())),
-                                                artist_name: artist_name.or_else(|| if art.is_empty() { None } else { Some(art.clone()) }),
+                                                track_name: Some(cand_title),
+                                                artist_name: cand_artist.or_else(|| if art.is_empty() { None } else { Some(art.clone()) }),
                                                 plain_lyrics: Some(clean_lines.join("\n")),
                                                 synced_lyrics: None,
                                                 duration: duration_secs,
@@ -765,6 +844,15 @@ pub async fn fetch_lyrics(
                                                 ..Default::default()
                                             });
                                         }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
                                     }
                                 }
                             }

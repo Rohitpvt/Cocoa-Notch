@@ -251,6 +251,20 @@ function scoreGeniusHit(hit: any, targetTitle: string, targetArtist: string): nu
 }
 
 /**
+ * Browser navigation headers to prevent anti-bot / Cloudflare blocks when scraping open lyrics.
+ */
+const BROWSER_FETCH_HEADERS: Record<string, string> = {
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+  "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+  "Accept-Language": "en-US,en;q=0.9",
+  "Sec-Fetch-Dest": "document",
+  "Sec-Fetch-Mode": "navigate",
+  "Sec-Fetch-Site": "none",
+  "Sec-Fetch-User": "?1",
+  "Upgrade-Insecure-Requests": "1",
+};
+
+/**
  * Searches and extracts accurate song lyrics from Genius as an open fallback.
  */
 export async function fetchGeniusLyricsWeb(
@@ -268,7 +282,8 @@ export async function fetchGeniusLyricsWeb(
       searchUrl,
       {
         headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+          "User-Agent": BROWSER_FETCH_HEADERS["User-Agent"],
+          "Accept": "application/json, text/plain, */*",
         },
       },
       3800
@@ -276,71 +291,92 @@ export async function fetchGeniusLyricsWeb(
     if (!searchRes.ok) return null;
     const searchData = await searchRes.json().catch(() => null);
     const sections = searchData?.response?.sections || [];
-    const songSection = sections.find((s: any) => s.type === "song" || s.type === "top_hit");
-    const rawHits: any[] = songSection?.hits || [];
-    const songHits = rawHits.filter((h: any) => h.type === "song" && h.result?.path);
-    if (songHits.length === 0) return null;
+    const hits: any[] = [];
+    for (const sec of sections) {
+      if (sec.type === "song" || sec.type === "top_hit") {
+        for (const hit of sec.hits || []) {
+          if (hit.type === "song" && hit.result?.path) {
+            hits.push(hit);
+          }
+        }
+      }
+    }
+    if (hits.length === 0) return null;
 
-    const scoredHits = songHits
-      .map((h: any) => ({ hit: h, score: scoreGeniusHit(h, cleanT, cleanA) }))
-      .sort((a: any, b: any) => b.score - a.score);
-    const hit = scoredHits[0]?.hit || songHits[0];
-
-    const songPath = hit?.result?.path;
-    if (!songPath) return null;
-
-    const pageRes = await fetchWithTimeout(
-      `https://genius.com${songPath}`,
-      {
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-        },
-      },
-      4200
-    );
-    if (!pageRes.ok) return null;
-    const html = await pageRes.text();
-
-    const parts = html.split(/data-lyrics-container="true"[^>]*>/);
-    if (parts.length <= 1) return null;
-
-    let combined = "";
-    for (let i = 1; i < parts.length; i++) {
-      let block = parts[i];
-      const cutPos = block.search(
-        /<div class="Lyrics__Footer|<div class="RightSidebar|<section|<div class="SongHeader/
-      );
-      if (cutPos > 0) block = block.slice(0, cutPos);
-      combined +=
-        "\n" +
-        decodeHtmlEntities(
-          block
-            .replace(/<br\s*[\/]?>/gi, "\n")
-            .replace(/<[^>]+>/g, "")
-        ).trim();
+    // Deduplicate candidate song hits by path
+    const seenPaths = new Set<string>();
+    const uniqueHits: any[] = [];
+    for (const h of hits) {
+      if (!seenPaths.has(h.result.path)) {
+        seenPaths.add(h.result.path);
+        uniqueHits.push(h);
+      }
     }
 
-    const lines = combined
-      .split(/\r?\n/)
-      .map((l) => l.trim())
-      .filter(
-        (l) =>
-          l &&
-          !(l.startsWith("[") && l.endsWith("]")) &&
-          !l.includes("Contributors") &&
-          !l.includes("Translations") &&
-          !l.endsWith("Lyrics") &&
-          !CREDIT_OR_NOISE_LINE.test(l) &&
-          !PLACEHOLDER_OR_STUB_LINE.test(l)
-      );
+    const scoredHits = uniqueHits
+      .map((h: any) => ({ hit: h, score: scoreGeniusHit(h, cleanT, cleanA) }))
+      .sort((a: any, b: any) => b.score - a.score);
 
-    if (lines.length < 3) return null;
+    for (const item of scoredHits) {
+      const hit = item.hit;
+      const songPath = hit?.result?.path;
+      if (!songPath) continue;
 
-    return {
-      trackName: hit?.result?.title || cleanT,
-      artistName: hit?.result?.primary_artist?.name || cleanA,
-      plainLyrics: lines.join("\n"),
-    };
+      const pageRes = await fetchWithTimeout(
+        `https://genius.com${songPath}`,
+        {
+          headers: BROWSER_FETCH_HEADERS,
+        },
+        4200
+      ).catch(() => null);
+
+      if (!pageRes || !pageRes.ok) continue;
+      const html = await pageRes.text().catch(() => "");
+      if (!html) continue;
+
+      const parts = html.split(/data-lyrics-container="true"[^>]*>/);
+      if (parts.length <= 1) continue;
+
+      let combined = "";
+      for (let i = 1; i < parts.length; i++) {
+        let block = parts[i];
+        const cutPos = block.search(
+          /<div class="Lyrics__Footer|<div class="RightSidebar|<section|<div class="SongHeader/
+        );
+        if (cutPos > 0) block = block.slice(0, cutPos);
+        combined +=
+          "\n" +
+          decodeHtmlEntities(
+            block
+              .replace(/<br\s*[\/]?>/gi, "\n")
+              .replace(/<[^>]+>/g, "")
+          ).trim();
+      }
+
+      const lines = combined
+        .split(/\r?\n/)
+        .map((l) => l.trim())
+        .filter(
+          (l) =>
+            l &&
+            !(l.startsWith("[") && l.endsWith("]")) &&
+            !l.includes("Contributors") &&
+            !l.includes("Translations") &&
+            !l.endsWith("Lyrics") &&
+            !CREDIT_OR_NOISE_LINE.test(l) &&
+            !PLACEHOLDER_OR_STUB_LINE.test(l)
+        );
+
+      if (lines.length >= 3) {
+        return {
+          trackName: hit?.result?.title || cleanT,
+          artistName: hit?.result?.primary_artist?.name || cleanA,
+          plainLyrics: lines.join("\n"),
+        };
+      }
+    }
+
+    return null;
   } catch {
     return null;
   }
@@ -538,6 +574,33 @@ export async function fetchLyrics(
         }
       }
 
+      // Strategy 5.2: Artist search on LRCLIB (recovers tracks with suffixes like (Studio) or when track name 503s)
+      if (!data) {
+        for (const art of artists) {
+          if (data || !art) continue;
+          try {
+            const params = new URLSearchParams({ q: art });
+            const res = await fetchWithTimeout(`https://lrclib.net/api/search?${params.toString()}`, {
+              headers: { "User-Agent": "CocoaNotch/0.2.4 (https://github.com/Rohitpvt/Cocoa-Notch)" },
+            }, 3500);
+            if (res.ok) {
+              const list = await res.json().catch(() => null);
+              if (Array.isArray(list) && list.length > 0) {
+                const normTargets = titles.map(t => t.toLowerCase().replace(/[^a-z0-9]/g, "")).filter(Boolean);
+                const matched = list.filter((item: any) => {
+                  const rawName = (item.trackName || item.name || "").toLowerCase();
+                  const normName = rawName.replace(/[^a-z0-9]/g, "");
+                  return normTargets.some(target => normName.includes(target) || target.includes(normName));
+                });
+                if (matched.length > 0) {
+                  data = pickBestLrclibMatch(matched, durationSecs);
+                }
+              }
+            }
+          } catch {}
+        }
+      }
+
       // Strategy 6: NetEase Cloud Music search & synced LRC
       if (!data) {
         for (const t of titles) {
@@ -651,7 +714,7 @@ export async function fetchLyrics(
           if (lyricsCache.get(cacheKey) === emptyResult) {
             lyricsCache.delete(cacheKey);
           }
-        }, 60000);
+        }, 12000);
         return emptyResult;
       }
 
