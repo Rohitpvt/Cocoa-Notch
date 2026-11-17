@@ -667,7 +667,7 @@ pub fn open_app(app_name: &str, app_id: Option<&str>) -> bool {
     if let Some(id) = app_id.filter(|s| !s.is_empty()) {
         let path = std::path::Path::new(id);
         if path.is_file() {
-            if no_console(Command::new(path)).spawn().is_ok() {
+            if no_console(&mut Command::new(path)).spawn().is_ok() {
                 return true;
             }
         }
@@ -705,7 +705,7 @@ pub fn open_app(app_name: &str, app_id: Option<&str>) -> bool {
 
     if name_lower == "visual studio code" || name_lower == "vscode" || name_lower == "code" {
         if let Some(code) = find_on_path("code") {
-            if no_console(Command::new(code)).spawn().is_ok() {
+            if no_console(&mut Command::new(code)).spawn().is_ok() {
                 return true;
             }
         }
@@ -740,14 +740,14 @@ pub fn open_app(app_name: &str, app_id: Option<&str>) -> bool {
 
     for candidate in candidates.iter().flatten() {
         if candidate.is_file() {
-            if no_console(Command::new(candidate)).spawn().is_ok() {
+            if no_console(&mut Command::new(candidate)).spawn().is_ok() {
                 return true;
             }
         }
     }
 
     if let Some(bin) = find_on_path(&name_lower) {
-        if no_console(Command::new(bin)).spawn().is_ok() {
+        if no_console(&mut Command::new(bin)).spawn().is_ok() {
             return true;
         }
     }
