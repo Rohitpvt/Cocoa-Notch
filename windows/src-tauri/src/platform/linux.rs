@@ -368,6 +368,16 @@ pub fn open_app(app_name: &str, _app_id: Option<&str>) -> bool {
         return true;
     }
 
+    if name_lower.contains("fairtab") {
+        open_url("https://fairtab-48340.web.app/#/overview");
+        return true;
+    }
+
+    if let Some(url) = _app_id.filter(|s| s.starts_with("http://") || s.starts_with("https://")) {
+        open_url(url);
+        return true;
+    }
+
     false
 }
 

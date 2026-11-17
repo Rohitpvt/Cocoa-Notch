@@ -438,9 +438,8 @@ pub fn first_with_window(pids: &[u32]) -> Option<u32> {
 fn bring_forward(raw: isize) -> bool {
     let hwnd = HWND(raw as *mut _);
     unsafe {
-        if IsIconic(hwnd).as_bool() {
-            let _ = ShowWindow(hwnd, SW_RESTORE);
-        }
+        // Restore and activate the window so it is brought to the top even if covered by other windows
+        let _ = ShowWindow(hwnd, SW_RESTORE);
         // Allowed: the click on the island that asked for this was the last input.
         SetForegroundWindow(hwnd).as_bool()
     }
@@ -693,6 +692,17 @@ pub fn open_app(app_name: &str, app_id: Option<&str>) -> bool {
 
     if let Some(proto) = protocol {
         open_url(proto);
+        return true;
+    }
+
+    // Web applications or URLs (e.g. FairTab)
+    if name_lower.contains("fairtab") {
+        open_url("https://fairtab-48340.web.app/#/overview");
+        return true;
+    }
+
+    if let Some(url) = app_id.filter(|s| s.starts_with("http://") || s.starts_with("https://")) {
+        open_url(url);
         return true;
     }
 

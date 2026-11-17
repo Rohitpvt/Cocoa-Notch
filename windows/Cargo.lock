@@ -541,7 +541,7 @@ dependencies = [
 
 [[package]]
 name = "cocoa"
-version = "0.2.4"
+version = "0.2.6"
 dependencies = [
  "gtk",
  "keyring",
@@ -562,7 +562,7 @@ dependencies = [
 
 [[package]]
 name = "cocoa-hook"
-version = "0.2.4"
+version = "0.2.6"
 dependencies = [
  "libc",
  "serde_json",
