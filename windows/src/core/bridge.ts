@@ -114,6 +114,10 @@ export const Bridge = {
   /** The diff card's ↗: an existing file, in Antigravity IDE. */
   openFileInAntigravity: (path: string) => call<boolean>("open_file_in_antigravity", { path }),
 
+  /** Brings forward the running app window or launches the app. */
+  openApp: (appName: string, appId?: string | null) =>
+    call<boolean>("open_app", { appName, appId: appId ?? null }),
+
   quit: () => call<void>("quit_app"),
 
   openSettingsWindow: () => call<void>("open_settings_window"),

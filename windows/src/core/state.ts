@@ -222,6 +222,7 @@ export interface SystemStats {
 export interface SystemNotification {
   id: number;
   appName: string;
+  appId?: string;
   title: string;
   body: string;
   timestamp: number;
@@ -496,6 +497,7 @@ class AppState {
     const item: SystemNotification = {
       id: notif.id,
       appName: normApp,
+      appId: notif.appId,
       title: normTitle,
       body: normBody,
       timestamp: tsMs,

@@ -1000,9 +1000,10 @@ function buildSettings(actions: ViewActions): ViewHost {
   };
 }
 
-function buildNotification(actions: ViewActions): ViewHost {
+export function buildNotification(actions: ViewActions): ViewHost {
   const appBadge = h("div", { class: "notif-app-badge" });
   const appName = h("span", { class: "notif-app-name" });
+  const openHint = h("span", { class: "notif-app-open-hint" }, svg(ICONS.arrowUpRight, 8));
   const timeLabel = h("span", { class: "notif-time", text: t("Now") });
   const closeBtn = h(
     "button",
@@ -1018,10 +1019,29 @@ function buildNotification(actions: ViewActions): ViewHost {
     svg(ICONS.xmark, 8),
   );
 
+  const handleOpenApp = (e: Event) => {
+    e.stopPropagation();
+    actions.blip();
+    const n = State.activeNotification;
+    if (n) {
+      void Bridge.openApp(n.appName, n.appId);
+    }
+    State.setSystemNotification(null);
+    actions.setView(State.defaultView());
+  };
+
+  const appInfo = h(
+    "div",
+    { class: "notif-app-info notif-app-info-interactive", onclick: handleOpenApp },
+    appBadge,
+    appName,
+    openHint,
+  );
+
   const header = h(
     "div",
     { class: "notif-header" },
-    h("div", { class: "notif-app-info" }, appBadge, appName),
+    appInfo,
     timeLabel,
     closeBtn,
   );
@@ -1032,7 +1052,7 @@ function buildNotification(actions: ViewActions): ViewHost {
 
   const cardBody = h(
     "div",
-    { class: "notif-card", onclick: () => actions.setView(State.defaultView()) },
+    { class: "notif-card notif-card-interactive", onclick: handleOpenApp },
     header,
     content,
   );
@@ -1048,6 +1068,9 @@ function buildNotification(actions: ViewActions): ViewHost {
       notifTitle.textContent = n.title || "";
       notifBody.textContent = n.body || "";
       notifBody.style.display = n.body ? "" : "none";
+      const tooltip = n.appName ? t("Open {app}", { app: n.appName }) : t("Open app");
+      cardBody.title = tooltip;
+      appInfo.title = tooltip;
     },
   };
 }

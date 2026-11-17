@@ -265,6 +265,12 @@ fn open_claude_desktop() -> bool {
     platform::open_claude_desktop()
 }
 
+/// Brings forward the running app window or launches the app.
+#[tauri::command]
+fn open_app(app_name: String, app_id: Option<String>) -> bool {
+    platform::open_app(&app_name, app_id.as_deref())
+}
+
 /// The file behind a live diff, if it may be handed to the editor: an existing
 /// regular file given by its full path. Anything else — a relative path, a
 /// folder, a path `code` could read as an option — goes no further.
@@ -696,6 +702,7 @@ pub fn run() {
             open_terminal,
             open_antigravity,
             open_claude_desktop,
+            open_app,
             open_file_in_vscode,
             open_file_in_antigravity,
             quit_app,

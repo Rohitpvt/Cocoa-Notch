@@ -9,7 +9,10 @@ import { WelfareManager } from "../src/core/welfare.ts";
 import { BotEngine } from "../src/mochi/engine.ts";
 import { buildShelf } from "../src/views/shelf.ts";
 import { buildAccessory } from "../src/views/accessory.ts";
-import { buildHeader } from "../src/views/views.ts";
+import { buildHeader, buildNotification } from "../src/views/views.ts";
+import { buildNotificationHistory } from "../src/views/notifications.ts";
+import { Bridge } from "../src/core/bridge.ts";
+import { sent } from "./tauri.mjs";
 
 installFakeDom();
 
@@ -662,4 +665,149 @@ Taking my sulkin' to the masses
   assert.equal(getActiveLyricIndex(synthesized, synthesized[0].timeSecs + 0.1), 0);
   assert.equal(getActiveLyricIndex(synthesized, synthesized[2].timeSecs + 0.1), 2);
   assert.equal(getActiveLyricIndex(synthesized, synthesized[4].timeSecs + 0.1), 4);
+});
+
+// ── 10. Interactive System Notifications & App Launching ─────────────────────
+
+test("Bridge.openApp invokes open_app command with appName and appId", async () => {
+  await Bridge.openApp("WhatsApp", "5319275A.WhatsAppDesktop_cv1g1gvanyjgm!App");
+  const calls = sent("open_app");
+  assert.ok(calls.length > 0);
+  const lastCall = calls[calls.length - 1];
+  assert.equal(lastCall.appName, "WhatsApp");
+  assert.equal(lastCall.appId, "5319275A.WhatsAppDesktop_cv1g1gvanyjgm!App");
+
+  await Bridge.openApp("Spotify");
+  const lastCall2 = sent("open_app").at(-1);
+  assert.equal(lastCall2.appName, "Spotify");
+  assert.equal(lastCall2.appId, null);
+});
+
+test("Active notification card is interactive: clicking card or appInfo launches app and clears notification", () => {
+  let blipped = 0;
+  let viewSet = null;
+  const actions = {
+    blip: () => { blipped++; },
+    setView: (v) => { viewSet = v; },
+  };
+
+  State.clearNotificationHistory();
+  State.addSystemNotification({
+    id: 501,
+    appName: "Slack",
+    appId: "com.squirrel.slack.slack",
+    title: "Workspace Update",
+    body: "Deployment successful!",
+    timestamp: Date.now(),
+  });
+
+  const notifHost = buildNotification(actions);
+  notifHost.sync();
+
+  const cardBody = notifHost.el.querySelector(".notif-card");
+  assert.ok(cardBody !== null, "Card body must exist");
+  assert.ok(cardBody.classList.contains("notif-card-interactive"));
+  assert.equal(cardBody.title || cardBody.getAttribute("title"), "Open Slack");
+
+  const appInfo = notifHost.el.querySelector(".notif-app-info");
+  assert.ok(appInfo !== null);
+  assert.ok(appInfo.classList.contains("notif-app-info-interactive"));
+  assert.equal(appInfo.title || appInfo.getAttribute("title"), "Open Slack");
+
+  // Click card to open Slack
+  cardBody.fire("click");
+  assert.ok(blipped > 0, "Clicking notification card should trigger sound/haptic blip");
+  assert.equal(State.activeNotification, null, "Active notification should be cleared on open");
+  assert.equal(viewSet, State.defaultView(), "View should reset to default view");
+
+  const lastCall = sent("open_app").at(-1);
+  assert.equal(lastCall.appName, "Slack");
+  assert.equal(lastCall.appId, "com.squirrel.slack.slack");
+});
+
+test("Active notification close button dismisses without calling Bridge.openApp", () => {
+  let blipped = 0;
+  let viewSet = null;
+  const actions = {
+    blip: () => { blipped++; },
+    setView: (v) => { viewSet = v; },
+  };
+
+  State.addSystemNotification({
+    id: 502,
+    appName: "Discord",
+    title: "New Ping",
+    body: "@everyone hello",
+    timestamp: Date.now(),
+  });
+
+  const notifHost = buildNotification(actions);
+  notifHost.sync();
+
+  const closeBtn = notifHost.el.querySelector(".notif-close");
+  assert.ok(closeBtn !== null);
+
+  const callsBefore = sent("open_app").length;
+  closeBtn.fire("click");
+
+  assert.equal(State.activeNotification, null, "Notification should be dismissed");
+  assert.equal(sent("open_app").length, callsBefore, "Dismiss button must NOT invoke open_app");
+});
+
+test("Notification history items are interactive: clicking item launches app, dismiss only removes", () => {
+  let blipped = 0;
+  const actions = {
+    blip: () => { blipped++; },
+    setView: () => {},
+  };
+
+  State.clearNotificationHistory();
+  State.addSystemNotification({
+    id: 601,
+    appName: "WhatsApp",
+    appId: "5319275A.WhatsAppDesktop_cv1g1gvanyjgm!App",
+    title: "Alice",
+    body: "See you soon!",
+    timestamp: Date.now(),
+  });
+
+  const histHost = buildNotificationHistory(actions);
+  histHost.sync();
+
+  const items = histHost.el.find(".notif-item");
+  assert.equal(items.length, 1);
+  const item = items[0];
+
+  assert.ok(item.classList.contains("notif-item-interactive"));
+  assert.equal(item.title || item.getAttribute("title"), "Open WhatsApp");
+
+  // Click item to open WhatsApp
+  item.fire("click");
+
+  assert.ok(blipped > 0, "Clicking history item must blip");
+  const lastCall = sent("open_app").at(-1);
+  assert.equal(lastCall.appName, "WhatsApp");
+  assert.equal(lastCall.appId, "5319275A.WhatsAppDesktop_cv1g1gvanyjgm!App");
+
+  // Re-add and verify dismiss button removes without invoking open_app
+  State.addSystemNotification({
+    id: 602,
+    appName: "WhatsApp",
+    appId: "5319275A.WhatsAppDesktop_cv1g1gvanyjgm!App",
+    title: "Alice",
+    body: "Are you there?",
+    timestamp: Date.now() + 1000,
+  });
+  histHost.sync();
+
+  const itemsAfter = histHost.el.find(".notif-item");
+  assert.equal(itemsAfter.length, 2);
+  const dismissBtn = itemsAfter[0].querySelector(".notif-item-dismiss");
+  assert.ok(dismissBtn !== null);
+
+  const callsBefore = sent("open_app").length;
+  dismissBtn.fire("click");
+
+  assert.equal(sent("open_app").length, callsBefore, "Dismissing must NOT invoke open_app");
+  assert.equal(State.notificationHistory.length, 1, "Dismissed notification must be removed from history");
 });

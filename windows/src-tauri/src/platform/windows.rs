@@ -586,6 +586,181 @@ pub fn open_antigravity(path: Option<&str>) -> bool {
     false
 }
 
+/// Brings forward the running window of `app_name`, or launches the app
+/// via its AppUserModelId / URL protocol / executable.
+pub fn open_app(app_name: &str, app_id: Option<&str>) -> bool {
+    let name_trimmed = app_name.trim();
+    if name_trimmed.is_empty() && app_id.is_none() {
+        return false;
+    }
+
+    let name_lower = name_trimmed.to_lowercase();
+
+    // Map common names to known executable stems
+    let known_exes: &[&str] = match name_lower.as_str() {
+        "whatsapp" | "whatsapp desktop" => &["whatsapp.exe"],
+        "slack" => &["slack.exe"],
+        "discord" => &["discord.exe"],
+        "spotify" => &["spotify.exe"],
+        "visual studio code" | "vs code" | "vscode" | "code" => &["code.exe"],
+        "antigravity" | "antigravity ide" | "google antigravity" => &["antigravity ide.exe", "antigravity-ide.exe"],
+        "telegram" | "telegram desktop" => &["telegram.exe"],
+        "microsoft teams" | "teams" => &["teams.exe", "ms-teams.exe"],
+        "outlook" | "microsoft outlook" => &["outlook.exe", "olk.exe"],
+        "mail" => &["hxoutlook.exe", "hxcalendarappimm.exe", "outlook.exe"],
+        "google chrome" | "chrome" => &["chrome.exe"],
+        "microsoft edge" | "edge" => &["msedge.exe"],
+        "firefox" | "mozilla firefox" => &["firefox.exe"],
+        "notion" => &["notion.exe"],
+        "obsidian" => &["obsidian.exe"],
+        "thunderbird" => &["thunderbird.exe"],
+        _ => &[],
+    };
+
+    // 1. Try to find a running process and bring its window forward
+    let procs = process_table();
+    let pids: Vec<u32> = procs
+        .into_iter()
+        .filter(|(_, p)| {
+            let exe_lower = p.exe.to_lowercase();
+            for known in known_exes {
+                if exe_lower.eq_ignore_ascii_case(known) {
+                    return true;
+                }
+            }
+            if exe_lower == format!("{name_lower}.exe") {
+                return true;
+            }
+            let stem = exe_lower.strip_suffix(".exe").unwrap_or(&exe_lower);
+            if !stem.is_empty() && (stem == name_lower || name_lower.contains(stem) || stem.contains(&name_lower)) {
+                return true;
+            }
+            false
+        })
+        .map(|(pid, _)| pid)
+        .collect();
+
+    if !pids.is_empty() {
+        let windows = top_windows();
+        if let Some((hwnd, _, _)) = windows.into_iter().find(|(_, owner, _)| pids.contains(owner)) {
+            if bring_forward(hwnd) {
+                return true;
+            }
+        }
+    }
+
+    // 2. Try matching top-level window titles
+    if !name_lower.is_empty() {
+        let windows = top_windows();
+        if let Some((hwnd, _, _)) = windows.into_iter().find(|(_, _, title)| {
+            let t = title.to_lowercase();
+            t.contains(&name_lower)
+        }) {
+            if bring_forward(hwnd) {
+                return true;
+            }
+        }
+    }
+
+    // 3. Not running — launch it!
+    // 3a. If AppUserModelId is given (UWP or Win32 registered app), launch via shell:AppsFolder
+    if let Some(id) = app_id.filter(|s| !s.is_empty()) {
+        let path = std::path::Path::new(id);
+        if path.is_file() {
+            if no_console(Command::new(path)).spawn().is_ok() {
+                return true;
+            }
+        }
+        let target = format!("shell:AppsFolder\\{id}");
+        if Command::new("explorer").arg(&target).spawn().is_ok() {
+            return true;
+        }
+    }
+
+    // 3b. Try URI protocol schemes for known apps
+    let protocol = match name_lower.as_str() {
+        "whatsapp" | "whatsapp desktop" => Some("whatsapp:"),
+        "slack" => Some("slack:"),
+        "discord" => Some("discord:"),
+        "spotify" => Some("spotify:"),
+        "mail" | "outlook" | "microsoft outlook" => Some("mailto:"),
+        "visual studio code" | "vs code" | "vscode" | "code" => Some("vscode:"),
+        "telegram" | "telegram desktop" => Some("tg:"),
+        "microsoft teams" | "teams" => Some("msteams:"),
+        "notion" => Some("notion:"),
+        _ => None,
+    };
+
+    if let Some(proto) = protocol {
+        open_url(proto);
+        return true;
+    }
+
+    // 3c. Try locating the app executable directly
+    if name_lower.contains("antigravity") {
+        if open_antigravity(None) {
+            return true;
+        }
+    }
+
+    if name_lower == "visual studio code" || name_lower == "vscode" || name_lower == "code" {
+        if let Some(code) = find_on_path("code") {
+            if no_console(Command::new(code)).spawn().is_ok() {
+                return true;
+            }
+        }
+    }
+
+    // Check %LOCALAPPDATA% and %APPDATA% for common desktop apps
+    let local_app_data = std::env::var_os("LOCALAPPDATA").map(PathBuf::from);
+    let app_data = std::env::var_os("APPDATA").map(PathBuf::from);
+
+    let candidates: &[Option<PathBuf>] = &[
+        if name_lower.contains("whatsapp") {
+            local_app_data.as_ref().map(|p| p.join("WhatsApp").join("WhatsApp.exe"))
+        } else {
+            None
+        },
+        if name_lower.contains("slack") {
+            local_app_data.as_ref().map(|p| p.join("slack").join("slack.exe"))
+        } else {
+            None
+        },
+        if name_lower.contains("spotify") {
+            app_data.as_ref().map(|p| p.join("Spotify").join("Spotify.exe"))
+        } else {
+            None
+        },
+        if name_lower.contains("telegram") {
+            app_data.as_ref().map(|p| p.join("Telegram Desktop").join("Telegram.exe"))
+        } else {
+            None
+        },
+    ];
+
+    for candidate in candidates.iter().flatten() {
+        if candidate.is_file() {
+            if no_console(Command::new(candidate)).spawn().is_ok() {
+                return true;
+            }
+        }
+    }
+
+    if let Some(bin) = find_on_path(&name_lower) {
+        if no_console(Command::new(bin)).spawn().is_ok() {
+            return true;
+        }
+    }
+
+    // 3d. Fallback: try explorer.exe shell:AppsFolder\<app_name>
+    let target = format!("shell:AppsFolder\\{name_trimmed}");
+    if Command::new("explorer").arg(&target).spawn().is_ok() {
+        return true;
+    }
+
+    false
+}
+
 // ── Global shortcuts ──────────────────────────────────────────────────────────
 
 /// RegisterHotKey works in every Windows session.

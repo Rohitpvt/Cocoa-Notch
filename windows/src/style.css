@@ -1090,11 +1090,15 @@ body {
 
 .notif-view .card {
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.3, 1.2, 0.4, 1);
+  transition: transform 0.2s cubic-bezier(0.3, 1.2, 0.4, 1), box-shadow 0.2s;
 }
 
 .notif-view .card:hover {
-  filter: brightness(1.04);
+  filter: brightness(1.06);
+}
+
+.notif-view .card:active {
+  transform: scale(0.995);
 }
 
 .notif-card {
@@ -1118,6 +1122,30 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin: -2px -6px;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.notif-app-info:hover {
+  background: rgba(56, 189, 248, 0.12);
+}
+
+.notif-app-open-hint {
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.5;
+  color: #7dd3fc;
+  transition: opacity 0.15s, transform 0.15s;
+  margin-left: 2px;
+}
+
+.notif-card:hover .notif-app-open-hint,
+.notif-app-info:hover .notif-app-open-hint {
+  opacity: 1;
+  transform: translate(1px, -1px);
 }
 
 .notif-app-badge {
@@ -1302,11 +1330,32 @@ body {
   background: rgba(255, 255, 255, 0.035);
   border: 1px solid rgba(255, 255, 255, 0.06);
   transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  cursor: pointer;
 }
 
 .notif-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(56, 189, 248, 0.35);
+  transform: translateY(-0.5px);
+}
+
+.notif-item:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.notif-item-open-hint {
+  display: inline-flex;
+  align-items: center;
+  opacity: 0;
+  color: #38bdf8;
+  margin-left: 2px;
+  transition: opacity 0.15s, transform 0.15s;
+  flex-shrink: 0;
+}
+
+.notif-item:hover .notif-item-open-hint {
+  opacity: 0.9;
+  transform: translate(1px, -1px);
 }
 
 .notif-item-header {

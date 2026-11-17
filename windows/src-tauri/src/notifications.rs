@@ -11,6 +11,8 @@ use tauri::{AppHandle, Emitter};
 pub struct SystemNotification {
     pub id: u32,
     pub app_name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub app_id: Option<String>,
     pub title: String,
     pub body: String,
     pub timestamp: u64,
@@ -101,11 +103,16 @@ fn run_listener(app: AppHandle) {
                     continue;
                 }
 
-                let app_name = un.AppInfo()
-                    .and_then(|info| info.DisplayInfo())
-                    .and_then(|disp| disp.DisplayName())
+                let app_info = un.AppInfo().ok();
+                let app_name = app_info.as_ref()
+                    .and_then(|info| info.DisplayInfo().ok())
+                    .and_then(|disp| disp.DisplayName().ok())
                     .map(|h| h.to_string())
-                    .unwrap_or_else(|_| "System".to_string());
+                    .unwrap_or_else(|| "System".to_string());
+
+                let app_id = app_info.as_ref()
+                    .and_then(|info| info.AppUserModelId().ok().or_else(|| info.Id().ok()))
+                    .map(|h| h.to_string());
 
                 let mut title = String::new();
                 let mut body = String::new();
@@ -199,6 +206,7 @@ fn run_listener(app: AppHandle) {
                     let payload = SystemNotification {
                         id,
                         app_name,
+                        app_id,
                         title,
                         body,
                         timestamp: creation_ts,

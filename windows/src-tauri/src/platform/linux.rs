@@ -317,6 +317,60 @@ pub fn open_antigravity(path: Option<&str>) -> bool {
     false
 }
 
+/// Brings forward the running window of `app_name`, or launches the app.
+pub fn open_app(app_name: &str, _app_id: Option<&str>) -> bool {
+    let name_trimmed = app_name.trim();
+    if name_trimmed.is_empty() {
+        return false;
+    }
+    let name_lower = name_trimmed.to_lowercase();
+
+    // Check known binaries on PATH
+    let bins: &[&str] = match name_lower.as_str() {
+        "whatsapp" | "whatsapp desktop" => &["whatsapp-for-linux", "whatsapp", "zapzap"],
+        "slack" => &["slack"],
+        "discord" => &["discord", "Discord"],
+        "spotify" => &["spotify"],
+        "visual studio code" | "vs code" | "vscode" | "code" => &["code", "codium"],
+        "antigravity" | "antigravity ide" => &["antigravity-ide", "antigravity", "agy"],
+        "telegram" | "telegram desktop" => &["telegram-desktop", "telegram"],
+        "microsoft teams" | "teams" => &["teams-for-linux", "teams"],
+        "mail" | "thunderbird" => &["thunderbird"],
+        "google chrome" | "chrome" => &["google-chrome", "google-chrome-stable", "chromium", "chromium-browser"],
+        "firefox" | "mozilla firefox" => &["firefox"],
+        _ => &[],
+    };
+
+    for &bin in bins {
+        if let Some(path) = find_on_path(bin) {
+            if Command::new(path).spawn().is_ok() {
+                return true;
+            }
+        }
+    }
+
+    if let Some(path) = find_on_path(&name_lower) {
+        if Command::new(path).spawn().is_ok() {
+            return true;
+        }
+    }
+
+    // Try xdg-open with URI scheme if applicable
+    let uri = match name_lower.as_str() {
+        "spotify" => Some("spotify:"),
+        "slack" => Some("slack:"),
+        "discord" => Some("discord:"),
+        "mail" => Some("mailto:"),
+        _ => None,
+    };
+    if let Some(u) = uri {
+        open_url(u);
+        return true;
+    }
+
+    false
+}
+
 /// Where the Codex CLI may be, best first: $PATH, then the usual per-user
 /// install folders, which a desktop launch often leaves out of $PATH (npm's
 /// global prefix, Volta, Bun, pnpm, and nvm with its newest Node first).

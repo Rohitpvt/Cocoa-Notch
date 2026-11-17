@@ -4,6 +4,7 @@
 import { h, svg, clear } from "./dom";
 import { ICONS } from "./icons";
 import { State, type SystemNotification } from "../core/state";
+import { Bridge } from "../core/bridge";
 import { card, type ViewActions, type ViewHost } from "./views";
 import { t, tl } from "../i18n/i18n";
 
@@ -65,6 +66,7 @@ export function buildNotificationHistory(actions: ViewActions): ViewHost {
   function renderItem(n: SystemNotification): HTMLElement {
     const dotEl = h("div", { class: "notif-item-dot" });
     const appEl = h("span", { class: "notif-item-app", text: n.appName || "SYSTEM" });
+    const openHint = h("span", { class: "notif-item-open-hint" }, svg(ICONS.arrowUpRight, 8));
     const timeEl = h("span", { class: "notif-item-time", text: formatRelativeTime(n.timestamp || Date.now()) });
 
     const dismissBtn = h(
@@ -81,16 +83,19 @@ export function buildNotificationHistory(actions: ViewActions): ViewHost {
       svg(ICONS.xmark, 8),
     );
 
-    const itemHeader = h("div", { class: "notif-item-header" }, dotEl, appEl, timeEl, dismissBtn);
+    const itemHeader = h("div", { class: "notif-item-header" }, dotEl, appEl, openHint, timeEl, dismissBtn);
     const titleEl = h("div", { class: "notif-item-title", text: n.title || "" });
     const bodyEl = n.body ? h("div", { class: "notif-item-body", text: n.body }) : null;
 
     return h(
       "div",
       {
-        class: "notif-item",
+        class: "notif-item notif-item-interactive",
+        title: n.appName ? t("Open {app}", { app: n.appName }) : t("Open app"),
         onclick: (e) => {
           e.stopPropagation();
+          actions.blip();
+          void Bridge.openApp(n.appName, n.appId);
         },
       },
       itemHeader,

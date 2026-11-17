@@ -45,6 +45,28 @@
    "ru": "Пока нет уведомлений",
    "id": "Belum ada notifikasi"
   },
+  "Open {app}": {
+   "zh-Hans": "打开 {app}",
+   "hi": "{app} खोलें",
+   "es": "Abrir {app}",
+   "ar": "فتح {app}",
+   "fr": "Ouvrir {app}",
+   "bn": "{app} খুলুন",
+   "pt-BR": "Abrir {app}",
+   "ru": "Открыть {app}",
+   "id": "Buka {app}"
+  },
+  "Open app": {
+   "zh-Hans": "打开应用",
+   "hi": "ऐप खोलें",
+   "es": "Abrir app",
+   "ar": "فتح التطبيق",
+   "fr": "Ouvrir l'application",
+   "bn": "অ্যাপ খুলুন",
+   "pt-BR": "Abrir aplicativo",
+   "ru": "Открыть приложение",
+   "id": "Buka aplikasi"
+  },
   " · until {date}": {
    "zh-Hans": " · 截至 {date}",
    "hi": " · {date} तक",
