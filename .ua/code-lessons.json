@@ -1,0 +1,2476 @@
+{
+  "version": 1,
+  "generatedAt": "2026-11-17T11:08:45.264Z",
+  "files": {
+    "README.md": {
+      "overview": "Primary repository documentation detailing Cocoa Notch capabilities, architecture, and multi-platform agent monitoring. Serves as a key component in Tour Step 1.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            102
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for README.md.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            103,
+            240
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            241,
+            343
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 1
+        }
+      ]
+    },
+    "CLAUDE.md": {
+      "overview": "Developer and agent guidance for building, running tests, and managing Cocoa Notch components. Serves as a key component in Tour Step 1.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            9
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for CLAUDE.md.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            10,
+            23
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 1
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            24,
+            33
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 1
+        }
+      ]
+    },
+    "NotchBuddy/Sources/App/NotchBuddyApp.swift": {
+      "overview": "Main macOS SwiftUI application lifecycle entry point managing status bar and notch overlay. Serves as a key component in Tour Step 2.",
+      "sections": [
+        {
+          "title": "Module Definition & Configuration",
+          "lineRange": [
+            1,
+            14
+          ],
+          "explanation": "Core configuration and implementation for NotchBuddyApp.swift.",
+          "tourOrder": 2
+        }
+      ]
+    },
+    "NotchBuddy/Sources/App/AppDelegate.swift": {
+      "overview": "Provides implementation with 14 function(s) and 2 class/component definition(s) for AppDelegate.swift. Serves as a key component in Tour Step 2.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            69
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for AppDelegate.swift.",
+          "tourOrder": 2
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            70,
+            161
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 2
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            162,
+            230
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 2
+        }
+      ]
+    },
+    "NotchBuddy/Sources/CocoaKit/MochiActivityState.swift": {
+      "overview": "Manages Mochi pet visual presentation, expressions, and dynamic animations. Serves as a key component in Tour Step 4.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            21
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for MochiActivityState.swift.",
+          "tourOrder": 4
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            22,
+            49
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 4
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            50,
+            70
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 4
+        }
+      ]
+    },
+    "NotchBuddy/Sources/CocoaKit/MochiStill.swift": {
+      "overview": "Provides implementation with 2 function(s) and 3 class/component definition(s) for MochiStill.swift. Serves as a key component in Tour Step 4.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            27
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for MochiStill.swift.",
+          "tourOrder": 4
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            28,
+            62
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 4
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            63,
+            90
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 4
+        }
+      ]
+    },
+    "NotchBuddy/Sources/App/AskQuestion.swift": {
+      "overview": "Presents interactive agent prompts and multi-choice permission questions in the notch. Serves as a key component in Tour Step 5.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            27
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for AskQuestion.swift.",
+          "tourOrder": 5
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            28,
+            65
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 5
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            66,
+            93
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 5
+        }
+      ]
+    },
+    "docs/AGENTS.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in docs. Serves as a key component in Tour Step 5.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            76
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for AGENTS.md.",
+          "tourOrder": 5
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            77,
+            177
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 5
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            178,
+            254
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 5
+        }
+      ]
+    },
+    "windows/src-tauri/src/main.rs": {
+      "overview": "Main Rust entry point initializing Tauri desktop window, system tray, and native event handlers. Serves as a key component in Tour Step 6.",
+      "sections": [
+        {
+          "title": "Module Definition & Configuration",
+          "lineRange": [
+            1,
+            7
+          ],
+          "explanation": "Core configuration and implementation for main.rs.",
+          "tourOrder": 6
+        }
+      ]
+    },
+    "windows/src-tauri/src/agent_hooks.rs": {
+      "overview": "Handles CLI agent IPC socket hooks, payload normalization, and approval dispatches. Serves as a key component in Tour Step 6.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            43
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for agent_hooks.rs.",
+          "tourOrder": 6
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            44,
+            100
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 6
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            101,
+            144
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 6
+        }
+      ]
+    },
+    "windows/src-tauri/src/agents.rs": {
+      "overview": "Tracks active coding agent session state, tool calls, and lifecycle events. Serves as a key component in Tour Step 6.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            379
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for agents.rs.",
+          "tourOrder": 6
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            380,
+            886
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 6
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            887,
+            1266
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 6
+        }
+      ]
+    },
+    "windows/src-tauri/Cargo.toml": {
+      "overview": "Configuration manifest defining build and package properties in TOML format for Cargo.toml. Serves as a key component in Tour Step 6.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            18
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for Cargo.toml.",
+          "tourOrder": 6
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            19,
+            42
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 6
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            43,
+            60
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 6
+        }
+      ]
+    },
+    "windows/src/main.ts": {
+      "overview": "Provides implementation with 2 function(s) and 0 class/component definition(s) for main.ts. Serves as a key component in Tour Step 7.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            33
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for main.ts.",
+          "tourOrder": 7
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            34,
+            79
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 7
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            80,
+            113
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 7
+        }
+      ]
+    },
+    "windows/src/core/bridge.ts": {
+      "overview": "TypeScript bridge establishing IPC communications between frontend Webview and Tauri backend. Serves as a key component in Tour Step 7.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            129
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for bridge.ts.",
+          "tourOrder": 7
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            130,
+            303
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 7
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            304,
+            433
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 7
+        }
+      ]
+    },
+    "windows/src/island/island.ts": {
+      "overview": "Controls compact and expanded island states, tabs, and layout animations on Windows. Serves as a key component in Tour Step 7.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            442
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for island.ts.",
+          "tourOrder": 7
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            443,
+            1032
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 7
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            1033,
+            1475
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 7
+        }
+      ]
+    },
+    "windows/package.json": {
+      "overview": "Configuration settings and package specifications for package.json. Serves as a key component in Tour Step 7.",
+      "sections": [
+        {
+          "title": "Module Definition & Configuration",
+          "lineRange": [
+            1,
+            26
+          ],
+          "explanation": "Core configuration and implementation for package.json.",
+          "tourOrder": 7
+        }
+      ]
+    },
+    "windows/src/core/diff.ts": {
+      "overview": "Parses unified diffs and formats side-by-side file modifications for the notch ticker. Serves as a key component in Tour Step 8.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            99
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for diff.ts.",
+          "tourOrder": 8
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            100,
+            230
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 8
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            231,
+            330
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 8
+        }
+      ]
+    },
+    "windows/src/core/lyrics.ts": {
+      "overview": "Synchronized LRC lyrics engine fetching lyrics from LRCLIB and NetEase for media playback. Serves as a key component in Tour Step 8.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            228
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for lyrics.ts.",
+          "tourOrder": 8
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            229,
+            533
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 8
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            534,
+            762
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 8
+        }
+      ]
+    },
+    "NotchBuddy/Sources/App/PhoneLink/SessionPublisher.swift": {
+      "overview": "Publishes agent session updates to CloudKit for remote iPhone synchronization. Serves as a key component in Tour Step 9.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            77
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for SessionPublisher.swift.",
+          "tourOrder": 9
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            78,
+            181
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 9
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            182,
+            259
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 9
+        }
+      ]
+    },
+    "NotchBuddy/Sources/Phone/LiveActivityLink.swift": {
+      "overview": "Provides implementation with 3 function(s) and 2 class/component definition(s) for LiveActivityLink.swift. Serves as a key component in Tour Step 9.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            28
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for LiveActivityLink.swift.",
+          "tourOrder": 9
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            29,
+            65
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 9
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            66,
+            94
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 9
+        }
+      ]
+    },
+    "NotchBuddy/Sources/App/PhoneLink/TurnRecorder.swift": {
+      "overview": "Records agent interaction turns and step histories for inspection and recap. Serves as a key component in Tour Step 9.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            65
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for TurnRecorder.swift.",
+          "tourOrder": 9
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            66,
+            152
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 9
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            153,
+            218
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 9
+        }
+      ]
+    },
+    "android/app/src/main/java/com/rohit/cocoa/MainActivity.kt": {
+      "overview": "Provides implementation with 5 function(s) and 2 class/component definition(s) for MainActivity.kt. Serves as a key component in Tour Step 10.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            67
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for MainActivity.kt.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            68,
+            158
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            159,
+            226
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 10
+        }
+      ]
+    },
+    "android/app/src/main/java/com/rohit/cocoa/CocoaApplication.kt": {
+      "overview": "Provides implementation with 2 function(s) and 1 class/component definition(s) for CocoaApplication.kt. Serves as a key component in Tour Step 10.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            20
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for CocoaApplication.kt.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            21,
+            47
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            48,
+            68
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 10
+        }
+      ]
+    },
+    "relay/src/index.ts": {
+      "overview": "Provides implementation with 6 function(s) and 0 class/component definition(s) for index.ts. Serves as a key component in Tour Step 10.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            54
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for index.ts.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            55,
+            128
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 10
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            129,
+            183
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 10
+        }
+      ]
+    },
+    "tests/AskQuestionTests.swift": {
+      "overview": "Presents interactive agent prompts and multi-choice permission questions in the notch. Serves as a key component in Tour Step 11.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            41
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for AskQuestionTests.swift.",
+          "tourOrder": 11
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            42,
+            97
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 11
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            98,
+            139
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 11
+        }
+      ]
+    },
+    "tests/ClaudeHookDetectionTests.swift": {
+      "overview": "Provides implementation with 2 function(s) and 1 class/component definition(s) for ClaudeHookDetectionTests.swift. Serves as a key component in Tour Step 11.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            18
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for ClaudeHookDetectionTests.swift.",
+          "tourOrder": 11
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            19,
+            42
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 11
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            43,
+            61
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 11
+        }
+      ]
+    },
+    ".github/workflows/build.yml": {
+      "overview": "CI/CD workflow for automated build builds and testing. Serves as a key component in Tour Step 11.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            36
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for build.yml.",
+          "tourOrder": 11
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            37,
+            86
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 11
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            87,
+            123
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 11
+        }
+      ]
+    },
+    "scripts/release.sh": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for release.sh. Serves as a key component in Tour Step 11.",
+      "sections": [
+        {
+          "title": "Imports & Initial Setup",
+          "lineRange": [
+            1,
+            52
+          ],
+          "explanation": "Initial definitions, required imports, and structural configuration for release.sh.",
+          "tourOrder": 11
+        },
+        {
+          "title": "Core Implementation & Logic",
+          "lineRange": [
+            53,
+            121
+          ],
+          "explanation": "Primary functional implementation handling core domain and UI responsibilities.",
+          "tourOrder": 11
+        },
+        {
+          "title": "Handlers & Lifecycle Events",
+          "lineRange": [
+            122,
+            174
+          ],
+          "explanation": "Lifecycle observers, export routines, and auxiliary helper functions.",
+          "tourOrder": 11
+        }
+      ]
+    },
+    "windows/src-tauri/src/chat.rs": {
+      "overview": "Implements chat client logic for Claude, OpenAI, Gemini, and local LLM endpoints.",
+      "sections": []
+    },
+    "windows/src-tauri/src/claude.rs": {
+      "overview": "Provides implementation with 13 function(s) and 0 class/component definition(s) for claude.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/codex_plan.rs": {
+      "overview": "Provides implementation with 5 function(s) and 1 class/component definition(s) for codex_plan.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/config_file.rs": {
+      "overview": "Provides implementation with 18 function(s) and 3 class/component definition(s) for config_file.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/desktop.rs": {
+      "overview": "Provides implementation with 31 function(s) and 7 class/component definition(s) for desktop.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/files.rs": {
+      "overview": "Provides implementation with 5 function(s) and 1 class/component definition(s) for files.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/github.rs": {
+      "overview": "Provides implementation with 12 function(s) and 8 class/component definition(s) for github.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/hardware.rs": {
+      "overview": "Provides implementation with 6 function(s) and 3 class/component definition(s) for hardware.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/hooks.rs": {
+      "overview": "Provides implementation with 25 function(s) and 2 class/component definition(s) for hooks.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/i18n.rs": {
+      "overview": "Provides implementation with 16 function(s) and 1 class/component definition(s) for i18n.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/identity.rs": {
+      "overview": "Provides implementation with 4 function(s) and 0 class/component definition(s) for identity.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/integrations.rs": {
+      "overview": "Provides implementation with 44 function(s) and 7 class/component definition(s) for integrations.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/island.rs": {
+      "overview": "Provides implementation with 20 function(s) and 6 class/component definition(s) for island.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/lib.rs": {
+      "overview": "Provides implementation with 54 function(s) and 2 class/component definition(s) for lib.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/local_chat.rs": {
+      "overview": "Implements chat client logic for Claude, OpenAI, Gemini, and local LLM endpoints.",
+      "sections": []
+    },
+    "windows/src-tauri/src/log.rs": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for log.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/media.rs": {
+      "overview": "Provides implementation with 9 function(s) and 3 class/component definition(s) for media.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/net.rs": {
+      "overview": "Provides implementation with 9 function(s) and 0 class/component definition(s) for net.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/notifications.rs": {
+      "overview": "Provides implementation with 4 function(s) and 1 class/component definition(s) for notifications.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/openai_compat.rs": {
+      "overview": "Provides implementation with 14 function(s) and 2 class/component definition(s) for openai_compat.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/pipe.rs": {
+      "overview": "Provides implementation with 14 function(s) and 3 class/component definition(s) for pipe.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/platform/linux.rs": {
+      "overview": "Provides implementation with 49 function(s) and 0 class/component definition(s) for linux.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/platform/mod.rs": {
+      "overview": "Provides implementation with 3 function(s) and 3 class/component definition(s) for mod.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/platform/windows.rs": {
+      "overview": "Provides implementation with 45 function(s) and 0 class/component definition(s) for windows.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/recap.rs": {
+      "overview": "Provides implementation with 50 function(s) and 8 class/component definition(s) for recap.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/secrets.rs": {
+      "overview": "Provides implementation with 6 function(s) and 0 class/component definition(s) for secrets.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/session_window.rs": {
+      "overview": "Provides implementation with 9 function(s) and 1 class/component definition(s) for session_window.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/settings.rs": {
+      "overview": "Provides implementation with 19 function(s) and 3 class/component definition(s) for settings.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/shortcuts.rs": {
+      "overview": "Provides implementation with 17 function(s) and 6 class/component definition(s) for shortcuts.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/src/tray.rs": {
+      "overview": "Configures the Windows system tray icon, context menus, and quick actions.",
+      "sections": []
+    },
+    "windows/src-tauri/src/webview_drop.rs": {
+      "overview": "Provides implementation with 1 function(s) and 1 class/component definition(s) for webview_drop.rs.",
+      "sections": []
+    },
+    "windows/src/core/github.ts": {
+      "overview": "Monitors GitHub pull requests, review requests, and CI status.",
+      "sections": []
+    },
+    "windows/src/core/pill-colors.ts": {
+      "overview": "Provides implementation with 4 function(s) and 0 class/component definition(s) for pill-colors.ts.",
+      "sections": []
+    },
+    "windows/src/core/pills.ts": {
+      "overview": "Provides implementation with 13 function(s) and 0 class/component definition(s) for pills.ts.",
+      "sections": []
+    },
+    "windows/src/core/shortcuts.ts": {
+      "overview": "Provides implementation with 16 function(s) and 0 class/component definition(s) for shortcuts.ts.",
+      "sections": []
+    },
+    "windows/src/core/state.ts": {
+      "overview": "Provides implementation with 1 function(s) and 1 class/component definition(s) for state.ts.",
+      "sections": []
+    },
+    "windows/src/core/welfare.ts": {
+      "overview": "Provides implementation with 1 function(s) and 1 class/component definition(s) for welfare.ts.",
+      "sections": []
+    },
+    "windows/src/island/integrations.ts": {
+      "overview": "Provides implementation with 6 function(s) and 0 class/component definition(s) for integrations.ts.",
+      "sections": []
+    },
+    "windows/src/island/shortcuts.ts": {
+      "overview": "Provides implementation with 5 function(s) and 0 class/component definition(s) for shortcuts.ts.",
+      "sections": []
+    },
+    "windows/src/recap/recap.ts": {
+      "overview": "Provides implementation with 0 function(s) and 1 class/component definition(s) for recap.ts.",
+      "sections": []
+    },
+    "windows/src/recap/summary.ts": {
+      "overview": "Provides implementation with 13 function(s) and 0 class/component definition(s) for summary.ts.",
+      "sections": []
+    },
+    "windows/src/views/github.ts": {
+      "overview": "Monitors GitHub pull requests, review requests, and CI status.",
+      "sections": []
+    },
+    "windows/src/views/integrations.ts": {
+      "overview": "Provides implementation with 22 function(s) and 0 class/component definition(s) for integrations.ts.",
+      "sections": []
+    },
+    "windows/src/views/recap.ts": {
+      "overview": "Provides implementation with 6 function(s) and 0 class/component definition(s) for recap.ts.",
+      "sections": []
+    },
+    "windows/tests/github.test.mjs": {
+      "overview": "Provides implementation with 4 function(s) and 0 class/component definition(s) for github.test.mjs.",
+      "sections": []
+    },
+    "windows/tests/music-lyrics.test.mjs": {
+      "overview": "Implements javascript code logic supporting Cocoa Notch functionality in windows/tests.",
+      "sections": []
+    },
+    "windows/tests/pill-colors.test.mjs": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for pill-colors.test.mjs.",
+      "sections": []
+    },
+    "windows/tests/pills.test.mjs": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for pills.test.mjs.",
+      "sections": []
+    },
+    "windows/tests/providers.test.mjs": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for providers.test.mjs.",
+      "sections": []
+    },
+    "windows/tests/recap-trigger.test.mjs": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for recap-trigger.test.mjs.",
+      "sections": []
+    },
+    "windows/tests/recap.test.mjs": {
+      "overview": "Provides implementation with 3 function(s) and 0 class/component definition(s) for recap.test.mjs.",
+      "sections": []
+    },
+    "windows/tests/shortcuts.test.mjs": {
+      "overview": "Provides implementation with 2 function(s) and 0 class/component definition(s) for shortcuts.test.mjs.",
+      "sections": []
+    },
+    "windows/tests/wardrobe.test.mjs": {
+      "overview": "Provides implementation with 2 function(s) and 0 class/component definition(s) for wardrobe.test.mjs.",
+      "sections": []
+    },
+    "windows/tests/welfare.test.mjs": {
+      "overview": "Implements javascript code logic supporting Cocoa Notch functionality in windows/tests.",
+      "sections": []
+    },
+    "windows/dev/recap-preview.ts": {
+      "overview": "Implements typescript code logic supporting Cocoa Notch functionality in windows/dev.",
+      "sections": []
+    },
+    "windows/dev/upload-preview.ts": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for upload-preview.ts.",
+      "sections": []
+    },
+    "windows/src/core/anim.ts": {
+      "overview": "Provides implementation with 4 function(s) and 2 class/component definition(s) for anim.ts.",
+      "sections": []
+    },
+    "windows/src/core/fonts.ts": {
+      "overview": "Implements typescript code logic supporting Cocoa Notch functionality in windows/src/core.",
+      "sections": []
+    },
+    "windows/src/core/layout.ts": {
+      "overview": "Provides implementation with 7 function(s) and 0 class/component definition(s) for layout.ts.",
+      "sections": []
+    },
+    "windows/src/core/sound.ts": {
+      "overview": "Provides implementation with 0 function(s) and 1 class/component definition(s) for sound.ts.",
+      "sections": []
+    },
+    "windows/src/desktop/main.ts": {
+      "overview": "Provides implementation with 0 function(s) and 1 class/component definition(s) for main.ts.",
+      "sections": []
+    },
+    "windows/src/island/desktop.ts": {
+      "overview": "Provides implementation with 0 function(s) and 1 class/component definition(s) for desktop.ts.",
+      "sections": []
+    },
+    "windows/src/island/fsm.ts": {
+      "overview": "Provides implementation with 0 function(s) and 1 class/component definition(s) for fsm.ts.",
+      "sections": []
+    },
+    "windows/src/mochi/desktop-logic.ts": {
+      "overview": "Provides implementation with 10 function(s) and 1 class/component definition(s) for desktop-logic.ts.",
+      "sections": []
+    },
+    "windows/src/mochi/engine.ts": {
+      "overview": "Provides implementation with 8 function(s) and 1 class/component definition(s) for engine.ts.",
+      "sections": []
+    },
+    "windows/src/mochi/greeting.ts": {
+      "overview": "Provides implementation with 17 function(s) and 1 class/component definition(s) for greeting.ts.",
+      "sections": []
+    },
+    "windows/src/mochi/minibots.ts": {
+      "overview": "Provides implementation with 6 function(s) and 0 class/component definition(s) for minibots.ts.",
+      "sections": []
+    },
+    "windows/src/mochi/outfits.ts": {
+      "overview": "Provides implementation with 42 function(s) and 0 class/component definition(s) for outfits.ts.",
+      "sections": []
+    },
+    "windows/src/mochi/wardrobe.ts": {
+      "overview": "Provides implementation with 5 function(s) and 1 class/component definition(s) for wardrobe.ts.",
+      "sections": []
+    },
+    "windows/src/recap/share.ts": {
+      "overview": "Provides implementation with 11 function(s) and 0 class/component definition(s) for share.ts.",
+      "sections": []
+    },
+    "windows/src/upload/canvas.ts": {
+      "overview": "Provides implementation with 8 function(s) and 1 class/component definition(s) for canvas.ts.",
+      "sections": []
+    },
+    "windows/src/upload/sequence.ts": {
+      "overview": "Provides implementation with 11 function(s) and 2 class/component definition(s) for sequence.ts.",
+      "sections": []
+    },
+    "windows/tests/desktop.test.mjs": {
+      "overview": "Provides implementation with 3 function(s) and 0 class/component definition(s) for desktop.test.mjs.",
+      "sections": []
+    },
+    "windows/tests/fsm.test.mjs": {
+      "overview": "Provides implementation with 2 function(s) and 0 class/component definition(s) for fsm.test.mjs.",
+      "sections": []
+    },
+    "windows/tests/greeting.test.mjs": {
+      "overview": "Provides implementation with 2 function(s) and 0 class/component definition(s) for greeting.test.mjs.",
+      "sections": []
+    },
+    "windows/src/core/providers.ts": {
+      "overview": "Provides implementation with 7 function(s) and 0 class/component definition(s) for providers.ts.",
+      "sections": []
+    },
+    "windows/src/i18n/i18n.ts": {
+      "overview": "Provides implementation with 23 function(s) and 1 class/component definition(s) for i18n.ts.",
+      "sections": []
+    },
+    "windows/src/settings/agents.ts": {
+      "overview": "Provides implementation with 4 function(s) and 0 class/component definition(s) for agents.ts.",
+      "sections": []
+    },
+    "windows/src/settings/colors.ts": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for colors.ts.",
+      "sections": []
+    },
+    "windows/src/settings/main.ts": {
+      "overview": "Provides implementation with 26 function(s) and 0 class/component definition(s) for main.ts.",
+      "sections": []
+    },
+    "windows/src/settings/parts.ts": {
+      "overview": "Provides implementation with 2 function(s) and 0 class/component definition(s) for parts.ts.",
+      "sections": []
+    },
+    "windows/src/views/accessory.ts": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for accessory.ts.",
+      "sections": []
+    },
+    "windows/src/views/chat.ts": {
+      "overview": "Provides implementation with 6 function(s) and 0 class/component definition(s) for chat.ts.",
+      "sections": []
+    },
+    "windows/src/views/diff.ts": {
+      "overview": "Parses unified diffs and formats side-by-side file modifications for the notch ticker.",
+      "sections": []
+    },
+    "windows/src/views/dom.ts": {
+      "overview": "Provides implementation with 9 function(s) and 0 class/component definition(s) for dom.ts.",
+      "sections": []
+    },
+    "windows/src/views/icons.ts": {
+      "overview": "Implements typescript code logic supporting Cocoa Notch functionality in windows/src/views.",
+      "sections": []
+    },
+    "windows/src/views/markdown.ts": {
+      "overview": "Provides implementation with 14 function(s) and 0 class/component definition(s) for markdown.ts.",
+      "sections": []
+    },
+    "windows/src/views/music.ts": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for music.ts.",
+      "sections": []
+    },
+    "windows/src/views/notifications.ts": {
+      "overview": "Provides implementation with 2 function(s) and 0 class/component definition(s) for notifications.ts.",
+      "sections": []
+    },
+    "windows/src/views/shelf.ts": {
+      "overview": "Provides implementation with 3 function(s) and 0 class/component definition(s) for shelf.ts.",
+      "sections": []
+    },
+    "windows/src/views/ticker.ts": {
+      "overview": "Provides implementation with 3 function(s) and 1 class/component definition(s) for ticker.ts.",
+      "sections": []
+    },
+    "windows/src/views/upload.ts": {
+      "overview": "Provides implementation with 4 function(s) and 0 class/component definition(s) for upload.ts.",
+      "sections": []
+    },
+    "windows/src/views/views.ts": {
+      "overview": "Provides implementation with 23 function(s) and 0 class/component definition(s) for views.ts.",
+      "sections": []
+    },
+    "windows/src/views/wardrobe.ts": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for wardrobe.ts.",
+      "sections": []
+    },
+    "windows/tests/bloom-features.test.mjs": {
+      "overview": "Implements javascript code logic supporting Cocoa Notch functionality in windows/tests.",
+      "sections": []
+    },
+    "windows/tests/diff.test.mjs": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for diff.test.mjs.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/network/CocoaLinkClient.kt": {
+      "overview": "Provides implementation with 15 function(s) and 2 class/component definition(s) for CocoaLinkClient.kt.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/service/MochiNotificationService.kt": {
+      "overview": "Provides implementation with 6 function(s) and 1 class/component definition(s) for MochiNotificationService.kt.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/service/NotificationActionReceiver.kt": {
+      "overview": "Provides implementation with 1 function(s) and 1 class/component definition(s) for NotificationActionReceiver.kt.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/ui/components/DiffViewer.kt": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for DiffViewer.kt.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/ui/components/GlassCard.kt": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for GlassCard.kt.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/ui/components/MochiAvatar.kt": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for MochiAvatar.kt.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/ui/components/StepItem.kt": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for StepItem.kt.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/ui/screens/ApprovalScreen.kt": {
+      "overview": "Provides implementation with 2 function(s) and 0 class/component definition(s) for ApprovalScreen.kt.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/ui/screens/HomeScreen.kt": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for HomeScreen.kt.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/ui/screens/InstructionScreen.kt": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for InstructionScreen.kt.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/ui/screens/PairingScreen.kt": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for PairingScreen.kt.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/ui/screens/QuestionScreen.kt": {
+      "overview": "Provides implementation with 2 function(s) and 0 class/component definition(s) for QuestionScreen.kt.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/ui/screens/ServicesScreen.kt": {
+      "overview": "Provides implementation with 2 function(s) and 0 class/component definition(s) for ServicesScreen.kt.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/ui/screens/SettingsScreen.kt": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for SettingsScreen.kt.",
+      "sections": []
+    },
+    "windows/src/core/plan.ts": {
+      "overview": "Provides implementation with 16 function(s) and 0 class/component definition(s) for plan.ts.",
+      "sections": []
+    },
+    "windows/src/island/agents.ts": {
+      "overview": "Provides implementation with 3 function(s) and 0 class/component definition(s) for agents.ts.",
+      "sections": []
+    },
+    "windows/src/island/hooks.ts": {
+      "overview": "Provides implementation with 13 function(s) and 0 class/component definition(s) for hooks.ts.",
+      "sections": []
+    },
+    "windows/src/views/usage.ts": {
+      "overview": "Provides implementation with 13 function(s) and 1 class/component definition(s) for usage.ts.",
+      "sections": []
+    },
+    "windows/tests/agents.test.mjs": {
+      "overview": "Implements javascript code logic supporting Cocoa Notch functionality in windows/tests.",
+      "sections": []
+    },
+    "windows/tests/chat.test.mjs": {
+      "overview": "Provides implementation with 4 function(s) and 0 class/component definition(s) for chat.test.mjs.",
+      "sections": []
+    },
+    "windows/tests/fakedom.mjs": {
+      "overview": "Provides implementation with 1 function(s) and 2 class/component definition(s) for fakedom.mjs.",
+      "sections": []
+    },
+    "windows/tests/hooks.test.mjs": {
+      "overview": "Provides implementation with 5 function(s) and 0 class/component definition(s) for hooks.test.mjs.",
+      "sections": []
+    },
+    "windows/tests/i18n.test.mjs": {
+      "overview": "Provides implementation with 6 function(s) and 0 class/component definition(s) for i18n.test.mjs.",
+      "sections": []
+    },
+    "windows/tests/livediff.test.mjs": {
+      "overview": "Provides implementation with 4 function(s) and 0 class/component definition(s) for livediff.test.mjs.",
+      "sections": []
+    },
+    "windows/tests/markdown.test.mjs": {
+      "overview": "Implements javascript code logic supporting Cocoa Notch functionality in windows/tests.",
+      "sections": []
+    },
+    "windows/tests/plan.test.mjs": {
+      "overview": "Provides implementation with 2 function(s) and 0 class/component definition(s) for plan.test.mjs.",
+      "sections": []
+    },
+    "windows/tests/setup.mjs": {
+      "overview": "Implements javascript code logic supporting Cocoa Notch functionality in windows/tests.",
+      "sections": []
+    },
+    "windows/tests/tauri.mjs": {
+      "overview": "Provides implementation with 2 function(s) and 0 class/component definition(s) for tauri.mjs.",
+      "sections": []
+    },
+    "windows/hook/src/main.rs": {
+      "overview": "Provides implementation with 12 function(s) and 2 class/component definition(s) for main.rs.",
+      "sections": []
+    },
+    "windows/hook/src/normalize.rs": {
+      "overview": "Provides implementation with 4 function(s) and 0 class/component definition(s) for normalize.rs.",
+      "sections": []
+    },
+    "windows/hook/src/reply.rs": {
+      "overview": "Provides implementation with 5 function(s) and 0 class/component definition(s) for reply.rs.",
+      "sections": []
+    },
+    "windows/hook/src/statusline.rs": {
+      "overview": "Provides implementation with 7 function(s) and 0 class/component definition(s) for statusline.rs.",
+      "sections": []
+    },
+    "windows/hook/src/unix.rs": {
+      "overview": "Provides implementation with 5 function(s) and 0 class/component definition(s) for unix.rs.",
+      "sections": []
+    },
+    "windows/hook/src/win.rs": {
+      "overview": "Provides implementation with 5 function(s) and 0 class/component definition(s) for win.rs.",
+      "sections": []
+    },
+    ".github/workflows/linux.yml": {
+      "overview": "CI/CD workflow for automated linux builds and testing.",
+      "sections": []
+    },
+    ".github/workflows/release.yml": {
+      "overview": "CI/CD workflow for automated release builds and testing.",
+      "sections": []
+    },
+    ".github/workflows/windows-ci.yml": {
+      "overview": "CI/CD workflow for automated windows-ci builds and testing.",
+      "sections": []
+    },
+    ".github/workflows/windows.yml": {
+      "overview": "CI/CD workflow for automated windows builds and testing.",
+      "sections": []
+    },
+    "CHANGELOG.md": {
+      "overview": "Version history and release notes across Cocoa releases.",
+      "sections": []
+    },
+    "CONTRIBUTING.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in ..",
+      "sections": []
+    },
+    "LICENSE-ASSETS.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in ..",
+      "sections": []
+    },
+    "NotchBuddy/Resources/Info.plist": {
+      "overview": "Apple configuration property list defining app settings and permissions for Info.plist.",
+      "sections": []
+    },
+    "NotchBuddy/Resources/InfoAppStore.plist": {
+      "overview": "Apple configuration property list defining app settings and permissions for InfoAppStore.plist.",
+      "sections": []
+    },
+    "NotchBuddy/Resources/InfoNotificationContent.plist": {
+      "overview": "Apple configuration property list defining app settings and permissions for InfoNotificationContent.plist.",
+      "sections": []
+    },
+    "NotchBuddy/Resources/InfoPhone.plist": {
+      "overview": "Apple configuration property list defining app settings and permissions for InfoPhone.plist.",
+      "sections": []
+    },
+    "NotchBuddy/Resources/InfoWidgets.plist": {
+      "overview": "Apple configuration property list defining app settings and permissions for InfoWidgets.plist.",
+      "sections": []
+    },
+    "android/README.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in android.",
+      "sections": []
+    },
+    "android/gradle.properties": {
+      "overview": "Implements properties config logic supporting Cocoa Notch functionality in android.",
+      "sections": []
+    },
+    "android/gradlew.bat": {
+      "overview": "Implements batch script logic supporting Cocoa Notch functionality in android.",
+      "sections": []
+    },
+    "android/app/src/main/res/drawable/ic_launcher_background.xml": {
+      "overview": "Android UI resource layout and styling definition for ic_launcher_background.xml.",
+      "sections": []
+    },
+    "android/app/src/main/res/drawable/ic_launcher_foreground.xml": {
+      "overview": "Android UI resource layout and styling definition for ic_launcher_foreground.xml.",
+      "sections": []
+    },
+    "android/app/src/main/res/drawable/ic_mochi.xml": {
+      "overview": "Android UI resource layout and styling definition for ic_mochi.xml.",
+      "sections": []
+    },
+    "android/app/src/main/res/drawable/ic_notification.xml": {
+      "overview": "Android UI resource layout and styling definition for ic_notification.xml.",
+      "sections": []
+    },
+    "android/app/src/main/res/values/colors.xml": {
+      "overview": "Android UI resource layout and styling definition for colors.xml.",
+      "sections": []
+    },
+    "android/app/src/main/res/values/strings.xml": {
+      "overview": "Android UI resource layout and styling definition for strings.xml.",
+      "sections": []
+    },
+    "android/app/src/main/res/values/themes.xml": {
+      "overview": "Android UI resource layout and styling definition for themes.xml.",
+      "sections": []
+    },
+    "docs/APP_FLOW.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/DATABASE_SCHEMA.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/DEPLOYMENT_GUIDE.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/FINAL_BROWSER_CHECKLIST.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/FRONTEND_STYLE_ARCHITECTURE.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/INTEGRATIONS.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/IPHONE.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/PRD.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/README.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/ROADMAP.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/SDD.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/SETUP_GUIDE.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/SPEC.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/TASK_BREAKDOWN.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/TRD.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/index.html": {
+      "overview": "Implements html markup logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/iphone.html": {
+      "overview": "Implements html markup logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/legal.html": {
+      "overview": "Implements html markup logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/privacy.html": {
+      "overview": "Implements html markup logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/site.css": {
+      "overview": "Implements css markup logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/support.html": {
+      "overview": "Implements html markup logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "docs/terms.html": {
+      "overview": "Implements html markup logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "relay/README.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in relay.",
+      "sections": []
+    },
+    "relay/package.json": {
+      "overview": "Configuration settings and package specifications for package.json.",
+      "sections": []
+    },
+    "relay/tsconfig.json": {
+      "overview": "Configuration settings and package specifications for tsconfig.json.",
+      "sections": []
+    },
+    "relay/wrangler.toml": {
+      "overview": "Configuration manifest defining build and package properties in TOML format for wrangler.toml.",
+      "sections": []
+    },
+    "scripts/cloud-test-build.sh": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for cloud-test-build.sh.",
+      "sections": []
+    },
+    "scripts/render-outfits.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-ask-question.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-auto-close.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-chat-parsing.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-claude-hooks.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-claude-host.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-claude-response.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-claude-settings.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-desktop-mochi.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-diff-engine.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-display-choice.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-github-activity.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-github-pulse.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-island-hover.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-pill-colors.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-plan-gauge.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-safe-links.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-screen-geometry.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-shortcuts.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-terminal-target.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "scripts/test-wardrobe.sh": {
+      "overview": "Implements shell script logic supporting Cocoa Notch functionality in scripts.",
+      "sections": []
+    },
+    "windows/Cargo.toml": {
+      "overview": "Configuration manifest defining build and package properties in TOML format for Cargo.toml.",
+      "sections": []
+    },
+    "windows/README.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in windows.",
+      "sections": []
+    },
+    "windows/index.html": {
+      "overview": "Implements html markup logic supporting Cocoa Notch functionality in windows.",
+      "sections": []
+    },
+    "windows/mochi.html": {
+      "overview": "Implements html markup logic supporting Cocoa Notch functionality in windows.",
+      "sections": []
+    },
+    "windows/settings.html": {
+      "overview": "Implements html markup logic supporting Cocoa Notch functionality in windows.",
+      "sections": []
+    },
+    "windows/tsconfig.json": {
+      "overview": "Configuration settings and package specifications for tsconfig.json.",
+      "sections": []
+    },
+    "windows/src-tauri/tauri.conf.json": {
+      "overview": "Configuration settings and package specifications for tauri.conf.json.",
+      "sections": []
+    },
+    "windows/src-tauri/tauri.linux.conf.json": {
+      "overview": "Configuration settings and package specifications for tauri.linux.conf.json.",
+      "sections": []
+    },
+    ".gitattributes": {
+      "overview": "Implements unknown code logic supporting Cocoa Notch functionality in ..",
+      "sections": []
+    },
+    ".github/ISSUE_TEMPLATE/bug_report.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in .github/ISSUE_TEMPLATE.",
+      "sections": []
+    },
+    ".github/ISSUE_TEMPLATE/feature_request.md": {
+      "overview": "Implements markdown docs logic supporting Cocoa Notch functionality in .github/ISSUE_TEMPLATE.",
+      "sections": []
+    },
+    "NotchBuddy/Assets.xcassets/AppIcon.appiconset/Contents.json": {
+      "overview": "Configuration settings and package specifications for Contents.json.",
+      "sections": []
+    },
+    "NotchBuddy/Assets.xcassets/Contents.json": {
+      "overview": "Configuration settings and package specifications for Contents.json.",
+      "sections": []
+    },
+    "NotchBuddy/Assets.xcassets/MenuBarIcon.imageset/Contents.json": {
+      "overview": "Configuration settings and package specifications for Contents.json.",
+      "sections": []
+    },
+    "NotchBuddy/NotchBuddy.xcodeproj/project.pbxproj": {
+      "overview": "Implements pbxproj code logic supporting Cocoa Notch functionality in NotchBuddy/NotchBuddy.xcodeproj.",
+      "sections": []
+    },
+    "NotchBuddy/NotchBuddy.xcodeproj/project.xcworkspace/contents.xcworkspacedata": {
+      "overview": "Implements xcworkspacedata code logic supporting Cocoa Notch functionality in NotchBuddy/NotchBuddy.xcodeproj/project.xcworkspace.",
+      "sections": []
+    },
+    "NotchBuddy/PhoneAssets.xcassets/AppIcon-Blue.appiconset/Contents.json": {
+      "overview": "Configuration settings and package specifications for Contents.json.",
+      "sections": []
+    },
+    "NotchBuddy/PhoneAssets.xcassets/AppIcon-Graphite.appiconset/Contents.json": {
+      "overview": "Configuration settings and package specifications for Contents.json.",
+      "sections": []
+    },
+    "NotchBuddy/PhoneAssets.xcassets/AppIcon-Green.appiconset/Contents.json": {
+      "overview": "Configuration settings and package specifications for Contents.json.",
+      "sections": []
+    },
+    "NotchBuddy/PhoneAssets.xcassets/AppIcon-Pink.appiconset/Contents.json": {
+      "overview": "Configuration settings and package specifications for Contents.json.",
+      "sections": []
+    },
+    "NotchBuddy/PhoneAssets.xcassets/AppIcon-Purple.appiconset/Contents.json": {
+      "overview": "Configuration settings and package specifications for Contents.json.",
+      "sections": []
+    },
+    "NotchBuddy/PhoneAssets.xcassets/AppIcon.appiconset/Contents.json": {
+      "overview": "Configuration settings and package specifications for Contents.json.",
+      "sections": []
+    },
+    "NotchBuddy/PhoneAssets.xcassets/Contents.json": {
+      "overview": "Configuration settings and package specifications for Contents.json.",
+      "sections": []
+    },
+    "NotchBuddy/PhoneAssets.xcassets/IconPreview-Blue.imageset/Contents.json": {
+      "overview": "Configuration settings and package specifications for Contents.json.",
+      "sections": []
+    },
+    "NotchBuddy/PhoneAssets.xcassets/IconPreview-Graphite.imageset/Contents.json": {
+      "overview": "Configuration settings and package specifications for Contents.json.",
+      "sections": []
+    },
+    "NotchBuddy/PhoneAssets.xcassets/IconPreview-Green.imageset/Contents.json": {
+      "overview": "Configuration settings and package specifications for Contents.json.",
+      "sections": []
+    },
+    "NotchBuddy/PhoneAssets.xcassets/IconPreview-Orange.imageset/Contents.json": {
+      "overview": "Configuration settings and package specifications for Contents.json.",
+      "sections": []
+    },
+    "NotchBuddy/PhoneAssets.xcassets/IconPreview-Pink.imageset/Contents.json": {
+      "overview": "Configuration settings and package specifications for Contents.json.",
+      "sections": []
+    },
+    "NotchBuddy/PhoneAssets.xcassets/IconPreview-Purple.imageset/Contents.json": {
+      "overview": "Configuration settings and package specifications for Contents.json.",
+      "sections": []
+    },
+    "NotchBuddy/Resources/Cocoa.entitlements": {
+      "overview": "Apple capability entitlements for macOS/iOS security and sandbox permissions.",
+      "sections": []
+    },
+    "NotchBuddy/Resources/CocoaAppStore.entitlements": {
+      "overview": "Apple capability entitlements for macOS/iOS security and sandbox permissions.",
+      "sections": []
+    },
+    "NotchBuddy/Resources/CocoaAppStoreCloud.entitlements": {
+      "overview": "Apple capability entitlements for macOS/iOS security and sandbox permissions.",
+      "sections": []
+    },
+    "NotchBuddy/Resources/CocoaCloud.entitlements": {
+      "overview": "Apple capability entitlements for macOS/iOS security and sandbox permissions.",
+      "sections": []
+    },
+    "NotchBuddy/Resources/CocoaPhone.entitlements": {
+      "overview": "Apple capability entitlements for macOS/iOS security and sandbox permissions.",
+      "sections": []
+    },
+    "NotchBuddy/Resources/CocoaPhoneProduction.entitlements": {
+      "overview": "Apple capability entitlements for macOS/iOS security and sandbox permissions.",
+      "sections": []
+    },
+    "NotchBuddy/Resources/CocoaReleaseCloud.entitlements": {
+      "overview": "Apple capability entitlements for macOS/iOS security and sandbox permissions.",
+      "sections": []
+    },
+    "NotchBuddy/Resources/CocoaWidgets.entitlements": {
+      "overview": "Apple capability entitlements for macOS/iOS security and sandbox permissions.",
+      "sections": []
+    },
+    "NotchBuddy/Resources/Localizable.xcstrings": {
+      "overview": "Implements xcstrings code logic supporting Cocoa Notch functionality in NotchBuddy/Resources.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/AppLog.swift": {
+      "overview": "Provides implementation with 2 function(s) and 0 class/component definition(s) for AppLog.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/AppState.swift": {
+      "overview": "Provides implementation with 19 function(s) and 14 class/component definition(s) for AppState.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/BotCanvasView.swift": {
+      "overview": "Provides implementation with 4 function(s) and 2 class/component definition(s) for BotCanvasView.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/CalcomPoller.swift": {
+      "overview": "Provides implementation with 5 function(s) and 1 class/component definition(s) for CalcomPoller.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/ChatMarkdown.swift": {
+      "overview": "Provides implementation with 1 function(s) and 2 class/component definition(s) for ChatMarkdown.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/ChatMarkdownView.swift": {
+      "overview": "Provides implementation with 2 function(s) and 2 class/component definition(s) for ChatMarkdownView.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/ClaudeHookDetection.swift": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for ClaudeHookDetection.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/ClaudeHost.swift": {
+      "overview": "Provides implementation with 4 function(s) and 1 class/component definition(s) for ClaudeHost.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/ClaudePlanCardView.swift": {
+      "overview": "Provides implementation with 1 function(s) and 2 class/component definition(s) for ClaudePlanCardView.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/ClaudePlanGauge.swift": {
+      "overview": "Provides implementation with 6 function(s) and 3 class/component definition(s) for ClaudePlanGauge.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/ClaudeResponseText.swift": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for ClaudeResponseText.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/ClaudeService.swift": {
+      "overview": "Provides implementation with 16 function(s) and 2 class/component definition(s) for ClaudeService.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/ClaudeSettingsFile.swift": {
+      "overview": "Provides implementation with 5 function(s) and 2 class/component definition(s) for ClaudeSettingsFile.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/CodexPlanGauge.swift": {
+      "overview": "Provides implementation with 6 function(s) and 3 class/component definition(s) for CodexPlanGauge.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/DemoEngine.swift": {
+      "overview": "Provides implementation with 8 function(s) and 1 class/component definition(s) for DemoEngine.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/DesktopMochi.swift": {
+      "overview": "Provides implementation with 25 function(s) and 3 class/component definition(s) for DesktopMochi.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/DesktopMochiLogic.swift": {
+      "overview": "Provides implementation with 6 function(s) and 3 class/component definition(s) for DesktopMochiLogic.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/FileDropView.swift": {
+      "overview": "Provides implementation with 8 function(s) and 2 class/component definition(s) for FileDropView.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/GitHubActivity.swift": {
+      "overview": "Provides implementation with 3 function(s) and 2 class/component definition(s) for GitHubActivity.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/GitHubPulse.swift": {
+      "overview": "Monitors GitHub pull requests, review requests, and CI status.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/GithubPoller.swift": {
+      "overview": "Provides implementation with 17 function(s) and 1 class/component definition(s) for GithubPoller.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/GreetingCanvasView.swift": {
+      "overview": "Provides implementation with 24 function(s) and 7 class/component definition(s) for GreetingCanvasView.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/HookServer.swift": {
+      "overview": "Provides implementation with 96 function(s) and 2 class/component definition(s) for HookServer.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/HotKeyCenter.swift": {
+      "overview": "Provides implementation with 7 function(s) and 1 class/component definition(s) for HotKeyCenter.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/IslandDisplayChoice.swift": {
+      "overview": "Provides implementation with 2 function(s) and 3 class/component definition(s) for IslandDisplayChoice.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/IslandRootView.swift": {
+      "overview": "Provides implementation with 7 function(s) and 10 class/component definition(s) for IslandRootView.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/IslandStateMachine.swift": {
+      "overview": "Provides implementation with 15 function(s) and 2 class/component definition(s) for IslandStateMachine.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/IslandViewContent.swift": {
+      "overview": "Provides implementation with 47 function(s) and 75 class/component definition(s) for IslandViewContent.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/IslandWindowController.swift": {
+      "overview": "Provides implementation with 50 function(s) and 4 class/component definition(s) for IslandWindowController.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/LocalChat.swift": {
+      "overview": "Provides implementation with 8 function(s) and 2 class/component definition(s) for LocalChat.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/MacDictation.swift": {
+      "overview": "Provides implementation with 17 function(s) and 2 class/component definition(s) for MacDictation.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/MusicController.swift": {
+      "overview": "Provides implementation with 14 function(s) and 2 class/component definition(s) for MusicController.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/N8nPoller.swift": {
+      "overview": "Provides implementation with 13 function(s) and 1 class/component definition(s) for N8nPoller.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/NotionPoller.swift": {
+      "overview": "Provides implementation with 5 function(s) and 1 class/component definition(s) for NotionPoller.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/NowPlayingViews.swift": {
+      "overview": "Provides implementation with 2 function(s) and 6 class/component definition(s) for NowPlayingViews.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/PhoneLink/ApprovalRelay.swift": {
+      "overview": "Provides implementation with 9 function(s) and 1 class/component definition(s) for ApprovalRelay.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/PhoneLink/CloudProbe.swift": {
+      "overview": "Provides implementation with 14 function(s) and 2 class/component definition(s) for CloudProbe.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/PhoneLink/InstructionRunner.swift": {
+      "overview": "Provides implementation with 9 function(s) and 1 class/component definition(s) for InstructionRunner.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/PhoneLink/LiveActivityRelay.swift": {
+      "overview": "Provides implementation with 16 function(s) and 2 class/component definition(s) for LiveActivityRelay.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/PhoneLink/QuestionRelay.swift": {
+      "overview": "Provides implementation with 7 function(s) and 2 class/component definition(s) for QuestionRelay.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/PhoneLink/ServiceDetailRunner.swift": {
+      "overview": "Provides implementation with 24 function(s) and 3 class/component definition(s) for ServiceDetailRunner.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/PhoneLink/ServicePublisher.swift": {
+      "overview": "Provides implementation with 14 function(s) and 2 class/component definition(s) for ServicePublisher.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/RecapStore.swift": {
+      "overview": "Provides implementation with 16 function(s) and 6 class/component definition(s) for RecapStore.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/ResendPoller.swift": {
+      "overview": "Provides implementation with 4 function(s) and 1 class/component definition(s) for ResendPoller.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/SafeWebURL.swift": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for SafeWebURL.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/SettingsView.swift": {
+      "overview": "Provides implementation with 40 function(s) and 6 class/component definition(s) for SettingsView.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/ShortcutLogic.swift": {
+      "overview": "Provides implementation with 10 function(s) and 3 class/component definition(s) for ShortcutLogic.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/ShortcutsSettingsView.swift": {
+      "overview": "Provides implementation with 9 function(s) and 1 class/component definition(s) for ShortcutsSettingsView.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/SoundEngine.swift": {
+      "overview": "Provides implementation with 8 function(s) and 1 class/component definition(s) for SoundEngine.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/SpotifyController.swift": {
+      "overview": "Provides implementation with 27 function(s) and 4 class/component definition(s) for SpotifyController.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/SpotifyViews.swift": {
+      "overview": "Provides implementation with 2 function(s) and 2 class/component definition(s) for SpotifyViews.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/StripePoller.swift": {
+      "overview": "Provides implementation with 8 function(s) and 1 class/component definition(s) for StripePoller.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/TerminalTarget+AppKit.swift": {
+      "overview": "Provides implementation with 1 function(s) and 1 class/component definition(s) for TerminalTarget+AppKit.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/TerminalTarget.swift": {
+      "overview": "Provides implementation with 2 function(s) and 1 class/component definition(s) for TerminalTarget.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/UploadCanvasView.swift": {
+      "overview": "Provides implementation with 13 function(s) and 1 class/component definition(s) for UploadCanvasView.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/UploadSequenceEngine.swift": {
+      "overview": "Provides implementation with 21 function(s) and 7 class/component definition(s) for UploadSequenceEngine.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/UserIdentity.swift": {
+      "overview": "Provides implementation with 4 function(s) and 0 class/component definition(s) for UserIdentity.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/VercelPoller.swift": {
+      "overview": "Provides implementation with 5 function(s) and 1 class/component definition(s) for VercelPoller.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/WeeklyRecapView.swift": {
+      "overview": "Provides implementation with 10 function(s) and 4 class/component definition(s) for WeeklyRecapView.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/App/WindowContextCapture.swift": {
+      "overview": "Provides implementation with 2 function(s) and 1 class/component definition(s) for WindowContextCapture.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/CocoaKit/BotEngine.swift": {
+      "overview": "Provides implementation with 50 function(s) and 11 class/component definition(s) for BotEngine.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/CocoaKit/ColorHex.swift": {
+      "overview": "Provides implementation with 3 function(s) and 3 class/component definition(s) for ColorHex.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/CocoaKit/DiffEngine.swift": {
+      "overview": "Provides implementation with 9 function(s) and 6 class/component definition(s) for DiffEngine.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/CocoaKit/IslandScreenGeometry.swift": {
+      "overview": "Provides implementation with 1 function(s) and 2 class/component definition(s) for IslandScreenGeometry.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/CocoaKit/IslandTypes.swift": {
+      "overview": "Provides implementation with 2 function(s) and 12 class/component definition(s) for IslandTypes.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/CocoaKit/MochiOutfitDrawing.swift": {
+      "overview": "Provides implementation with 35 function(s) and 3 class/component definition(s) for MochiOutfitDrawing.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/CocoaKit/MochiWardrobe.swift": {
+      "overview": "Provides implementation with 3 function(s) and 1 class/component definition(s) for MochiWardrobe.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/CocoaKit/PillCatalog.swift": {
+      "overview": "Provides implementation with 2 function(s) and 3 class/component definition(s) for PillCatalog.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/CocoaKit/PillColors.swift": {
+      "overview": "Provides implementation with 4 function(s) and 1 class/component definition(s) for PillColors.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/CocoaKit/QuestionPayload.swift": {
+      "overview": "Provides implementation with 4 function(s) and 3 class/component definition(s) for QuestionPayload.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/CocoaKit/ServiceDetail.swift": {
+      "overview": "Provides implementation with 3 function(s) and 6 class/component definition(s) for ServiceDetail.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/CocoaKit/ServiceSnapshot.swift": {
+      "overview": "Provides implementation with 4 function(s) and 5 class/component definition(s) for ServiceSnapshot.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/CocoaKit/TurnSnapshot.swift": {
+      "overview": "Provides implementation with 3 function(s) and 6 class/component definition(s) for TurnSnapshot.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/NotificationContent/NotificationViewController.swift": {
+      "overview": "Provides implementation with 2 function(s) and 2 class/component definition(s) for NotificationViewController.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/AboutView.swift": {
+      "overview": "Provides implementation with 3 function(s) and 3 class/component definition(s) for AboutView.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/AgentNotifier.swift": {
+      "overview": "Provides implementation with 6 function(s) and 4 class/component definition(s) for AgentNotifier.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/AppleStyle.swift": {
+      "overview": "Provides implementation with 6 function(s) and 8 class/component definition(s) for AppleStyle.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/ApprovalCard.swift": {
+      "overview": "Provides implementation with 3 function(s) and 3 class/component definition(s) for ApprovalCard.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/CocoaIntents.swift": {
+      "overview": "Provides implementation with 3 function(s) and 4 class/component definition(s) for CocoaIntents.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/CocoaPhoneApp.swift": {
+      "overview": "Provides implementation with 7 function(s) and 3 class/component definition(s) for CocoaPhoneApp.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/Decisions.swift": {
+      "overview": "Provides implementation with 3 function(s) and 3 class/component definition(s) for Decisions.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/DenyApprovalIntent.swift": {
+      "overview": "Provides implementation with 6 function(s) and 2 class/component definition(s) for DenyApprovalIntent.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/Haptics.swift": {
+      "overview": "Provides implementation with 4 function(s) and 1 class/component definition(s) for Haptics.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/HomeView.swift": {
+      "overview": "Provides implementation with 5 function(s) and 11 class/component definition(s) for HomeView.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/InstructionComposer.swift": {
+      "overview": "Provides implementation with 8 function(s) and 3 class/component definition(s) for InstructionComposer.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/IntroView.swift": {
+      "overview": "Provides implementation with 11 function(s) and 10 class/component definition(s) for IntroView.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/KitPreviewView.swift": {
+      "overview": "Provides implementation with 3 function(s) and 1 class/component definition(s) for KitPreviewView.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/LastTurnView.swift": {
+      "overview": "Provides implementation with 3 function(s) and 4 class/component definition(s) for LastTurnView.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/LinkTestView.swift": {
+      "overview": "Provides implementation with 1 function(s) and 1 class/component definition(s) for LinkTestView.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/MacStubs.swift": {
+      "overview": "Provides implementation with 1 function(s) and 2 class/component definition(s) for MacStubs.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/MochiActivityAttributes.swift": {
+      "overview": "Provides implementation with 0 function(s) and 1 class/component definition(s) for MochiActivityAttributes.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/MochiLive.swift": {
+      "overview": "Provides implementation with 0 function(s) and 1 class/component definition(s) for MochiLive.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/OpenLeadMochiIntent.swift": {
+      "overview": "Provides implementation with 1 function(s) and 1 class/component definition(s) for OpenLeadMochiIntent.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/PhoneLink.swift": {
+      "overview": "Provides implementation with 26 function(s) and 4 class/component definition(s) for PhoneLink.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/QuestionCard.swift": {
+      "overview": "Provides implementation with 3 function(s) and 1 class/component definition(s) for QuestionCard.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/SearchAndSpotlight.swift": {
+      "overview": "Provides implementation with 5 function(s) and 3 class/component definition(s) for SearchAndSpotlight.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/ServiceLiveDetail.swift": {
+      "overview": "Provides implementation with 4 function(s) and 1 class/component definition(s) for ServiceLiveDetail.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/ServiceStatus.swift": {
+      "overview": "Provides implementation with 0 function(s) and 2 class/component definition(s) for ServiceStatus.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/ServiceViews.swift": {
+      "overview": "Provides implementation with 3 function(s) and 4 class/component definition(s) for ServiceViews.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/SessionDetailView.swift": {
+      "overview": "Provides implementation with 6 function(s) and 2 class/component definition(s) for SessionDetailView.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/SessionStatus.swift": {
+      "overview": "Provides implementation with 1 function(s) and 2 class/component definition(s) for SessionStatus.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/SharedSessions.swift": {
+      "overview": "Provides implementation with 4 function(s) and 4 class/component definition(s) for SharedSessions.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/TurnArchive.swift": {
+      "overview": "Provides implementation with 4 function(s) and 2 class/component definition(s) for TurnArchive.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Phone/TurnShare.swift": {
+      "overview": "Provides implementation with 3 function(s) and 2 class/component definition(s) for TurnShare.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Widgets/CocoaControl.swift": {
+      "overview": "Provides implementation with 3 function(s) and 3 class/component definition(s) for CocoaControl.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Widgets/CocoaWidgets.swift": {
+      "overview": "Provides implementation with 5 function(s) and 18 class/component definition(s) for CocoaWidgets.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Widgets/MochiLiveActivity.swift": {
+      "overview": "Provides implementation with 0 function(s) and 8 class/component definition(s) for MochiLiveActivity.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Sources/Widgets/TeamConfiguration.swift": {
+      "overview": "Provides implementation with 3 function(s) and 4 class/component definition(s) for TeamConfiguration.swift.",
+      "sections": []
+    },
+    "NotchBuddy/Tests/HermesConfigMergerTests.swift": {
+      "overview": "Provides implementation with 4 function(s) and 0 class/component definition(s) for HermesConfigMergerTests.swift.",
+      "sections": []
+    },
+    "NotchBuddy/project.yml": {
+      "overview": "Implements yaml config logic supporting Cocoa Notch functionality in NotchBuddy.",
+      "sections": []
+    },
+    "android/app/build.gradle.kts": {
+      "overview": "Implements kotlin code logic supporting Cocoa Notch functionality in android/app.",
+      "sections": []
+    },
+    "android/app/proguard-rules.pro": {
+      "overview": "Implements pro code logic supporting Cocoa Notch functionality in android/app.",
+      "sections": []
+    },
+    "android/app/src/main/AndroidManifest.xml": {
+      "overview": "Implements xml config logic supporting Cocoa Notch functionality in android/app/src/main.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/model/Models.kt": {
+      "overview": "Provides implementation with 0 function(s) and 12 class/component definition(s) for Models.kt.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/ui/theme/Color.kt": {
+      "overview": "Implements kotlin code logic supporting Cocoa Notch functionality in android/app/src/main/java/com/rohit/cocoa/ui/theme.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/ui/theme/Theme.kt": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for Theme.kt.",
+      "sections": []
+    },
+    "android/app/src/main/java/com/rohit/cocoa/ui/theme/Type.kt": {
+      "overview": "Implements kotlin code logic supporting Cocoa Notch functionality in android/app/src/main/java/com/rohit/cocoa/ui/theme.",
+      "sections": []
+    },
+    "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml": {
+      "overview": "Android UI resource layout and styling definition for ic_launcher.xml.",
+      "sections": []
+    },
+    "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml": {
+      "overview": "Android UI resource layout and styling definition for ic_launcher_round.xml.",
+      "sections": []
+    },
+    "android/app/src/main/res/xml/backup_rules.xml": {
+      "overview": "Android UI resource layout and styling definition for backup_rules.xml.",
+      "sections": []
+    },
+    "android/app/src/main/res/xml/data_extraction_rules.xml": {
+      "overview": "Android UI resource layout and styling definition for data_extraction_rules.xml.",
+      "sections": []
+    },
+    "android/build.gradle.kts": {
+      "overview": "Implements kotlin code logic supporting Cocoa Notch functionality in android.",
+      "sections": []
+    },
+    "android/gradle/libs.versions.toml": {
+      "overview": "Configuration manifest defining build and package properties in TOML format for libs.versions.toml.",
+      "sections": []
+    },
+    "android/gradle/wrapper/gradle-wrapper.properties": {
+      "overview": "Implements properties config logic supporting Cocoa Notch functionality in android/gradle/wrapper.",
+      "sections": []
+    },
+    "android/settings.gradle.kts": {
+      "overview": "Implements kotlin code logic supporting Cocoa Notch functionality in android.",
+      "sections": []
+    },
+    "design/animations/greeting-v2.html": {
+      "overview": "Implements html markup logic supporting Cocoa Notch functionality in design/animations.",
+      "sections": []
+    },
+    "design/animations/upload-sequence.html": {
+      "overview": "Implements html markup logic supporting Cocoa Notch functionality in design/animations.",
+      "sections": []
+    },
+    "design/outfits/mochi-outfits.js": {
+      "overview": "Provides implementation with 26 function(s) and 0 class/component definition(s) for mochi-outfits.js.",
+      "sections": []
+    },
+    "design/outfits/sheet.html": {
+      "overview": "Implements html markup logic supporting Cocoa Notch functionality in design/outfits.",
+      "sections": []
+    },
+    "design/prototype/notch-buddy.html": {
+      "overview": "Implements html markup logic supporting Cocoa Notch functionality in design/prototype.",
+      "sections": []
+    },
+    "docs/.nojekyll": {
+      "overview": "Implements unknown code logic supporting Cocoa Notch functionality in docs.",
+      "sections": []
+    },
+    "linux/arch/PKGBUILD": {
+      "overview": "Implements unknown code logic supporting Cocoa Notch functionality in linux/arch.",
+      "sections": []
+    },
+    "linux/arch/cocoa.desktop": {
+      "overview": "Implements desktop code logic supporting Cocoa Notch functionality in linux/arch.",
+      "sections": []
+    },
+    "scripts/RenderOutfits.swift": {
+      "overview": "Provides implementation with 4 function(s) and 9 class/component definition(s) for RenderOutfits.swift.",
+      "sections": []
+    },
+    "scripts/test-weekly-recap.swift": {
+      "overview": "Provides implementation with 1 function(s) and 3 class/component definition(s) for test-weekly-recap.swift.",
+      "sections": []
+    },
+    "tests/ChatParsingTests.swift": {
+      "overview": "Provides implementation with 4 function(s) and 1 class/component definition(s) for ChatParsingTests.swift.",
+      "sections": []
+    },
+    "tests/ClaudeHostTests.swift": {
+      "overview": "Provides implementation with 2 function(s) and 1 class/component definition(s) for ClaudeHostTests.swift.",
+      "sections": []
+    },
+    "tests/ClaudePlanGaugeTests.swift": {
+      "overview": "Provides implementation with 3 function(s) and 1 class/component definition(s) for ClaudePlanGaugeTests.swift.",
+      "sections": []
+    },
+    "tests/ClaudeResponseTextTests.swift": {
+      "overview": "Provides implementation with 1 function(s) and 1 class/component definition(s) for ClaudeResponseTextTests.swift.",
+      "sections": []
+    },
+    "tests/ClaudeSettingsFileTests.swift": {
+      "overview": "Provides implementation with 6 function(s) and 1 class/component definition(s) for ClaudeSettingsFileTests.swift.",
+      "sections": []
+    },
+    "tests/DesktopMochiTests.swift": {
+      "overview": "Provides implementation with 7 function(s) and 1 class/component definition(s) for DesktopMochiTests.swift.",
+      "sections": []
+    },
+    "tests/DiffEngineTests.swift": {
+      "overview": "Provides implementation with 3 function(s) and 1 class/component definition(s) for DiffEngineTests.swift.",
+      "sections": []
+    },
+    "tests/GitHubActivityTests.swift": {
+      "overview": "Provides implementation with 2 function(s) and 1 class/component definition(s) for GitHubActivityTests.swift.",
+      "sections": []
+    },
+    "tests/GitHubPulseTests.swift": {
+      "overview": "Monitors GitHub pull requests, review requests, and CI status.",
+      "sections": []
+    },
+    "tests/IslandAutoCloseTests.swift": {
+      "overview": "Provides implementation with 3 function(s) and 1 class/component definition(s) for IslandAutoCloseTests.swift.",
+      "sections": []
+    },
+    "tests/IslandDisplayChoiceTests.swift": {
+      "overview": "Provides implementation with 1 function(s) and 1 class/component definition(s) for IslandDisplayChoiceTests.swift.",
+      "sections": []
+    },
+    "tests/IslandHoverTests.swift": {
+      "overview": "Provides implementation with 3 function(s) and 1 class/component definition(s) for IslandHoverTests.swift.",
+      "sections": []
+    },
+    "tests/IslandScreenGeometryTests.swift": {
+      "overview": "Provides implementation with 1 function(s) and 1 class/component definition(s) for IslandScreenGeometryTests.swift.",
+      "sections": []
+    },
+    "tests/MochiWardrobeTests.swift": {
+      "overview": "Provides implementation with 4 function(s) and 1 class/component definition(s) for MochiWardrobeTests.swift.",
+      "sections": []
+    },
+    "tests/PillColorsTests.swift": {
+      "overview": "Provides implementation with 2 function(s) and 1 class/component definition(s) for PillColorsTests.swift.",
+      "sections": []
+    },
+    "tests/SafeWebURLTests.swift": {
+      "overview": "Provides implementation with 1 function(s) and 1 class/component definition(s) for SafeWebURLTests.swift.",
+      "sections": []
+    },
+    "tests/ShortcutTests.swift": {
+      "overview": "Provides implementation with 12 function(s) and 1 class/component definition(s) for ShortcutTests.swift.",
+      "sections": []
+    },
+    "tests/TerminalTargetTests.swift": {
+      "overview": "Provides implementation with 1 function(s) and 1 class/component definition(s) for TerminalTargetTests.swift.",
+      "sections": []
+    },
+    "tests/fake_local_llm.py": {
+      "overview": "Provides implementation with 1 function(s) and 2 class/component definition(s) for fake_local_llm.py.",
+      "sections": []
+    },
+    "windows/dev/recap-preview.html": {
+      "overview": "Implements html markup logic supporting Cocoa Notch functionality in windows/dev.",
+      "sections": []
+    },
+    "windows/dev/upload-preview.html": {
+      "overview": "Implements html markup logic supporting Cocoa Notch functionality in windows/dev.",
+      "sections": []
+    },
+    "windows/hook/Cargo.toml": {
+      "overview": "Configuration manifest defining build and package properties in TOML format for Cargo.toml.",
+      "sections": []
+    },
+    "windows/nsis_installer.nsi": {
+      "overview": "Implements nsi code logic supporting Cocoa Notch functionality in windows.",
+      "sections": []
+    },
+    "windows/scripts/gen-icons.mjs": {
+      "overview": "Provides implementation with 8 function(s) and 0 class/component definition(s) for gen-icons.mjs.",
+      "sections": []
+    },
+    "windows/scripts/gen-strings.mjs": {
+      "overview": "Provides implementation with 5 function(s) and 0 class/component definition(s) for gen-strings.mjs.",
+      "sections": []
+    },
+    "windows/scripts/pack.mjs": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for pack.mjs.",
+      "sections": []
+    },
+    "windows/src-tauri/build.rs": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for build.rs.",
+      "sections": []
+    },
+    "windows/src-tauri/capabilities/default.json": {
+      "overview": "Configuration settings and package specifications for default.json.",
+      "sections": []
+    },
+    "windows/src-tauri/nsis/hooks.nsh": {
+      "overview": "Implements nsh code logic supporting Cocoa Notch functionality in windows/src-tauri/nsis.",
+      "sections": []
+    },
+    "windows/src/i18n/extra.json": {
+      "overview": "Configuration settings and package specifications for extra.json.",
+      "sections": []
+    },
+    "windows/src/i18n/strings.json": {
+      "overview": "Configuration settings and package specifications for strings.json.",
+      "sections": []
+    },
+    "windows/src/settings/settings.css": {
+      "overview": "Implements css markup logic supporting Cocoa Notch functionality in windows/src/settings.",
+      "sections": []
+    },
+    "windows/src/style.css": {
+      "overview": "Implements css markup logic supporting Cocoa Notch functionality in windows/src.",
+      "sections": []
+    },
+    "windows/vite.config.ts": {
+      "overview": "Provides implementation with 1 function(s) and 0 class/component definition(s) for vite.config.ts.",
+      "sections": []
+    }
+  }
+}

@@ -69,3 +69,9 @@ _prive/
 .idea/
 .gemini/
 .agents/
+
+# Understand-Anything temporary files
+.ua/tmp/
+.ua/.trash-*/
+.understand-anything/tmp/
+.understand-anything/.trash-*/

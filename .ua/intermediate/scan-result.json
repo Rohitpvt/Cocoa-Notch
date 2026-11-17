@@ -1,0 +1,3598 @@
+{
+  "name": "Cocoa Notch",
+  "description": "A desktop and mobile companion living in macOS notch and Windows/Linux top bar to monitor AI coding agent sessions, permission approvals, diffs, and developer utilities.",
+  "languages": [
+    "batch",
+    "css",
+    "desktop",
+    "entitlements",
+    "html",
+    "javascript",
+    "json",
+    "kotlin",
+    "markdown",
+    "nsh",
+    "nsi",
+    "pbxproj",
+    "pro",
+    "properties",
+    "python",
+    "rust",
+    "shell",
+    "swift",
+    "toml",
+    "typescript",
+    "unknown",
+    "xcstrings",
+    "xcworkspacedata",
+    "xml",
+    "yaml"
+  ],
+  "frameworks": [
+    "Tauri",
+    "SwiftUI",
+    "Vite",
+    "Tokio",
+    "Serde",
+    "Cloudflare Workers",
+    "GitHub Actions"
+  ],
+  "files": [
+    {
+      "path": ".gitattributes",
+      "language": "unknown",
+      "sizeLines": 50,
+      "fileCategory": "code"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "language": "markdown",
+      "sizeLines": 17,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "language": "markdown",
+      "sizeLines": 9,
+      "fileCategory": "docs"
+    },
+    {
+      "path": ".github/workflows/build.yml",
+      "language": "yaml",
+      "sizeLines": 122,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".github/workflows/linux.yml",
+      "language": "yaml",
+      "sizeLines": 196,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".github/workflows/release.yml",
+      "language": "yaml",
+      "sizeLines": 30,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".github/workflows/windows-ci.yml",
+      "language": "yaml",
+      "sizeLines": 66,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".github/workflows/windows.yml",
+      "language": "yaml",
+      "sizeLines": 175,
+      "fileCategory": "infra"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "language": "markdown",
+      "sizeLines": 187,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "CLAUDE.md",
+      "language": "markdown",
+      "sizeLines": 32,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "language": "markdown",
+      "sizeLines": 46,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "LICENSE-ASSETS.md",
+      "language": "markdown",
+      "sizeLines": 21,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "NotchBuddy/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "language": "json",
+      "sizeLines": 67,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/Assets.xcassets/Contents.json",
+      "language": "json",
+      "sizeLines": 6,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/Assets.xcassets/MenuBarIcon.imageset/Contents.json",
+      "language": "json",
+      "sizeLines": 25,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/NotchBuddy.xcodeproj/project.pbxproj",
+      "language": "pbxproj",
+      "sizeLines": 1933,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/NotchBuddy.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
+      "language": "xcworkspacedata",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/PhoneAssets.xcassets/AppIcon-Blue.appiconset/Contents.json",
+      "language": "json",
+      "sizeLines": 11,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/PhoneAssets.xcassets/AppIcon-Graphite.appiconset/Contents.json",
+      "language": "json",
+      "sizeLines": 11,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/PhoneAssets.xcassets/AppIcon-Green.appiconset/Contents.json",
+      "language": "json",
+      "sizeLines": 11,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/PhoneAssets.xcassets/AppIcon-Pink.appiconset/Contents.json",
+      "language": "json",
+      "sizeLines": 11,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/PhoneAssets.xcassets/AppIcon-Purple.appiconset/Contents.json",
+      "language": "json",
+      "sizeLines": 11,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/PhoneAssets.xcassets/AppIcon.appiconset/Contents.json",
+      "language": "json",
+      "sizeLines": 25,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/PhoneAssets.xcassets/Contents.json",
+      "language": "json",
+      "sizeLines": 3,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/PhoneAssets.xcassets/IconPreview-Blue.imageset/Contents.json",
+      "language": "json",
+      "sizeLines": 11,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/PhoneAssets.xcassets/IconPreview-Graphite.imageset/Contents.json",
+      "language": "json",
+      "sizeLines": 11,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/PhoneAssets.xcassets/IconPreview-Green.imageset/Contents.json",
+      "language": "json",
+      "sizeLines": 11,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/PhoneAssets.xcassets/IconPreview-Orange.imageset/Contents.json",
+      "language": "json",
+      "sizeLines": 11,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/PhoneAssets.xcassets/IconPreview-Pink.imageset/Contents.json",
+      "language": "json",
+      "sizeLines": 11,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/PhoneAssets.xcassets/IconPreview-Purple.imageset/Contents.json",
+      "language": "json",
+      "sizeLines": 11,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/Resources/Cocoa.entitlements",
+      "language": "entitlements",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Resources/CocoaAppStore.entitlements",
+      "language": "entitlements",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Resources/CocoaAppStoreCloud.entitlements",
+      "language": "entitlements",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Resources/CocoaCloud.entitlements",
+      "language": "entitlements",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Resources/CocoaPhone.entitlements",
+      "language": "entitlements",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Resources/CocoaPhoneProduction.entitlements",
+      "language": "entitlements",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Resources/CocoaReleaseCloud.entitlements",
+      "language": "entitlements",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Resources/CocoaWidgets.entitlements",
+      "language": "entitlements",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Resources/Info.plist",
+      "language": "xml",
+      "sizeLines": 56,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/Resources/InfoAppStore.plist",
+      "language": "xml",
+      "sizeLines": 52,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/Resources/InfoNotificationContent.plist",
+      "language": "xml",
+      "sizeLines": 40,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/Resources/InfoPhone.plist",
+      "language": "xml",
+      "sizeLines": 67,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/Resources/InfoWidgets.plist",
+      "language": "xml",
+      "sizeLines": 29,
+      "fileCategory": "config"
+    },
+    {
+      "path": "NotchBuddy/Resources/Localizable.xcstrings",
+      "language": "xcstrings",
+      "sizeLines": 20998,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/AppDelegate.swift",
+      "language": "swift",
+      "sizeLines": 229,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/AppLog.swift",
+      "language": "swift",
+      "sizeLines": 49,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/AppState.swift",
+      "language": "swift",
+      "sizeLines": 847,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/AskQuestion.swift",
+      "language": "swift",
+      "sizeLines": 92,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/BotCanvasView.swift",
+      "language": "swift",
+      "sizeLines": 249,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/CalcomPoller.swift",
+      "language": "swift",
+      "sizeLines": 105,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/ChatMarkdown.swift",
+      "language": "swift",
+      "sizeLines": 118,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/ChatMarkdownView.swift",
+      "language": "swift",
+      "sizeLines": 117,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/ClaudeHookDetection.swift",
+      "language": "swift",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/ClaudeHost.swift",
+      "language": "swift",
+      "sizeLines": 77,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/ClaudePlanCardView.swift",
+      "language": "swift",
+      "sizeLines": 127,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/ClaudePlanGauge.swift",
+      "language": "swift",
+      "sizeLines": 80,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/ClaudeResponseText.swift",
+      "language": "swift",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/ClaudeService.swift",
+      "language": "swift",
+      "sizeLines": 643,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/ClaudeSettingsFile.swift",
+      "language": "swift",
+      "sizeLines": 145,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/CodexPlanGauge.swift",
+      "language": "swift",
+      "sizeLines": 211,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/DemoEngine.swift",
+      "language": "swift",
+      "sizeLines": 756,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/DesktopMochi.swift",
+      "language": "swift",
+      "sizeLines": 744,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/DesktopMochiLogic.swift",
+      "language": "swift",
+      "sizeLines": 82,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/FileDropView.swift",
+      "language": "swift",
+      "sizeLines": 124,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/GitHubActivity.swift",
+      "language": "swift",
+      "sizeLines": 72,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/GitHubPulse.swift",
+      "language": "swift",
+      "sizeLines": 244,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/GithubPoller.swift",
+      "language": "swift",
+      "sizeLines": 349,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/GreetingCanvasView.swift",
+      "language": "swift",
+      "sizeLines": 689,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/HookServer.swift",
+      "language": "swift",
+      "sizeLines": 3699,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/HotKeyCenter.swift",
+      "language": "swift",
+      "sizeLines": 148,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/IslandDisplayChoice.swift",
+      "language": "swift",
+      "sizeLines": 65,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/IslandRootView.swift",
+      "language": "swift",
+      "sizeLines": 673,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/IslandStateMachine.swift",
+      "language": "swift",
+      "sizeLines": 215,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/IslandViewContent.swift",
+      "language": "swift",
+      "sizeLines": 4921,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/IslandWindowController.swift",
+      "language": "swift",
+      "sizeLines": 1290,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/LocalChat.swift",
+      "language": "swift",
+      "sizeLines": 208,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/MacDictation.swift",
+      "language": "swift",
+      "sizeLines": 290,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/MusicController.swift",
+      "language": "swift",
+      "sizeLines": 279,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/N8nPoller.swift",
+      "language": "swift",
+      "sizeLines": 260,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/NotchBuddyApp.swift",
+      "language": "swift",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/NotionPoller.swift",
+      "language": "swift",
+      "sizeLines": 100,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/NowPlayingViews.swift",
+      "language": "swift",
+      "sizeLines": 186,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/PhoneLink/ApprovalRelay.swift",
+      "language": "swift",
+      "sizeLines": 165,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/PhoneLink/CloudProbe.swift",
+      "language": "swift",
+      "sizeLines": 277,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/PhoneLink/InstructionRunner.swift",
+      "language": "swift",
+      "sizeLines": 182,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/PhoneLink/LiveActivityRelay.swift",
+      "language": "swift",
+      "sizeLines": 415,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/PhoneLink/QuestionRelay.swift",
+      "language": "swift",
+      "sizeLines": 134,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/PhoneLink/ServiceDetailRunner.swift",
+      "language": "swift",
+      "sizeLines": 802,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/PhoneLink/ServicePublisher.swift",
+      "language": "swift",
+      "sizeLines": 395,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/PhoneLink/SessionPublisher.swift",
+      "language": "swift",
+      "sizeLines": 258,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/PhoneLink/TurnRecorder.swift",
+      "language": "swift",
+      "sizeLines": 217,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/RecapStore.swift",
+      "language": "swift",
+      "sizeLines": 319,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/ResendPoller.swift",
+      "language": "swift",
+      "sizeLines": 63,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/SafeWebURL.swift",
+      "language": "swift",
+      "sizeLines": 12,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/SettingsView.swift",
+      "language": "swift",
+      "sizeLines": 2053,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/ShortcutLogic.swift",
+      "language": "swift",
+      "sizeLines": 236,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/ShortcutsSettingsView.swift",
+      "language": "swift",
+      "sizeLines": 196,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/SoundEngine.swift",
+      "language": "swift",
+      "sizeLines": 114,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/SpotifyController.swift",
+      "language": "swift",
+      "sizeLines": 514,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/SpotifyViews.swift",
+      "language": "swift",
+      "sizeLines": 255,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/StripePoller.swift",
+      "language": "swift",
+      "sizeLines": 162,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/TerminalTarget+AppKit.swift",
+      "language": "swift",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/TerminalTarget.swift",
+      "language": "swift",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/UploadCanvasView.swift",
+      "language": "swift",
+      "sizeLines": 582,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/UploadSequenceEngine.swift",
+      "language": "swift",
+      "sizeLines": 437,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/UserIdentity.swift",
+      "language": "swift",
+      "sizeLines": 33,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/VercelPoller.swift",
+      "language": "swift",
+      "sizeLines": 109,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/WeeklyRecapView.swift",
+      "language": "swift",
+      "sizeLines": 368,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/App/WindowContextCapture.swift",
+      "language": "swift",
+      "sizeLines": 68,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/CocoaKit/BotEngine.swift",
+      "language": "swift",
+      "sizeLines": 1659,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/CocoaKit/ColorHex.swift",
+      "language": "swift",
+      "sizeLines": 43,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/CocoaKit/DiffEngine.swift",
+      "language": "swift",
+      "sizeLines": 301,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/CocoaKit/IslandScreenGeometry.swift",
+      "language": "swift",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/CocoaKit/IslandTypes.swift",
+      "language": "swift",
+      "sizeLines": 233,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/CocoaKit/MochiActivityState.swift",
+      "language": "swift",
+      "sizeLines": 69,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/CocoaKit/MochiOutfitDrawing.swift",
+      "language": "swift",
+      "sizeLines": 1464,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/CocoaKit/MochiStill.swift",
+      "language": "swift",
+      "sizeLines": 89,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/CocoaKit/MochiWardrobe.swift",
+      "language": "swift",
+      "sizeLines": 89,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/CocoaKit/PillCatalog.swift",
+      "language": "swift",
+      "sizeLines": 145,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/CocoaKit/PillColors.swift",
+      "language": "swift",
+      "sizeLines": 72,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/CocoaKit/QuestionPayload.swift",
+      "language": "swift",
+      "sizeLines": 64,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/CocoaKit/ServiceDetail.swift",
+      "language": "swift",
+      "sizeLines": 81,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/CocoaKit/ServiceSnapshot.swift",
+      "language": "swift",
+      "sizeLines": 67,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/CocoaKit/TurnSnapshot.swift",
+      "language": "swift",
+      "sizeLines": 78,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/NotificationContent/NotificationViewController.swift",
+      "language": "swift",
+      "sizeLines": 95,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/AboutView.swift",
+      "language": "swift",
+      "sizeLines": 241,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/AgentNotifier.swift",
+      "language": "swift",
+      "sizeLines": 186,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/AppleStyle.swift",
+      "language": "swift",
+      "sizeLines": 223,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/ApprovalCard.swift",
+      "language": "swift",
+      "sizeLines": 194,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/CocoaIntents.swift",
+      "language": "swift",
+      "sizeLines": 90,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/CocoaPhoneApp.swift",
+      "language": "swift",
+      "sizeLines": 145,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/Decisions.swift",
+      "language": "swift",
+      "sizeLines": 37,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/DenyApprovalIntent.swift",
+      "language": "swift",
+      "sizeLines": 56,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/Haptics.swift",
+      "language": "swift",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/HomeView.swift",
+      "language": "swift",
+      "sizeLines": 568,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/InstructionComposer.swift",
+      "language": "swift",
+      "sizeLines": 292,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/IntroView.swift",
+      "language": "swift",
+      "sizeLines": 337,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/KitPreviewView.swift",
+      "language": "swift",
+      "sizeLines": 93,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/LastTurnView.swift",
+      "language": "swift",
+      "sizeLines": 331,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/LinkTestView.swift",
+      "language": "swift",
+      "sizeLines": 128,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/LiveActivityLink.swift",
+      "language": "swift",
+      "sizeLines": 93,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/MacStubs.swift",
+      "language": "swift",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/MochiActivityAttributes.swift",
+      "language": "swift",
+      "sizeLines": 9,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/MochiLive.swift",
+      "language": "swift",
+      "sizeLines": 38,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/OpenLeadMochiIntent.swift",
+      "language": "swift",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/PhoneLink.swift",
+      "language": "swift",
+      "sizeLines": 579,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/QuestionCard.swift",
+      "language": "swift",
+      "sizeLines": 119,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/SearchAndSpotlight.swift",
+      "language": "swift",
+      "sizeLines": 129,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/ServiceLiveDetail.swift",
+      "language": "swift",
+      "sizeLines": 207,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/ServiceStatus.swift",
+      "language": "swift",
+      "sizeLines": 58,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/ServiceViews.swift",
+      "language": "swift",
+      "sizeLines": 247,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/SessionDetailView.swift",
+      "language": "swift",
+      "sizeLines": 256,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/SessionStatus.swift",
+      "language": "swift",
+      "sizeLines": 90,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/SharedSessions.swift",
+      "language": "swift",
+      "sizeLines": 86,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/TurnArchive.swift",
+      "language": "swift",
+      "sizeLines": 74,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Phone/TurnShare.swift",
+      "language": "swift",
+      "sizeLines": 118,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Widgets/CocoaControl.swift",
+      "language": "swift",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Widgets/CocoaWidgets.swift",
+      "language": "swift",
+      "sizeLines": 450,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Widgets/MochiLiveActivity.swift",
+      "language": "swift",
+      "sizeLines": 235,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Sources/Widgets/TeamConfiguration.swift",
+      "language": "swift",
+      "sizeLines": 85,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/Tests/HermesConfigMergerTests.swift",
+      "language": "swift",
+      "sizeLines": 361,
+      "fileCategory": "code"
+    },
+    {
+      "path": "NotchBuddy/project.yml",
+      "language": "yaml",
+      "sizeLines": 423,
+      "fileCategory": "config"
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "sizeLines": 342,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "android/README.md",
+      "language": "markdown",
+      "sizeLines": 84,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "android/app/build.gradle.kts",
+      "language": "kotlin",
+      "sizeLines": 68,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/proguard-rules.pro",
+      "language": "pro",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/AndroidManifest.xml",
+      "language": "xml",
+      "sizeLines": 70,
+      "fileCategory": "config"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/CocoaApplication.kt",
+      "language": "kotlin",
+      "sizeLines": 67,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/MainActivity.kt",
+      "language": "kotlin",
+      "sizeLines": 225,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/model/Models.kt",
+      "language": "kotlin",
+      "sizeLines": 170,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/network/CocoaLinkClient.kt",
+      "language": "kotlin",
+      "sizeLines": 318,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/service/MochiNotificationService.kt",
+      "language": "kotlin",
+      "sizeLines": 165,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/service/NotificationActionReceiver.kt",
+      "language": "kotlin",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/ui/components/DiffViewer.kt",
+      "language": "kotlin",
+      "sizeLines": 78,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/ui/components/GlassCard.kt",
+      "language": "kotlin",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/ui/components/MochiAvatar.kt",
+      "language": "kotlin",
+      "sizeLines": 215,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/ui/components/StepItem.kt",
+      "language": "kotlin",
+      "sizeLines": 190,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/ui/screens/ApprovalScreen.kt",
+      "language": "kotlin",
+      "sizeLines": 282,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/ui/screens/HomeScreen.kt",
+      "language": "kotlin",
+      "sizeLines": 391,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/ui/screens/InstructionScreen.kt",
+      "language": "kotlin",
+      "sizeLines": 238,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/ui/screens/PairingScreen.kt",
+      "language": "kotlin",
+      "sizeLines": 297,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/ui/screens/QuestionScreen.kt",
+      "language": "kotlin",
+      "sizeLines": 252,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/ui/screens/ServicesScreen.kt",
+      "language": "kotlin",
+      "sizeLines": 184,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/ui/screens/SettingsScreen.kt",
+      "language": "kotlin",
+      "sizeLines": 234,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/ui/theme/Color.kt",
+      "language": "kotlin",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/ui/theme/Theme.kt",
+      "language": "kotlin",
+      "sizeLines": 48,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/java/com/rohit/cocoa/ui/theme/Type.kt",
+      "language": "kotlin",
+      "sizeLines": 66,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/app/src/main/res/drawable/ic_launcher_background.xml",
+      "language": "xml",
+      "sizeLines": 9,
+      "fileCategory": "config"
+    },
+    {
+      "path": "android/app/src/main/res/drawable/ic_launcher_foreground.xml",
+      "language": "xml",
+      "sizeLines": 47,
+      "fileCategory": "config"
+    },
+    {
+      "path": "android/app/src/main/res/drawable/ic_mochi.xml",
+      "language": "xml",
+      "sizeLines": 49,
+      "fileCategory": "config"
+    },
+    {
+      "path": "android/app/src/main/res/drawable/ic_notification.xml",
+      "language": "xml",
+      "sizeLines": 9,
+      "fileCategory": "config"
+    },
+    {
+      "path": "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+      "language": "xml",
+      "sizeLines": 5,
+      "fileCategory": "config"
+    },
+    {
+      "path": "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml",
+      "language": "xml",
+      "sizeLines": 5,
+      "fileCategory": "config"
+    },
+    {
+      "path": "android/app/src/main/res/values/colors.xml",
+      "language": "xml",
+      "sizeLines": 17,
+      "fileCategory": "config"
+    },
+    {
+      "path": "android/app/src/main/res/values/strings.xml",
+      "language": "xml",
+      "sizeLines": 13,
+      "fileCategory": "config"
+    },
+    {
+      "path": "android/app/src/main/res/values/themes.xml",
+      "language": "xml",
+      "sizeLines": 10,
+      "fileCategory": "config"
+    },
+    {
+      "path": "android/app/src/main/res/xml/backup_rules.xml",
+      "language": "xml",
+      "sizeLines": 5,
+      "fileCategory": "config"
+    },
+    {
+      "path": "android/app/src/main/res/xml/data_extraction_rules.xml",
+      "language": "xml",
+      "sizeLines": 10,
+      "fileCategory": "config"
+    },
+    {
+      "path": "android/build.gradle.kts",
+      "language": "kotlin",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "android/gradle.properties",
+      "language": "properties",
+      "sizeLines": 4,
+      "fileCategory": "config"
+    },
+    {
+      "path": "android/gradle/libs.versions.toml",
+      "language": "toml",
+      "sizeLines": 46,
+      "fileCategory": "config"
+    },
+    {
+      "path": "android/gradle/wrapper/gradle-wrapper.properties",
+      "language": "properties",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": "android/gradlew.bat",
+      "language": "batch",
+      "sizeLines": 79,
+      "fileCategory": "script"
+    },
+    {
+      "path": "android/settings.gradle.kts",
+      "language": "kotlin",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "design/animations/greeting-v2.html",
+      "language": "html",
+      "sizeLines": 216,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "design/animations/upload-sequence.html",
+      "language": "html",
+      "sizeLines": 303,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "design/outfits/mochi-outfits.js",
+      "language": "javascript",
+      "sizeLines": 618,
+      "fileCategory": "code"
+    },
+    {
+      "path": "design/outfits/sheet.html",
+      "language": "html",
+      "sizeLines": 31,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "design/prototype/notch-buddy.html",
+      "language": "html",
+      "sizeLines": 969,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/.nojekyll",
+      "language": "unknown",
+      "sizeLines": 0,
+      "fileCategory": "code"
+    },
+    {
+      "path": "docs/AGENTS.md",
+      "language": "markdown",
+      "sizeLines": 253,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/APP_FLOW.md",
+      "language": "markdown",
+      "sizeLines": 332,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/DATABASE_SCHEMA.md",
+      "language": "markdown",
+      "sizeLines": 315,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/DEPLOYMENT_GUIDE.md",
+      "language": "markdown",
+      "sizeLines": 243,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/FINAL_BROWSER_CHECKLIST.md",
+      "language": "markdown",
+      "sizeLines": 100,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/FRONTEND_STYLE_ARCHITECTURE.md",
+      "language": "markdown",
+      "sizeLines": 215,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/INTEGRATIONS.md",
+      "language": "markdown",
+      "sizeLines": 337,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/IPHONE.md",
+      "language": "markdown",
+      "sizeLines": 101,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/PRD.md",
+      "language": "markdown",
+      "sizeLines": 175,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/README.md",
+      "language": "markdown",
+      "sizeLines": 90,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "language": "markdown",
+      "sizeLines": 125,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/SDD.md",
+      "language": "markdown",
+      "sizeLines": 203,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/SETUP_GUIDE.md",
+      "language": "markdown",
+      "sizeLines": 207,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/SPEC.md",
+      "language": "markdown",
+      "sizeLines": 417,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/TASK_BREAKDOWN.md",
+      "language": "markdown",
+      "sizeLines": 122,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/TRD.md",
+      "language": "markdown",
+      "sizeLines": 230,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/index.html",
+      "language": "html",
+      "sizeLines": 27,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/iphone.html",
+      "language": "html",
+      "sizeLines": 94,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/legal.html",
+      "language": "html",
+      "sizeLines": 31,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/privacy.html",
+      "language": "html",
+      "sizeLines": 132,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/site.css",
+      "language": "css",
+      "sizeLines": 29,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/support.html",
+      "language": "html",
+      "sizeLines": 108,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "docs/terms.html",
+      "language": "html",
+      "sizeLines": 76,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "linux/arch/PKGBUILD",
+      "language": "unknown",
+      "sizeLines": 69,
+      "fileCategory": "code"
+    },
+    {
+      "path": "linux/arch/cocoa.desktop",
+      "language": "desktop",
+      "sizeLines": 9,
+      "fileCategory": "code"
+    },
+    {
+      "path": "relay/README.md",
+      "language": "markdown",
+      "sizeLines": 45,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "relay/package.json",
+      "language": "json",
+      "sizeLines": 14,
+      "fileCategory": "config"
+    },
+    {
+      "path": "relay/src/index.ts",
+      "language": "typescript",
+      "sizeLines": 182,
+      "fileCategory": "code"
+    },
+    {
+      "path": "relay/tsconfig.json",
+      "language": "json",
+      "sizeLines": 13,
+      "fileCategory": "config"
+    },
+    {
+      "path": "relay/wrangler.toml",
+      "language": "toml",
+      "sizeLines": 13,
+      "fileCategory": "config"
+    },
+    {
+      "path": "scripts/RenderOutfits.swift",
+      "language": "swift",
+      "sizeLines": 331,
+      "fileCategory": "code"
+    },
+    {
+      "path": "scripts/cloud-test-build.sh",
+      "language": "shell",
+      "sizeLines": 89,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/release.sh",
+      "language": "shell",
+      "sizeLines": 173,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/render-outfits.sh",
+      "language": "shell",
+      "sizeLines": 30,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-ask-question.sh",
+      "language": "shell",
+      "sizeLines": 8,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-auto-close.sh",
+      "language": "shell",
+      "sizeLines": 9,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-chat-parsing.sh",
+      "language": "shell",
+      "sizeLines": 44,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-claude-hooks.sh",
+      "language": "shell",
+      "sizeLines": 8,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-claude-host.sh",
+      "language": "shell",
+      "sizeLines": 8,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-claude-response.sh",
+      "language": "shell",
+      "sizeLines": 9,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-claude-settings.sh",
+      "language": "shell",
+      "sizeLines": 8,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-desktop-mochi.sh",
+      "language": "shell",
+      "sizeLines": 8,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-diff-engine.sh",
+      "language": "shell",
+      "sizeLines": 8,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-display-choice.sh",
+      "language": "shell",
+      "sizeLines": 8,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-github-activity.sh",
+      "language": "shell",
+      "sizeLines": 8,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-github-pulse.sh",
+      "language": "shell",
+      "sizeLines": 8,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-island-hover.sh",
+      "language": "shell",
+      "sizeLines": 9,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-pill-colors.sh",
+      "language": "shell",
+      "sizeLines": 8,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-plan-gauge.sh",
+      "language": "shell",
+      "sizeLines": 8,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-safe-links.sh",
+      "language": "shell",
+      "sizeLines": 8,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-screen-geometry.sh",
+      "language": "shell",
+      "sizeLines": 8,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-shortcuts.sh",
+      "language": "shell",
+      "sizeLines": 8,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-terminal-target.sh",
+      "language": "shell",
+      "sizeLines": 8,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-wardrobe.sh",
+      "language": "shell",
+      "sizeLines": 8,
+      "fileCategory": "script"
+    },
+    {
+      "path": "scripts/test-weekly-recap.swift",
+      "language": "swift",
+      "sizeLines": 139,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/AskQuestionTests.swift",
+      "language": "swift",
+      "sizeLines": 138,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/ChatParsingTests.swift",
+      "language": "swift",
+      "sizeLines": 207,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/ClaudeHookDetectionTests.swift",
+      "language": "swift",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/ClaudeHostTests.swift",
+      "language": "swift",
+      "sizeLines": 43,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/ClaudePlanGaugeTests.swift",
+      "language": "swift",
+      "sizeLines": 133,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/ClaudeResponseTextTests.swift",
+      "language": "swift",
+      "sizeLines": 164,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/ClaudeSettingsFileTests.swift",
+      "language": "swift",
+      "sizeLines": 157,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/DesktopMochiTests.swift",
+      "language": "swift",
+      "sizeLines": 148,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/DiffEngineTests.swift",
+      "language": "swift",
+      "sizeLines": 222,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/GitHubActivityTests.swift",
+      "language": "swift",
+      "sizeLines": 157,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/GitHubPulseTests.swift",
+      "language": "swift",
+      "sizeLines": 355,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/IslandAutoCloseTests.swift",
+      "language": "swift",
+      "sizeLines": 105,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/IslandDisplayChoiceTests.swift",
+      "language": "swift",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/IslandHoverTests.swift",
+      "language": "swift",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/IslandScreenGeometryTests.swift",
+      "language": "swift",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/MochiWardrobeTests.swift",
+      "language": "swift",
+      "sizeLines": 110,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/PillColorsTests.swift",
+      "language": "swift",
+      "sizeLines": 91,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/SafeWebURLTests.swift",
+      "language": "swift",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/ShortcutTests.swift",
+      "language": "swift",
+      "sizeLines": 235,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/TerminalTargetTests.swift",
+      "language": "swift",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/fake_local_llm.py",
+      "language": "python",
+      "sizeLines": 142,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 17,
+      "fileCategory": "config"
+    },
+    {
+      "path": "windows/README.md",
+      "language": "markdown",
+      "sizeLines": 566,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "windows/dev/recap-preview.html",
+      "language": "html",
+      "sizeLines": 20,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "windows/dev/recap-preview.ts",
+      "language": "typescript",
+      "sizeLines": 23,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/dev/upload-preview.html",
+      "language": "html",
+      "sizeLines": 17,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "windows/dev/upload-preview.ts",
+      "language": "typescript",
+      "sizeLines": 50,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/hook/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 27,
+      "fileCategory": "config"
+    },
+    {
+      "path": "windows/hook/src/main.rs",
+      "language": "rust",
+      "sizeLines": 545,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/hook/src/normalize.rs",
+      "language": "rust",
+      "sizeLines": 274,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/hook/src/reply.rs",
+      "language": "rust",
+      "sizeLines": 295,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/hook/src/statusline.rs",
+      "language": "rust",
+      "sizeLines": 338,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/hook/src/unix.rs",
+      "language": "rust",
+      "sizeLines": 114,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/hook/src/win.rs",
+      "language": "rust",
+      "sizeLines": 116,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/index.html",
+      "language": "html",
+      "sizeLines": 12,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "windows/mochi.html",
+      "language": "html",
+      "sizeLines": 33,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "windows/nsis_installer.nsi",
+      "language": "nsi",
+      "sizeLines": 50,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/package.json",
+      "language": "json",
+      "sizeLines": 25,
+      "fileCategory": "config"
+    },
+    {
+      "path": "windows/scripts/gen-icons.mjs",
+      "language": "javascript",
+      "sizeLines": 200,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/scripts/gen-strings.mjs",
+      "language": "javascript",
+      "sizeLines": 132,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/scripts/pack.mjs",
+      "language": "javascript",
+      "sizeLines": 159,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/settings.html",
+      "language": "html",
+      "sizeLines": 12,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "windows/src-tauri/Cargo.toml",
+      "language": "toml",
+      "sizeLines": 59,
+      "fileCategory": "config"
+    },
+    {
+      "path": "windows/src-tauri/build.rs",
+      "language": "rust",
+      "sizeLines": 3,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/capabilities/default.json",
+      "language": "json",
+      "sizeLines": 7,
+      "fileCategory": "config"
+    },
+    {
+      "path": "windows/src-tauri/nsis/hooks.nsh",
+      "language": "nsh",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/agent_hooks.rs",
+      "language": "rust",
+      "sizeLines": 143,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/agents.rs",
+      "language": "rust",
+      "sizeLines": 1265,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/chat.rs",
+      "language": "rust",
+      "sizeLines": 399,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/claude.rs",
+      "language": "rust",
+      "sizeLines": 424,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/codex_plan.rs",
+      "language": "rust",
+      "sizeLines": 219,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/config_file.rs",
+      "language": "rust",
+      "sizeLines": 652,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/desktop.rs",
+      "language": "rust",
+      "sizeLines": 1007,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/files.rs",
+      "language": "rust",
+      "sizeLines": 200,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/github.rs",
+      "language": "rust",
+      "sizeLines": 799,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/hardware.rs",
+      "language": "rust",
+      "sizeLines": 380,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/hooks.rs",
+      "language": "rust",
+      "sizeLines": 584,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/i18n.rs",
+      "language": "rust",
+      "sizeLines": 290,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/identity.rs",
+      "language": "rust",
+      "sizeLines": 67,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/integrations.rs",
+      "language": "rust",
+      "sizeLines": 1702,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/island.rs",
+      "language": "rust",
+      "sizeLines": 486,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/lib.rs",
+      "language": "rust",
+      "sizeLines": 832,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/local_chat.rs",
+      "language": "rust",
+      "sizeLines": 578,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/log.rs",
+      "language": "rust",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/main.rs",
+      "language": "rust",
+      "sizeLines": 6,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/media.rs",
+      "language": "rust",
+      "sizeLines": 935,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/net.rs",
+      "language": "rust",
+      "sizeLines": 285,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/notifications.rs",
+      "language": "rust",
+      "sizeLines": 223,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/openai_compat.rs",
+      "language": "rust",
+      "sizeLines": 591,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/pipe.rs",
+      "language": "rust",
+      "sizeLines": 391,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/platform/linux.rs",
+      "language": "rust",
+      "sizeLines": 894,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/platform/mod.rs",
+      "language": "rust",
+      "sizeLines": 85,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/platform/windows.rs",
+      "language": "rust",
+      "sizeLines": 663,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/recap.rs",
+      "language": "rust",
+      "sizeLines": 1049,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/secrets.rs",
+      "language": "rust",
+      "sizeLines": 64,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/session_window.rs",
+      "language": "rust",
+      "sizeLines": 233,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/settings.rs",
+      "language": "rust",
+      "sizeLines": 992,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/shortcuts.rs",
+      "language": "rust",
+      "sizeLines": 554,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/tray.rs",
+      "language": "rust",
+      "sizeLines": 61,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/src/webview_drop.rs",
+      "language": "rust",
+      "sizeLines": 70,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src-tauri/tauri.conf.json",
+      "language": "json",
+      "sizeLines": 64,
+      "fileCategory": "config"
+    },
+    {
+      "path": "windows/src-tauri/tauri.linux.conf.json",
+      "language": "json",
+      "sizeLines": 56,
+      "fileCategory": "config"
+    },
+    {
+      "path": "windows/src/core/anim.ts",
+      "language": "typescript",
+      "sizeLines": 164,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/core/bridge.ts",
+      "language": "typescript",
+      "sizeLines": 432,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/core/diff.ts",
+      "language": "typescript",
+      "sizeLines": 329,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/core/fonts.ts",
+      "language": "typescript",
+      "sizeLines": 9,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/core/github.ts",
+      "language": "typescript",
+      "sizeLines": 312,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/core/layout.ts",
+      "language": "typescript",
+      "sizeLines": 294,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/core/lyrics.ts",
+      "language": "typescript",
+      "sizeLines": 761,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/core/pill-colors.ts",
+      "language": "typescript",
+      "sizeLines": 58,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/core/pills.ts",
+      "language": "typescript",
+      "sizeLines": 244,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/core/plan.ts",
+      "language": "typescript",
+      "sizeLines": 224,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/core/providers.ts",
+      "language": "typescript",
+      "sizeLines": 120,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/core/shortcuts.ts",
+      "language": "typescript",
+      "sizeLines": 392,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/core/sound.ts",
+      "language": "typescript",
+      "sizeLines": 185,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/core/state.ts",
+      "language": "typescript",
+      "sizeLines": 920,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/core/welfare.ts",
+      "language": "typescript",
+      "sizeLines": 543,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/desktop/main.ts",
+      "language": "typescript",
+      "sizeLines": 354,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/i18n/extra.json",
+      "language": "json",
+      "sizeLines": 5356,
+      "fileCategory": "config"
+    },
+    {
+      "path": "windows/src/i18n/i18n.ts",
+      "language": "typescript",
+      "sizeLines": 268,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/i18n/strings.json",
+      "language": "json",
+      "sizeLines": 3612,
+      "fileCategory": "config"
+    },
+    {
+      "path": "windows/src/island/agents.ts",
+      "language": "typescript",
+      "sizeLines": 52,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/island/desktop.ts",
+      "language": "typescript",
+      "sizeLines": 170,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/island/fsm.ts",
+      "language": "typescript",
+      "sizeLines": 267,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/island/hooks.ts",
+      "language": "typescript",
+      "sizeLines": 548,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/island/integrations.ts",
+      "language": "typescript",
+      "sizeLines": 138,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/island/island.ts",
+      "language": "typescript",
+      "sizeLines": 1474,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/island/shortcuts.ts",
+      "language": "typescript",
+      "sizeLines": 180,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/main.ts",
+      "language": "typescript",
+      "sizeLines": 112,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/mochi/desktop-logic.ts",
+      "language": "typescript",
+      "sizeLines": 310,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/mochi/engine.ts",
+      "language": "typescript",
+      "sizeLines": 1345,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/mochi/greeting.ts",
+      "language": "typescript",
+      "sizeLines": 676,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/mochi/minibots.ts",
+      "language": "typescript",
+      "sizeLines": 103,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/mochi/outfits.ts",
+      "language": "typescript",
+      "sizeLines": 1261,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/mochi/wardrobe.ts",
+      "language": "typescript",
+      "sizeLines": 143,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/recap/recap.ts",
+      "language": "typescript",
+      "sizeLines": 87,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/recap/share.ts",
+      "language": "typescript",
+      "sizeLines": 294,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/recap/summary.ts",
+      "language": "typescript",
+      "sizeLines": 253,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/settings/agents.ts",
+      "language": "typescript",
+      "sizeLines": 192,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/settings/colors.ts",
+      "language": "typescript",
+      "sizeLines": 101,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/settings/main.ts",
+      "language": "typescript",
+      "sizeLines": 1899,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/settings/parts.ts",
+      "language": "typescript",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/settings/settings.css",
+      "language": "css",
+      "sizeLines": 502,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "windows/src/style.css",
+      "language": "css",
+      "sizeLines": 4231,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "windows/src/upload/canvas.ts",
+      "language": "typescript",
+      "sizeLines": 602,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/upload/sequence.ts",
+      "language": "typescript",
+      "sizeLines": 530,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/views/accessory.ts",
+      "language": "typescript",
+      "sizeLines": 183,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/views/chat.ts",
+      "language": "typescript",
+      "sizeLines": 352,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/views/diff.ts",
+      "language": "typescript",
+      "sizeLines": 72,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/views/dom.ts",
+      "language": "typescript",
+      "sizeLines": 145,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/views/github.ts",
+      "language": "typescript",
+      "sizeLines": 208,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/views/icons.ts",
+      "language": "typescript",
+      "sizeLines": 61,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/views/integrations.ts",
+      "language": "typescript",
+      "sizeLines": 698,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/views/markdown.ts",
+      "language": "typescript",
+      "sizeLines": 266,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/views/music.ts",
+      "language": "typescript",
+      "sizeLines": 543,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/views/notifications.ts",
+      "language": "typescript",
+      "sizeLines": 123,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/views/recap.ts",
+      "language": "typescript",
+      "sizeLines": 243,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/views/shelf.ts",
+      "language": "typescript",
+      "sizeLines": 148,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/views/ticker.ts",
+      "language": "typescript",
+      "sizeLines": 221,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/views/upload.ts",
+      "language": "typescript",
+      "sizeLines": 152,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/views/usage.ts",
+      "language": "typescript",
+      "sizeLines": 224,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/views/views.ts",
+      "language": "typescript",
+      "sizeLines": 1274,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/src/views/wardrobe.ts",
+      "language": "typescript",
+      "sizeLines": 97,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/agents.test.mjs",
+      "language": "javascript",
+      "sizeLines": 38,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/bloom-features.test.mjs",
+      "language": "javascript",
+      "sizeLines": 665,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/chat.test.mjs",
+      "language": "javascript",
+      "sizeLines": 124,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/desktop.test.mjs",
+      "language": "javascript",
+      "sizeLines": 357,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/diff.test.mjs",
+      "language": "javascript",
+      "sizeLines": 192,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/fakedom.mjs",
+      "language": "javascript",
+      "sizeLines": 133,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/fsm.test.mjs",
+      "language": "javascript",
+      "sizeLines": 419,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/github.test.mjs",
+      "language": "javascript",
+      "sizeLines": 212,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/greeting.test.mjs",
+      "language": "javascript",
+      "sizeLines": 72,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/hooks.test.mjs",
+      "language": "javascript",
+      "sizeLines": 735,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/i18n.test.mjs",
+      "language": "javascript",
+      "sizeLines": 290,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/livediff.test.mjs",
+      "language": "javascript",
+      "sizeLines": 163,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/markdown.test.mjs",
+      "language": "javascript",
+      "sizeLines": 137,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/music-lyrics.test.mjs",
+      "language": "javascript",
+      "sizeLines": 295,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/pill-colors.test.mjs",
+      "language": "javascript",
+      "sizeLines": 121,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/pills.test.mjs",
+      "language": "javascript",
+      "sizeLines": 279,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/plan.test.mjs",
+      "language": "javascript",
+      "sizeLines": 261,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/providers.test.mjs",
+      "language": "javascript",
+      "sizeLines": 74,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/recap-trigger.test.mjs",
+      "language": "javascript",
+      "sizeLines": 103,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/recap.test.mjs",
+      "language": "javascript",
+      "sizeLines": 168,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/setup.mjs",
+      "language": "javascript",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/shortcuts.test.mjs",
+      "language": "javascript",
+      "sizeLines": 449,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/tauri.mjs",
+      "language": "javascript",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/wardrobe.test.mjs",
+      "language": "javascript",
+      "sizeLines": 131,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tests/welfare.test.mjs",
+      "language": "javascript",
+      "sizeLines": 258,
+      "fileCategory": "code"
+    },
+    {
+      "path": "windows/tsconfig.json",
+      "language": "json",
+      "sizeLines": 20,
+      "fileCategory": "config"
+    },
+    {
+      "path": "windows/vite.config.ts",
+      "language": "typescript",
+      "sizeLines": 70,
+      "fileCategory": "code"
+    }
+  ],
+  "totalFiles": 435,
+  "filteredByIgnore": 33,
+  "estimatedComplexity": "large",
+  "importMap": {
+    ".gitattributes": [],
+    ".github/ISSUE_TEMPLATE/bug_report.md": [],
+    ".github/ISSUE_TEMPLATE/feature_request.md": [],
+    ".github/workflows/build.yml": [],
+    ".github/workflows/linux.yml": [],
+    ".github/workflows/release.yml": [],
+    ".github/workflows/windows-ci.yml": [],
+    ".github/workflows/windows.yml": [],
+    "CHANGELOG.md": [],
+    "CLAUDE.md": [],
+    "CONTRIBUTING.md": [],
+    "LICENSE-ASSETS.md": [],
+    "NotchBuddy/Assets.xcassets/AppIcon.appiconset/Contents.json": [],
+    "NotchBuddy/Assets.xcassets/Contents.json": [],
+    "NotchBuddy/Assets.xcassets/MenuBarIcon.imageset/Contents.json": [],
+    "NotchBuddy/NotchBuddy.xcodeproj/project.pbxproj": [],
+    "NotchBuddy/NotchBuddy.xcodeproj/project.xcworkspace/contents.xcworkspacedata": [],
+    "NotchBuddy/PhoneAssets.xcassets/AppIcon-Blue.appiconset/Contents.json": [],
+    "NotchBuddy/PhoneAssets.xcassets/AppIcon-Graphite.appiconset/Contents.json": [],
+    "NotchBuddy/PhoneAssets.xcassets/AppIcon-Green.appiconset/Contents.json": [],
+    "NotchBuddy/PhoneAssets.xcassets/AppIcon-Pink.appiconset/Contents.json": [],
+    "NotchBuddy/PhoneAssets.xcassets/AppIcon-Purple.appiconset/Contents.json": [],
+    "NotchBuddy/PhoneAssets.xcassets/AppIcon.appiconset/Contents.json": [],
+    "NotchBuddy/PhoneAssets.xcassets/Contents.json": [],
+    "NotchBuddy/PhoneAssets.xcassets/IconPreview-Blue.imageset/Contents.json": [],
+    "NotchBuddy/PhoneAssets.xcassets/IconPreview-Graphite.imageset/Contents.json": [],
+    "NotchBuddy/PhoneAssets.xcassets/IconPreview-Green.imageset/Contents.json": [],
+    "NotchBuddy/PhoneAssets.xcassets/IconPreview-Orange.imageset/Contents.json": [],
+    "NotchBuddy/PhoneAssets.xcassets/IconPreview-Pink.imageset/Contents.json": [],
+    "NotchBuddy/PhoneAssets.xcassets/IconPreview-Purple.imageset/Contents.json": [],
+    "NotchBuddy/Resources/Cocoa.entitlements": [],
+    "NotchBuddy/Resources/CocoaAppStore.entitlements": [],
+    "NotchBuddy/Resources/CocoaAppStoreCloud.entitlements": [],
+    "NotchBuddy/Resources/CocoaCloud.entitlements": [],
+    "NotchBuddy/Resources/CocoaPhone.entitlements": [],
+    "NotchBuddy/Resources/CocoaPhoneProduction.entitlements": [],
+    "NotchBuddy/Resources/CocoaReleaseCloud.entitlements": [],
+    "NotchBuddy/Resources/CocoaWidgets.entitlements": [],
+    "NotchBuddy/Resources/Info.plist": [],
+    "NotchBuddy/Resources/InfoAppStore.plist": [],
+    "NotchBuddy/Resources/InfoNotificationContent.plist": [],
+    "NotchBuddy/Resources/InfoPhone.plist": [],
+    "NotchBuddy/Resources/InfoWidgets.plist": [],
+    "NotchBuddy/Resources/Localizable.xcstrings": [],
+    "NotchBuddy/Sources/App/AppDelegate.swift": [],
+    "NotchBuddy/Sources/App/AppLog.swift": [],
+    "NotchBuddy/Sources/App/AppState.swift": [],
+    "NotchBuddy/Sources/App/AskQuestion.swift": [],
+    "NotchBuddy/Sources/App/BotCanvasView.swift": [],
+    "NotchBuddy/Sources/App/CalcomPoller.swift": [],
+    "NotchBuddy/Sources/App/ChatMarkdown.swift": [],
+    "NotchBuddy/Sources/App/ChatMarkdownView.swift": [],
+    "NotchBuddy/Sources/App/ClaudeHookDetection.swift": [],
+    "NotchBuddy/Sources/App/ClaudeHost.swift": [],
+    "NotchBuddy/Sources/App/ClaudePlanCardView.swift": [],
+    "NotchBuddy/Sources/App/ClaudePlanGauge.swift": [],
+    "NotchBuddy/Sources/App/ClaudeResponseText.swift": [],
+    "NotchBuddy/Sources/App/ClaudeService.swift": [],
+    "NotchBuddy/Sources/App/ClaudeSettingsFile.swift": [],
+    "NotchBuddy/Sources/App/CodexPlanGauge.swift": [],
+    "NotchBuddy/Sources/App/DemoEngine.swift": [],
+    "NotchBuddy/Sources/App/DesktopMochi.swift": [],
+    "NotchBuddy/Sources/App/DesktopMochiLogic.swift": [],
+    "NotchBuddy/Sources/App/FileDropView.swift": [],
+    "NotchBuddy/Sources/App/GitHubActivity.swift": [],
+    "NotchBuddy/Sources/App/GitHubPulse.swift": [],
+    "NotchBuddy/Sources/App/GithubPoller.swift": [],
+    "NotchBuddy/Sources/App/GreetingCanvasView.swift": [],
+    "NotchBuddy/Sources/App/HookServer.swift": [],
+    "NotchBuddy/Sources/App/HotKeyCenter.swift": [],
+    "NotchBuddy/Sources/App/IslandDisplayChoice.swift": [],
+    "NotchBuddy/Sources/App/IslandRootView.swift": [],
+    "NotchBuddy/Sources/App/IslandStateMachine.swift": [],
+    "NotchBuddy/Sources/App/IslandViewContent.swift": [],
+    "NotchBuddy/Sources/App/IslandWindowController.swift": [],
+    "NotchBuddy/Sources/App/LocalChat.swift": [],
+    "NotchBuddy/Sources/App/MacDictation.swift": [],
+    "NotchBuddy/Sources/App/MusicController.swift": [],
+    "NotchBuddy/Sources/App/N8nPoller.swift": [],
+    "NotchBuddy/Sources/App/NotchBuddyApp.swift": [],
+    "NotchBuddy/Sources/App/NotionPoller.swift": [],
+    "NotchBuddy/Sources/App/NowPlayingViews.swift": [],
+    "NotchBuddy/Sources/App/PhoneLink/ApprovalRelay.swift": [],
+    "NotchBuddy/Sources/App/PhoneLink/CloudProbe.swift": [],
+    "NotchBuddy/Sources/App/PhoneLink/InstructionRunner.swift": [],
+    "NotchBuddy/Sources/App/PhoneLink/LiveActivityRelay.swift": [],
+    "NotchBuddy/Sources/App/PhoneLink/QuestionRelay.swift": [],
+    "NotchBuddy/Sources/App/PhoneLink/ServiceDetailRunner.swift": [],
+    "NotchBuddy/Sources/App/PhoneLink/ServicePublisher.swift": [],
+    "NotchBuddy/Sources/App/PhoneLink/SessionPublisher.swift": [],
+    "NotchBuddy/Sources/App/PhoneLink/TurnRecorder.swift": [],
+    "NotchBuddy/Sources/App/RecapStore.swift": [],
+    "NotchBuddy/Sources/App/ResendPoller.swift": [],
+    "NotchBuddy/Sources/App/SafeWebURL.swift": [],
+    "NotchBuddy/Sources/App/SettingsView.swift": [],
+    "NotchBuddy/Sources/App/ShortcutLogic.swift": [],
+    "NotchBuddy/Sources/App/ShortcutsSettingsView.swift": [],
+    "NotchBuddy/Sources/App/SoundEngine.swift": [],
+    "NotchBuddy/Sources/App/SpotifyController.swift": [],
+    "NotchBuddy/Sources/App/SpotifyViews.swift": [],
+    "NotchBuddy/Sources/App/StripePoller.swift": [],
+    "NotchBuddy/Sources/App/TerminalTarget+AppKit.swift": [],
+    "NotchBuddy/Sources/App/TerminalTarget.swift": [],
+    "NotchBuddy/Sources/App/UploadCanvasView.swift": [],
+    "NotchBuddy/Sources/App/UploadSequenceEngine.swift": [],
+    "NotchBuddy/Sources/App/UserIdentity.swift": [],
+    "NotchBuddy/Sources/App/VercelPoller.swift": [],
+    "NotchBuddy/Sources/App/WeeklyRecapView.swift": [],
+    "NotchBuddy/Sources/App/WindowContextCapture.swift": [],
+    "NotchBuddy/Sources/CocoaKit/BotEngine.swift": [],
+    "NotchBuddy/Sources/CocoaKit/ColorHex.swift": [],
+    "NotchBuddy/Sources/CocoaKit/DiffEngine.swift": [],
+    "NotchBuddy/Sources/CocoaKit/IslandScreenGeometry.swift": [],
+    "NotchBuddy/Sources/CocoaKit/IslandTypes.swift": [],
+    "NotchBuddy/Sources/CocoaKit/MochiActivityState.swift": [],
+    "NotchBuddy/Sources/CocoaKit/MochiOutfitDrawing.swift": [],
+    "NotchBuddy/Sources/CocoaKit/MochiStill.swift": [],
+    "NotchBuddy/Sources/CocoaKit/MochiWardrobe.swift": [],
+    "NotchBuddy/Sources/CocoaKit/PillCatalog.swift": [],
+    "NotchBuddy/Sources/CocoaKit/PillColors.swift": [],
+    "NotchBuddy/Sources/CocoaKit/QuestionPayload.swift": [],
+    "NotchBuddy/Sources/CocoaKit/ServiceDetail.swift": [],
+    "NotchBuddy/Sources/CocoaKit/ServiceSnapshot.swift": [],
+    "NotchBuddy/Sources/CocoaKit/TurnSnapshot.swift": [],
+    "NotchBuddy/Sources/NotificationContent/NotificationViewController.swift": [],
+    "NotchBuddy/Sources/Phone/AboutView.swift": [],
+    "NotchBuddy/Sources/Phone/AgentNotifier.swift": [],
+    "NotchBuddy/Sources/Phone/AppleStyle.swift": [],
+    "NotchBuddy/Sources/Phone/ApprovalCard.swift": [],
+    "NotchBuddy/Sources/Phone/CocoaIntents.swift": [],
+    "NotchBuddy/Sources/Phone/CocoaPhoneApp.swift": [],
+    "NotchBuddy/Sources/Phone/Decisions.swift": [],
+    "NotchBuddy/Sources/Phone/DenyApprovalIntent.swift": [],
+    "NotchBuddy/Sources/Phone/Haptics.swift": [],
+    "NotchBuddy/Sources/Phone/HomeView.swift": [],
+    "NotchBuddy/Sources/Phone/InstructionComposer.swift": [],
+    "NotchBuddy/Sources/Phone/IntroView.swift": [],
+    "NotchBuddy/Sources/Phone/KitPreviewView.swift": [],
+    "NotchBuddy/Sources/Phone/LastTurnView.swift": [],
+    "NotchBuddy/Sources/Phone/LinkTestView.swift": [],
+    "NotchBuddy/Sources/Phone/LiveActivityLink.swift": [],
+    "NotchBuddy/Sources/Phone/MacStubs.swift": [],
+    "NotchBuddy/Sources/Phone/MochiActivityAttributes.swift": [],
+    "NotchBuddy/Sources/Phone/MochiLive.swift": [],
+    "NotchBuddy/Sources/Phone/OpenLeadMochiIntent.swift": [],
+    "NotchBuddy/Sources/Phone/PhoneLink.swift": [],
+    "NotchBuddy/Sources/Phone/QuestionCard.swift": [],
+    "NotchBuddy/Sources/Phone/SearchAndSpotlight.swift": [],
+    "NotchBuddy/Sources/Phone/ServiceLiveDetail.swift": [],
+    "NotchBuddy/Sources/Phone/ServiceStatus.swift": [],
+    "NotchBuddy/Sources/Phone/ServiceViews.swift": [],
+    "NotchBuddy/Sources/Phone/SessionDetailView.swift": [],
+    "NotchBuddy/Sources/Phone/SessionStatus.swift": [],
+    "NotchBuddy/Sources/Phone/SharedSessions.swift": [],
+    "NotchBuddy/Sources/Phone/TurnArchive.swift": [],
+    "NotchBuddy/Sources/Phone/TurnShare.swift": [],
+    "NotchBuddy/Sources/Widgets/CocoaControl.swift": [],
+    "NotchBuddy/Sources/Widgets/CocoaWidgets.swift": [],
+    "NotchBuddy/Sources/Widgets/MochiLiveActivity.swift": [],
+    "NotchBuddy/Sources/Widgets/TeamConfiguration.swift": [],
+    "NotchBuddy/Tests/HermesConfigMergerTests.swift": [],
+    "NotchBuddy/project.yml": [],
+    "README.md": [],
+    "android/README.md": [],
+    "android/app/build.gradle.kts": [],
+    "android/app/proguard-rules.pro": [],
+    "android/app/src/main/AndroidManifest.xml": [],
+    "android/app/src/main/java/com/rohit/cocoa/CocoaApplication.kt": [
+      "android/app/src/main/java/com/rohit/cocoa/network/CocoaLinkClient.kt"
+    ],
+    "android/app/src/main/java/com/rohit/cocoa/MainActivity.kt": [
+      "android/app/src/main/java/com/rohit/cocoa/service/MochiNotificationService.kt"
+    ],
+    "android/app/src/main/java/com/rohit/cocoa/model/Models.kt": [],
+    "android/app/src/main/java/com/rohit/cocoa/network/CocoaLinkClient.kt": [],
+    "android/app/src/main/java/com/rohit/cocoa/service/MochiNotificationService.kt": [
+      "android/app/src/main/java/com/rohit/cocoa/CocoaApplication.kt",
+      "android/app/src/main/java/com/rohit/cocoa/MainActivity.kt"
+    ],
+    "android/app/src/main/java/com/rohit/cocoa/service/NotificationActionReceiver.kt": [
+      "android/app/src/main/java/com/rohit/cocoa/CocoaApplication.kt"
+    ],
+    "android/app/src/main/java/com/rohit/cocoa/ui/components/DiffViewer.kt": [],
+    "android/app/src/main/java/com/rohit/cocoa/ui/components/GlassCard.kt": [],
+    "android/app/src/main/java/com/rohit/cocoa/ui/components/MochiAvatar.kt": [],
+    "android/app/src/main/java/com/rohit/cocoa/ui/components/StepItem.kt": [],
+    "android/app/src/main/java/com/rohit/cocoa/ui/screens/ApprovalScreen.kt": [
+      "android/app/src/main/java/com/rohit/cocoa/network/CocoaLinkClient.kt",
+      "android/app/src/main/java/com/rohit/cocoa/ui/components/DiffViewer.kt",
+      "android/app/src/main/java/com/rohit/cocoa/ui/components/GlassCard.kt"
+    ],
+    "android/app/src/main/java/com/rohit/cocoa/ui/screens/HomeScreen.kt": [
+      "android/app/src/main/java/com/rohit/cocoa/network/CocoaLinkClient.kt",
+      "android/app/src/main/java/com/rohit/cocoa/ui/components/GlassCard.kt",
+      "android/app/src/main/java/com/rohit/cocoa/ui/components/MochiAvatar.kt",
+      "android/app/src/main/java/com/rohit/cocoa/ui/components/StepItem.kt"
+    ],
+    "android/app/src/main/java/com/rohit/cocoa/ui/screens/InstructionScreen.kt": [
+      "android/app/src/main/java/com/rohit/cocoa/network/CocoaLinkClient.kt",
+      "android/app/src/main/java/com/rohit/cocoa/ui/components/GlassCard.kt"
+    ],
+    "android/app/src/main/java/com/rohit/cocoa/ui/screens/PairingScreen.kt": [
+      "android/app/src/main/java/com/rohit/cocoa/network/CocoaLinkClient.kt",
+      "android/app/src/main/java/com/rohit/cocoa/ui/components/GlassCard.kt"
+    ],
+    "android/app/src/main/java/com/rohit/cocoa/ui/screens/QuestionScreen.kt": [
+      "android/app/src/main/java/com/rohit/cocoa/network/CocoaLinkClient.kt",
+      "android/app/src/main/java/com/rohit/cocoa/ui/components/GlassCard.kt"
+    ],
+    "android/app/src/main/java/com/rohit/cocoa/ui/screens/ServicesScreen.kt": [
+      "android/app/src/main/java/com/rohit/cocoa/network/CocoaLinkClient.kt",
+      "android/app/src/main/java/com/rohit/cocoa/ui/components/GlassCard.kt"
+    ],
+    "android/app/src/main/java/com/rohit/cocoa/ui/screens/SettingsScreen.kt": [
+      "android/app/src/main/java/com/rohit/cocoa/network/CocoaLinkClient.kt",
+      "android/app/src/main/java/com/rohit/cocoa/service/MochiNotificationService.kt",
+      "android/app/src/main/java/com/rohit/cocoa/ui/components/GlassCard.kt"
+    ],
+    "android/app/src/main/java/com/rohit/cocoa/ui/theme/Color.kt": [],
+    "android/app/src/main/java/com/rohit/cocoa/ui/theme/Theme.kt": [],
+    "android/app/src/main/java/com/rohit/cocoa/ui/theme/Type.kt": [],
+    "android/app/src/main/res/drawable/ic_launcher_background.xml": [],
+    "android/app/src/main/res/drawable/ic_launcher_foreground.xml": [],
+    "android/app/src/main/res/drawable/ic_mochi.xml": [],
+    "android/app/src/main/res/drawable/ic_notification.xml": [],
+    "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml": [],
+    "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml": [],
+    "android/app/src/main/res/values/colors.xml": [],
+    "android/app/src/main/res/values/strings.xml": [],
+    "android/app/src/main/res/values/themes.xml": [],
+    "android/app/src/main/res/xml/backup_rules.xml": [],
+    "android/app/src/main/res/xml/data_extraction_rules.xml": [],
+    "android/build.gradle.kts": [],
+    "android/gradle.properties": [],
+    "android/gradle/libs.versions.toml": [],
+    "android/gradle/wrapper/gradle-wrapper.properties": [],
+    "android/gradlew.bat": [],
+    "android/settings.gradle.kts": [],
+    "design/animations/greeting-v2.html": [],
+    "design/animations/upload-sequence.html": [],
+    "design/outfits/mochi-outfits.js": [],
+    "design/outfits/sheet.html": [],
+    "design/prototype/notch-buddy.html": [],
+    "docs/.nojekyll": [],
+    "docs/AGENTS.md": [],
+    "docs/APP_FLOW.md": [],
+    "docs/DATABASE_SCHEMA.md": [],
+    "docs/DEPLOYMENT_GUIDE.md": [],
+    "docs/FINAL_BROWSER_CHECKLIST.md": [],
+    "docs/FRONTEND_STYLE_ARCHITECTURE.md": [],
+    "docs/INTEGRATIONS.md": [],
+    "docs/IPHONE.md": [],
+    "docs/PRD.md": [],
+    "docs/README.md": [],
+    "docs/ROADMAP.md": [],
+    "docs/SDD.md": [],
+    "docs/SETUP_GUIDE.md": [],
+    "docs/SPEC.md": [],
+    "docs/TASK_BREAKDOWN.md": [],
+    "docs/TRD.md": [],
+    "docs/index.html": [],
+    "docs/iphone.html": [],
+    "docs/legal.html": [],
+    "docs/privacy.html": [],
+    "docs/site.css": [],
+    "docs/support.html": [],
+    "docs/terms.html": [],
+    "linux/arch/PKGBUILD": [],
+    "linux/arch/cocoa.desktop": [],
+    "relay/README.md": [],
+    "relay/package.json": [],
+    "relay/src/index.ts": [],
+    "relay/tsconfig.json": [],
+    "relay/wrangler.toml": [],
+    "scripts/RenderOutfits.swift": [],
+    "scripts/cloud-test-build.sh": [],
+    "scripts/release.sh": [],
+    "scripts/render-outfits.sh": [],
+    "scripts/test-ask-question.sh": [],
+    "scripts/test-auto-close.sh": [],
+    "scripts/test-chat-parsing.sh": [],
+    "scripts/test-claude-hooks.sh": [],
+    "scripts/test-claude-host.sh": [],
+    "scripts/test-claude-response.sh": [],
+    "scripts/test-claude-settings.sh": [],
+    "scripts/test-desktop-mochi.sh": [],
+    "scripts/test-diff-engine.sh": [],
+    "scripts/test-display-choice.sh": [],
+    "scripts/test-github-activity.sh": [],
+    "scripts/test-github-pulse.sh": [],
+    "scripts/test-island-hover.sh": [],
+    "scripts/test-pill-colors.sh": [],
+    "scripts/test-plan-gauge.sh": [],
+    "scripts/test-safe-links.sh": [],
+    "scripts/test-screen-geometry.sh": [],
+    "scripts/test-shortcuts.sh": [],
+    "scripts/test-terminal-target.sh": [],
+    "scripts/test-wardrobe.sh": [],
+    "scripts/test-weekly-recap.swift": [],
+    "tests/AskQuestionTests.swift": [],
+    "tests/ChatParsingTests.swift": [],
+    "tests/ClaudeHookDetectionTests.swift": [],
+    "tests/ClaudeHostTests.swift": [],
+    "tests/ClaudePlanGaugeTests.swift": [],
+    "tests/ClaudeResponseTextTests.swift": [],
+    "tests/ClaudeSettingsFileTests.swift": [],
+    "tests/DesktopMochiTests.swift": [],
+    "tests/DiffEngineTests.swift": [],
+    "tests/GitHubActivityTests.swift": [],
+    "tests/GitHubPulseTests.swift": [],
+    "tests/IslandAutoCloseTests.swift": [],
+    "tests/IslandDisplayChoiceTests.swift": [],
+    "tests/IslandHoverTests.swift": [],
+    "tests/IslandScreenGeometryTests.swift": [],
+    "tests/MochiWardrobeTests.swift": [],
+    "tests/PillColorsTests.swift": [],
+    "tests/SafeWebURLTests.swift": [],
+    "tests/ShortcutTests.swift": [],
+    "tests/TerminalTargetTests.swift": [],
+    "tests/fake_local_llm.py": [],
+    "windows/Cargo.toml": [],
+    "windows/README.md": [],
+    "windows/dev/recap-preview.html": [],
+    "windows/dev/recap-preview.ts": [
+      "windows/src/island/island.ts",
+      "windows/src/recap/recap.ts",
+      "windows/src/recap/share.ts",
+      "windows/src/style.css"
+    ],
+    "windows/dev/upload-preview.html": [],
+    "windows/dev/upload-preview.ts": [
+      "windows/src/core/state.ts",
+      "windows/src/upload/canvas.ts",
+      "windows/src/upload/sequence.ts"
+    ],
+    "windows/hook/Cargo.toml": [],
+    "windows/hook/src/main.rs": [
+      "windows/hook/src/normalize.rs",
+      "windows/hook/src/reply.rs",
+      "windows/hook/src/statusline.rs",
+      "windows/hook/src/unix.rs",
+      "windows/hook/src/win.rs"
+    ],
+    "windows/hook/src/normalize.rs": [],
+    "windows/hook/src/reply.rs": [],
+    "windows/hook/src/statusline.rs": [],
+    "windows/hook/src/unix.rs": [],
+    "windows/hook/src/win.rs": [],
+    "windows/index.html": [],
+    "windows/mochi.html": [],
+    "windows/nsis_installer.nsi": [],
+    "windows/package.json": [],
+    "windows/scripts/gen-icons.mjs": [],
+    "windows/scripts/gen-strings.mjs": [],
+    "windows/scripts/pack.mjs": [],
+    "windows/settings.html": [],
+    "windows/src-tauri/Cargo.toml": [],
+    "windows/src-tauri/build.rs": [],
+    "windows/src-tauri/capabilities/default.json": [],
+    "windows/src-tauri/nsis/hooks.nsh": [],
+    "windows/src-tauri/src/agent_hooks.rs": [],
+    "windows/src-tauri/src/agents.rs": [
+      "windows/src-tauri/src/config_file.rs"
+    ],
+    "windows/src-tauri/src/chat.rs": [
+      "windows/src-tauri/src/settings.rs"
+    ],
+    "windows/src-tauri/src/claude.rs": [
+      "windows/src-tauri/src/chat.rs",
+      "windows/src-tauri/src/i18n.rs"
+    ],
+    "windows/src-tauri/src/codex_plan.rs": [],
+    "windows/src-tauri/src/config_file.rs": [
+      "windows/src-tauri/src/i18n.rs"
+    ],
+    "windows/src-tauri/src/desktop.rs": [
+      "windows/src-tauri/src/island.rs",
+      "windows/src-tauri/src/platform/mod.rs",
+      "windows/src-tauri/src/settings.rs"
+    ],
+    "windows/src-tauri/src/files.rs": [],
+    "windows/src-tauri/src/github.rs": [],
+    "windows/src-tauri/src/hardware.rs": [
+      "windows/src-tauri/src/island.rs"
+    ],
+    "windows/src-tauri/src/hooks.rs": [
+      "windows/src-tauri/src/agents.rs",
+      "windows/src-tauri/src/config_file.rs"
+    ],
+    "windows/src-tauri/src/i18n.rs": [],
+    "windows/src-tauri/src/identity.rs": [],
+    "windows/src-tauri/src/integrations.rs": [
+      "windows/src-tauri/src/github.rs",
+      "windows/src-tauri/src/island.rs"
+    ],
+    "windows/src-tauri/src/island.rs": [
+      "windows/src-tauri/src/platform/mod.rs"
+    ],
+    "windows/src-tauri/src/lib.rs": [
+      "windows/src-tauri/src/agent_hooks.rs",
+      "windows/src-tauri/src/agents.rs",
+      "windows/src-tauri/src/chat.rs",
+      "windows/src-tauri/src/claude.rs",
+      "windows/src-tauri/src/codex_plan.rs",
+      "windows/src-tauri/src/config_file.rs",
+      "windows/src-tauri/src/desktop.rs",
+      "windows/src-tauri/src/files.rs",
+      "windows/src-tauri/src/github.rs",
+      "windows/src-tauri/src/hardware.rs",
+      "windows/src-tauri/src/hooks.rs",
+      "windows/src-tauri/src/i18n.rs",
+      "windows/src-tauri/src/identity.rs",
+      "windows/src-tauri/src/integrations.rs",
+      "windows/src-tauri/src/island.rs",
+      "windows/src-tauri/src/local_chat.rs",
+      "windows/src-tauri/src/log.rs",
+      "windows/src-tauri/src/media.rs",
+      "windows/src-tauri/src/net.rs",
+      "windows/src-tauri/src/notifications.rs",
+      "windows/src-tauri/src/openai_compat.rs",
+      "windows/src-tauri/src/pipe.rs",
+      "windows/src-tauri/src/platform/mod.rs",
+      "windows/src-tauri/src/recap.rs",
+      "windows/src-tauri/src/secrets.rs",
+      "windows/src-tauri/src/session_window.rs",
+      "windows/src-tauri/src/settings.rs",
+      "windows/src-tauri/src/shortcuts.rs",
+      "windows/src-tauri/src/tray.rs",
+      "windows/src-tauri/src/webview_drop.rs"
+    ],
+    "windows/src-tauri/src/local_chat.rs": [
+      "windows/src-tauri/src/chat.rs",
+      "windows/src-tauri/src/i18n.rs",
+      "windows/src-tauri/src/island.rs",
+      "windows/src-tauri/src/settings.rs"
+    ],
+    "windows/src-tauri/src/log.rs": [],
+    "windows/src-tauri/src/main.rs": [],
+    "windows/src-tauri/src/media.rs": [
+      "windows/src-tauri/src/island.rs"
+    ],
+    "windows/src-tauri/src/net.rs": [
+      "windows/src-tauri/src/i18n.rs"
+    ],
+    "windows/src-tauri/src/notifications.rs": [],
+    "windows/src-tauri/src/openai_compat.rs": [
+      "windows/src-tauri/src/chat.rs",
+      "windows/src-tauri/src/i18n.rs"
+    ],
+    "windows/src-tauri/src/pipe.rs": [
+      "windows/src-tauri/src/island.rs"
+    ],
+    "windows/src-tauri/src/platform/linux.rs": [],
+    "windows/src-tauri/src/platform/mod.rs": [
+      "windows/src-tauri/src/platform/linux.rs",
+      "windows/src-tauri/src/platform/windows.rs"
+    ],
+    "windows/src-tauri/src/platform/windows.rs": [
+      "windows/src-tauri/src/session_window.rs"
+    ],
+    "windows/src-tauri/src/recap.rs": [
+      "windows/src-tauri/src/island.rs"
+    ],
+    "windows/src-tauri/src/secrets.rs": [],
+    "windows/src-tauri/src/session_window.rs": [],
+    "windows/src-tauri/src/settings.rs": [
+      "windows/src-tauri/src/platform/mod.rs"
+    ],
+    "windows/src-tauri/src/shortcuts.rs": [
+      "windows/src-tauri/src/island.rs"
+    ],
+    "windows/src-tauri/src/tray.rs": [
+      "windows/src-tauri/src/i18n.rs",
+      "windows/src-tauri/src/island.rs"
+    ],
+    "windows/src-tauri/src/webview_drop.rs": [
+      "windows/src-tauri/src/island.rs"
+    ],
+    "windows/src-tauri/tauri.conf.json": [],
+    "windows/src-tauri/tauri.linux.conf.json": [],
+    "windows/src/core/anim.ts": [],
+    "windows/src/core/bridge.ts": [
+      "windows/src/core/state.ts",
+      "windows/src/recap/summary.ts"
+    ],
+    "windows/src/core/diff.ts": [],
+    "windows/src/core/fonts.ts": [],
+    "windows/src/core/github.ts": [
+      "windows/src/i18n/i18n.ts"
+    ],
+    "windows/src/core/layout.ts": [
+      "windows/src/core/state.ts"
+    ],
+    "windows/src/core/lyrics.ts": [
+      "windows/src/core/bridge.ts"
+    ],
+    "windows/src/core/pill-colors.ts": [],
+    "windows/src/core/pills.ts": [
+      "windows/src/core/state.ts",
+      "windows/src/i18n/i18n.ts"
+    ],
+    "windows/src/core/plan.ts": [
+      "windows/src/i18n/i18n.ts"
+    ],
+    "windows/src/core/providers.ts": [
+      "windows/src/core/state.ts",
+      "windows/src/i18n/i18n.ts"
+    ],
+    "windows/src/core/shortcuts.ts": [
+      "windows/src/i18n/i18n.ts"
+    ],
+    "windows/src/core/sound.ts": [],
+    "windows/src/core/state.ts": [
+      "windows/src/core/diff.ts",
+      "windows/src/core/layout.ts",
+      "windows/src/core/pill-colors.ts",
+      "windows/src/core/pills.ts",
+      "windows/src/core/plan.ts",
+      "windows/src/core/providers.ts",
+      "windows/src/core/shortcuts.ts",
+      "windows/src/core/welfare.ts",
+      "windows/src/mochi/engine.ts",
+      "windows/src/mochi/wardrobe.ts"
+    ],
+    "windows/src/core/welfare.ts": [
+      "windows/src/core/layout.ts",
+      "windows/src/core/state.ts",
+      "windows/src/i18n/i18n.ts"
+    ],
+    "windows/src/desktop/main.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/core/layout.ts",
+      "windows/src/core/sound.ts",
+      "windows/src/mochi/desktop-logic.ts",
+      "windows/src/mochi/engine.ts"
+    ],
+    "windows/src/i18n/extra.json": [],
+    "windows/src/i18n/i18n.ts": [
+      "windows/src/i18n/extra.json",
+      "windows/src/i18n/strings.json"
+    ],
+    "windows/src/i18n/strings.json": [],
+    "windows/src/island/agents.ts": [],
+    "windows/src/island/desktop.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/core/layout.ts",
+      "windows/src/core/sound.ts",
+      "windows/src/core/state.ts",
+      "windows/src/mochi/desktop-logic.ts",
+      "windows/src/mochi/wardrobe.ts"
+    ],
+    "windows/src/island/fsm.ts": [],
+    "windows/src/island/hooks.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/core/diff.ts",
+      "windows/src/core/pills.ts",
+      "windows/src/core/plan.ts",
+      "windows/src/core/sound.ts",
+      "windows/src/core/state.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/island/agents.ts",
+      "windows/src/island/island.ts",
+      "windows/src/views/usage.ts"
+    ],
+    "windows/src/island/integrations.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/core/github.ts",
+      "windows/src/core/pills.ts",
+      "windows/src/core/sound.ts",
+      "windows/src/core/state.ts",
+      "windows/src/island/island.ts"
+    ],
+    "windows/src/island/island.ts": [
+      "windows/src/core/anim.ts",
+      "windows/src/core/bridge.ts",
+      "windows/src/core/layout.ts",
+      "windows/src/core/sound.ts",
+      "windows/src/core/state.ts",
+      "windows/src/core/welfare.ts",
+      "windows/src/island/desktop.ts",
+      "windows/src/island/fsm.ts",
+      "windows/src/island/integrations.ts",
+      "windows/src/mochi/desktop-logic.ts",
+      "windows/src/mochi/engine.ts",
+      "windows/src/mochi/greeting.ts",
+      "windows/src/mochi/minibots.ts",
+      "windows/src/mochi/wardrobe.ts",
+      "windows/src/upload/canvas.ts",
+      "windows/src/upload/sequence.ts",
+      "windows/src/views/dom.ts",
+      "windows/src/views/usage.ts",
+      "windows/src/views/views.ts"
+    ],
+    "windows/src/island/shortcuts.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/core/layout.ts",
+      "windows/src/core/shortcuts.ts",
+      "windows/src/core/sound.ts",
+      "windows/src/core/state.ts"
+    ],
+    "windows/src/main.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/core/sound.ts",
+      "windows/src/core/state.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/island/hooks.ts",
+      "windows/src/island/integrations.ts",
+      "windows/src/island/island.ts",
+      "windows/src/island/shortcuts.ts",
+      "windows/src/recap/recap.ts",
+      "windows/src/style.css"
+    ],
+    "windows/src/mochi/desktop-logic.ts": [
+      "windows/src/core/layout.ts",
+      "windows/src/mochi/wardrobe.ts"
+    ],
+    "windows/src/mochi/engine.ts": [
+      "windows/src/core/anim.ts",
+      "windows/src/core/layout.ts",
+      "windows/src/core/sound.ts",
+      "windows/src/mochi/outfits.ts",
+      "windows/src/mochi/wardrobe.ts"
+    ],
+    "windows/src/mochi/greeting.ts": [
+      "windows/src/core/anim.ts",
+      "windows/src/core/layout.ts",
+      "windows/src/core/sound.ts"
+    ],
+    "windows/src/mochi/minibots.ts": [
+      "windows/src/core/state.ts",
+      "windows/src/mochi/engine.ts"
+    ],
+    "windows/src/mochi/outfits.ts": [
+      "windows/src/core/anim.ts",
+      "windows/src/core/fonts.ts",
+      "windows/src/mochi/wardrobe.ts"
+    ],
+    "windows/src/mochi/wardrobe.ts": [
+      "windows/src/i18n/i18n.ts"
+    ],
+    "windows/src/recap/recap.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/core/layout.ts",
+      "windows/src/core/state.ts",
+      "windows/src/recap/summary.ts"
+    ],
+    "windows/src/recap/share.ts": [
+      "windows/src/core/fonts.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/mochi/engine.ts",
+      "windows/src/recap/summary.ts"
+    ],
+    "windows/src/recap/summary.ts": [
+      "windows/src/i18n/i18n.ts"
+    ],
+    "windows/src/settings/agents.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/core/state.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/settings/parts.ts",
+      "windows/src/views/dom.ts"
+    ],
+    "windows/src/settings/colors.ts": [
+      "windows/src/core/pill-colors.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/views/dom.ts"
+    ],
+    "windows/src/settings/main.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/core/pills.ts",
+      "windows/src/core/providers.ts",
+      "windows/src/core/shortcuts.ts",
+      "windows/src/core/state.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/settings/agents.ts",
+      "windows/src/settings/colors.ts",
+      "windows/src/settings/parts.ts",
+      "windows/src/settings/settings.css",
+      "windows/src/views/dom.ts"
+    ],
+    "windows/src/settings/parts.ts": [
+      "windows/src/views/dom.ts"
+    ],
+    "windows/src/settings/settings.css": [],
+    "windows/src/style.css": [],
+    "windows/src/upload/canvas.ts": [
+      "windows/src/core/fonts.ts",
+      "windows/src/core/state.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/upload/sequence.ts"
+    ],
+    "windows/src/upload/sequence.ts": [],
+    "windows/src/views/accessory.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/core/state.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/views/dom.ts",
+      "windows/src/views/icons.ts",
+      "windows/src/views/views.ts"
+    ],
+    "windows/src/views/chat.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/core/providers.ts",
+      "windows/src/core/sound.ts",
+      "windows/src/core/state.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/views/dom.ts",
+      "windows/src/views/icons.ts",
+      "windows/src/views/markdown.ts",
+      "windows/src/views/views.ts"
+    ],
+    "windows/src/views/diff.ts": [
+      "windows/src/core/diff.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/views/dom.ts",
+      "windows/src/views/icons.ts"
+    ],
+    "windows/src/views/dom.ts": [
+      "windows/src/i18n/i18n.ts"
+    ],
+    "windows/src/views/github.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/core/github.ts",
+      "windows/src/views/dom.ts",
+      "windows/src/views/icons.ts"
+    ],
+    "windows/src/views/icons.ts": [],
+    "windows/src/views/integrations.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/core/github.ts",
+      "windows/src/core/pills.ts",
+      "windows/src/core/sound.ts",
+      "windows/src/core/state.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/island/integrations.ts",
+      "windows/src/views/dom.ts",
+      "windows/src/views/github.ts",
+      "windows/src/views/icons.ts"
+    ],
+    "windows/src/views/markdown.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/views/dom.ts",
+      "windows/src/views/icons.ts"
+    ],
+    "windows/src/views/music.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/core/lyrics.ts",
+      "windows/src/core/state.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/views/dom.ts",
+      "windows/src/views/icons.ts",
+      "windows/src/views/views.ts"
+    ],
+    "windows/src/views/notifications.ts": [
+      "windows/src/core/state.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/views/dom.ts",
+      "windows/src/views/icons.ts",
+      "windows/src/views/views.ts"
+    ],
+    "windows/src/views/recap.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/core/layout.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/recap/recap.ts",
+      "windows/src/recap/share.ts",
+      "windows/src/recap/summary.ts",
+      "windows/src/views/dom.ts",
+      "windows/src/views/views.ts"
+    ],
+    "windows/src/views/shelf.ts": [
+      "windows/src/core/state.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/views/dom.ts",
+      "windows/src/views/icons.ts",
+      "windows/src/views/views.ts"
+    ],
+    "windows/src/views/ticker.ts": [
+      "windows/src/core/anim.ts",
+      "windows/src/core/diff.ts",
+      "windows/src/core/state.ts",
+      "windows/src/views/dom.ts",
+      "windows/src/views/icons.ts"
+    ],
+    "windows/src/views/upload.ts": [
+      "windows/src/core/state.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/views/dom.ts",
+      "windows/src/views/views.ts"
+    ],
+    "windows/src/views/usage.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/core/plan.ts",
+      "windows/src/core/state.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/views/dom.ts",
+      "windows/src/views/icons.ts"
+    ],
+    "windows/src/views/views.ts": [
+      "windows/src/core/bridge.ts",
+      "windows/src/core/diff.ts",
+      "windows/src/core/layout.ts",
+      "windows/src/core/pills.ts",
+      "windows/src/core/state.ts",
+      "windows/src/core/welfare.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/mochi/minibots.ts",
+      "windows/src/mochi/wardrobe.ts",
+      "windows/src/views/accessory.ts",
+      "windows/src/views/chat.ts",
+      "windows/src/views/diff.ts",
+      "windows/src/views/dom.ts",
+      "windows/src/views/icons.ts",
+      "windows/src/views/integrations.ts",
+      "windows/src/views/music.ts",
+      "windows/src/views/notifications.ts",
+      "windows/src/views/recap.ts",
+      "windows/src/views/shelf.ts",
+      "windows/src/views/ticker.ts",
+      "windows/src/views/upload.ts",
+      "windows/src/views/usage.ts",
+      "windows/src/views/wardrobe.ts"
+    ],
+    "windows/src/views/wardrobe.ts": [
+      "windows/src/core/state.ts",
+      "windows/src/i18n/i18n.ts",
+      "windows/src/mochi/outfits.ts",
+      "windows/src/mochi/wardrobe.ts",
+      "windows/src/views/dom.ts",
+      "windows/src/views/views.ts"
+    ],
+    "windows/tests/agents.test.mjs": [
+      "windows/src/island/agents.ts"
+    ],
+    "windows/tests/bloom-features.test.mjs": [
+      "windows/src/core/state.ts",
+      "windows/src/core/welfare.ts",
+      "windows/src/mochi/engine.ts",
+      "windows/src/views/accessory.ts",
+      "windows/src/views/shelf.ts",
+      "windows/src/views/views.ts",
+      "windows/tests/fakedom.mjs"
+    ],
+    "windows/tests/chat.test.mjs": [
+      "windows/tests/fakedom.mjs",
+      "windows/tests/tauri.mjs"
+    ],
+    "windows/tests/desktop.test.mjs": [
+      "windows/src/mochi/desktop-logic.ts"
+    ],
+    "windows/tests/diff.test.mjs": [
+      "windows/src/core/diff.ts"
+    ],
+    "windows/tests/fakedom.mjs": [],
+    "windows/tests/fsm.test.mjs": [
+      "windows/src/island/fsm.ts"
+    ],
+    "windows/tests/github.test.mjs": [
+      "windows/src/core/github.ts",
+      "windows/src/core/state.ts",
+      "windows/src/island/integrations.ts",
+      "windows/tests/tauri.mjs"
+    ],
+    "windows/tests/greeting.test.mjs": [
+      "windows/src/core/anim.ts",
+      "windows/src/core/layout.ts",
+      "windows/src/mochi/greeting.ts"
+    ],
+    "windows/tests/hooks.test.mjs": [
+      "windows/src/core/state.ts",
+      "windows/src/island/hooks.ts",
+      "windows/tests/tauri.mjs"
+    ],
+    "windows/tests/i18n.test.mjs": [
+      "windows/tests/fakedom.mjs"
+    ],
+    "windows/tests/livediff.test.mjs": [
+      "windows/src/core/diff.ts",
+      "windows/src/core/state.ts",
+      "windows/src/island/hooks.ts",
+      "windows/tests/tauri.mjs"
+    ],
+    "windows/tests/markdown.test.mjs": [
+      "windows/tests/fakedom.mjs",
+      "windows/tests/tauri.mjs"
+    ],
+    "windows/tests/music-lyrics.test.mjs": [
+      "windows/src/core/lyrics.ts",
+      "windows/src/core/state.ts",
+      "windows/src/mochi/engine.ts"
+    ],
+    "windows/tests/pill-colors.test.mjs": [
+      "windows/src/core/pill-colors.ts",
+      "windows/src/core/pills.ts",
+      "windows/src/core/state.ts"
+    ],
+    "windows/tests/pills.test.mjs": [
+      "windows/src/core/pills.ts",
+      "windows/src/core/state.ts"
+    ],
+    "windows/tests/plan.test.mjs": [
+      "windows/src/core/plan.ts",
+      "windows/src/core/state.ts",
+      "windows/src/island/hooks.ts",
+      "windows/src/views/usage.ts",
+      "windows/tests/tauri.mjs"
+    ],
+    "windows/tests/providers.test.mjs": [
+      "windows/src/core/providers.ts",
+      "windows/src/core/state.ts"
+    ],
+    "windows/tests/recap-trigger.test.mjs": [
+      "windows/src/core/state.ts",
+      "windows/src/recap/recap.ts",
+      "windows/src/recap/summary.ts",
+      "windows/tests/tauri.mjs"
+    ],
+    "windows/tests/recap.test.mjs": [
+      "windows/src/recap/summary.ts"
+    ],
+    "windows/tests/setup.mjs": [
+      "windows/tests/tauri.mjs"
+    ],
+    "windows/tests/shortcuts.test.mjs": [
+      "windows/src/core/shortcuts.ts",
+      "windows/src/core/state.ts",
+      "windows/src/island/shortcuts.ts",
+      "windows/tests/tauri.mjs"
+    ],
+    "windows/tests/tauri.mjs": [],
+    "windows/tests/wardrobe.test.mjs": [
+      "windows/src/core/state.ts",
+      "windows/src/mochi/wardrobe.ts"
+    ],
+    "windows/tests/welfare.test.mjs": [
+      "windows/src/core/state.ts",
+      "windows/src/core/welfare.ts"
+    ],
+    "windows/tsconfig.json": [],
+    "windows/vite.config.ts": []
+  }
+}
