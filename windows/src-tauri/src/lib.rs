@@ -37,7 +37,7 @@ use std::sync::atomic::Ordering;
 use std::sync::{Arc, Mutex};
 
 use serde::Serialize;
-use tauri::{AppHandle, Emitter, Manager, State, WebviewUrl, WebviewWindowBuilder};
+use tauri::{AppHandle, Emitter, Manager, State, WebviewUrl, WebviewWindow, WebviewWindowBuilder};
 use tauri_plugin_autostart::{ManagerExt, MacosLauncher};
 
 use chat::{Chat, ChatContext, ChatReply, ModelInfo};
@@ -591,7 +591,7 @@ fn shortcuts_suspend(app: AppHandle, shared: State<Shared>, suspended: bool) {
 /// for the *same* arguments as the island (see `additionalBrowserArgs` in
 /// tauri.conf.json) — a mismatch makes the second window come up blank, with no
 /// error anywhere.
-pub(crate) const BROWSER_ARGS: &str = "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --autoplay-policy=no-user-gesture-required";
+pub(crate) const BROWSER_ARGS: &str = "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,Translate,InterestFeedContentSuggestions --renderer-process-limit=1 --enable-features=TrimOnMemoryPressure --autoplay-policy=no-user-gesture-required";
 
 /// In a dev build the pages are served by Vite, so the second window needs the
 /// absolute dev URL; a bundled build resolves it inside the app bundle.
@@ -609,7 +609,10 @@ fn settings_page_url(app: &AppHandle) -> WebviewUrl {
 /// hidden afterwards. A WebView2 window created later — on the main thread or
 /// not — silently comes up blank in this app, so the window that works is the
 /// one that exists before the island's webview does.
-fn create_settings_window(app: &AppHandle) {
+fn create_settings_window(app: &AppHandle) -> Option<WebviewWindow> {
+    if let Some(win) = app.get_webview_window("settings") {
+        return Some(win);
+    }
     let url = settings_page_url(app);
     match WebviewWindowBuilder::new(app, "settings", url)
         .additional_browser_args(BROWSER_ARGS)
@@ -630,19 +633,35 @@ fn create_settings_window(app: &AppHandle) {
                     let _ = hidden.hide();
                 }
             });
+            Some(win)
         }
-        Err(err) => log::line(format!("settings window failed: {err}")),
+        Err(err) => {
+            log::line(format!("settings window failed: {err}"));
+            None
+        }
     }
 }
 
 pub fn show_settings_window(app: &AppHandle) {
-    let Some(win) = app.get_webview_window("settings") else {
-        log::line("settings window missing");
-        return;
+    let win = match app.get_webview_window("settings") {
+        Some(win) => win,
+        None => match create_settings_window(app) {
+            Some(win) => win,
+            None => {
+                log::line("settings window missing and failed to create");
+                return;
+            }
+        },
     };
     let _ = win.unminimize();
     let _ = win.show();
+    // Island uses WS_EX_NOACTIVATE so Cocoa isn't always the foreground process
+    // when Settings is clicked; briefly toggling topmost promotes it cleanly in
+    // the z-order even if Windows blocks SetForegroundWindow.
+    let _ = win.set_always_on_top(true);
+    let _ = win.set_always_on_top(false);
     let _ = win.set_focus();
+    platform::bring_forward_window(&win);
 }
 
 #[tauri::command]
@@ -768,7 +787,7 @@ pub fn run() {
             let handle = app.handle().clone();
             tray::build(&handle)?;
             // Before the island: see create_settings_window.
-            create_settings_window(&handle);
+            let _ = create_settings_window(&handle);
             // Same rule for Mochi's desktop window.
             desktop::setup(&handle);
 
@@ -817,7 +836,17 @@ pub fn run() {
 
 #[cfg(test)]
 mod tests {
-    use super::diff_file;
+    use super::{diff_file, BROWSER_ARGS};
+
+    #[test]
+    fn browser_args_match_tauri_conf() {
+        let conf: serde_json::Value =
+            serde_json::from_str(include_str!("../tauri.conf.json")).unwrap();
+        let island_args = conf["app"]["windows"][0]["additionalBrowserArgs"]
+            .as_str()
+            .expect("island window additionalBrowserArgs must be set");
+        assert_eq!(BROWSER_ARGS, island_args);
+    }
 
     #[test]
     fn only_an_existing_file_by_its_full_path_reaches_the_editor() {

@@ -274,6 +274,10 @@ pub fn first_with_window(_pids: &[u32]) -> Option<u32> {
     None
 }
 
+pub fn bring_forward_window(_win: &WebviewWindow) -> bool {
+    false
+}
+
 pub fn focus_process_window(_pid: u32, _folder: &str) -> bool {
     false
 }

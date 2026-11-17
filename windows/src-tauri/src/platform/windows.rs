@@ -445,6 +445,18 @@ fn bring_forward(raw: isize) -> bool {
     }
 }
 
+pub fn bring_forward_window(win: &WebviewWindow) -> bool {
+    let Some(hwnd) = hwnd_of(win) else {
+        return false;
+    };
+    unsafe {
+        if IsIconic(hwnd).as_bool() {
+            let _ = ShowWindow(hwnd, SW_RESTORE);
+        }
+        SetForegroundWindow(hwnd).as_bool()
+    }
+}
+
 /// Brings `pid`'s window forward — the one titled after `folder` if there are several.
 pub fn focus_process_window(pid: u32, folder: &str) -> bool {
     let candidates: Vec<(isize, String)> = top_windows()
